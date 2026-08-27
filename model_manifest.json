@@ -1,0 +1,6 @@
+{
+  "model": "YOUR_ORG/relict-qwen3-4b",
+  "version": "0.1.0",
+  "revision": "PINNED_HUGGINGFACE_COMMIT",
+  "format": "safetensors"
+}

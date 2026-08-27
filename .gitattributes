@@ -1,0 +1,7 @@
+# Git LFS declarations for model weight formats.
+# The actual model files are hosted externally on Hugging Face
+# and are NOT committed to this repository.
+
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.gguf filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relict-core"
+version = "0.1.0"
+description = "Relict Core — evidence-grounded biological strategy engine"
+requires-python = ">=3.11"
+license = "AGPL-3.0-only"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "pydantic-settings",
+    "httpx",
+    "anyio",
+    "networkx",
+    "numpy",
+    "duckdb",
+    "huggingface-hub",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+    "mypy",
+    "pre-commit",
+]
+training = [
+    "torch",
+    "transformers",
+    "peft",
+    "trl",
+    "datasets",
+    "accelerate",
+    "bitsandbytes",
+    "unsloth",
+]
+local = [
+    "ollama",
+    "llama-cpp-python",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

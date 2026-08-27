@@ -1,0 +1,15 @@
+name: Publish Model
+
+# Skeleton workflow — do not add real credentials, tokens, or publishing steps yet.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder
+        run: echo "Model publishing workflow is not yet configured."
