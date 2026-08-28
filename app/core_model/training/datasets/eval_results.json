@@ -1,0 +1,798 @@
+[
+  {
+    "index": 0,
+    "objective": "I want to increase drought tolerance in rice by modifying stomatal density.",
+    "expected": {
+      "target_phenotypes": [
+        "drought tolerance"
+      ],
+      "biological_processes": [
+        "stomatal regulation",
+        "transpiration control"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "stomatal density",
+        "drought response"
+      ],
+      "retrieval_targets": [
+        "genes regulating stomatal density in Oryza sativa"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "drought tolerance"
+      ],
+      "biological_processes": [
+        "stomatal regulation"
+      ],
+      "desired_change": "increase stomatal density",
+      "relevant_concepts": [
+        "stomatal density",
+        "drought tolerance",
+        "rice"
+      ],
+      "retrieval_targets": [
+        "stomatal density in rice",
+        "genetic factors affecting stomatal density",
+        "drought tolerance mechanisms in rice"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": false
+  },
+  {
+    "index": 1,
+    "objective": "I want to decrease stomatal density in wheat to reduce water loss under drought conditions.",
+    "expected": {
+      "target_phenotypes": [
+        "drought tolerance",
+        "reduced water loss"
+      ],
+      "biological_processes": [
+        "stomatal development",
+        "transpiration"
+      ],
+      "desired_change": "decrease stomatal density",
+      "relevant_concepts": [
+        "stomatal density",
+        "water use efficiency"
+      ],
+      "retrieval_targets": [
+        "genes controlling stomatal density in Triticum aestivum"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "reduced water loss under drought conditions"
+      ],
+      "biological_processes": [
+        "stomatal regulation",
+        "water balance in plants"
+      ],
+      "desired_change": "decrease stomatal density",
+      "relevant_concepts": [
+        "stomatal density",
+        "drought tolerance",
+        "wheat",
+        "water loss"
+      ],
+      "retrieval_targets": [
+        "stomatal density in wheat",
+        "genetic factors affecting stomatal density",
+        "drought tolerance mechanisms in wheat"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 2,
+    "objective": "Increase root depth in wheat to improve drought resistance.",
+    "expected": {
+      "target_phenotypes": [
+        "increased root depth",
+        "drought resistance"
+      ],
+      "biological_processes": [
+        "root elongation",
+        "root system architecture"
+      ],
+      "desired_change": "increase root depth",
+      "relevant_concepts": [
+        "deep rooting phenotype",
+        "drought avoidance"
+      ],
+      "retrieval_targets": [
+        "genes regulating root depth in wheat"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "drought resistance"
+      ],
+      "biological_processes": [
+        "root development"
+      ],
+      "desired_change": "increase root depth",
+      "relevant_concepts": [
+        "root depth",
+        "drought resistance",
+        "wheat",
+        "root development"
+      ],
+      "retrieval_targets": [
+        "genes associated with root depth in wheat",
+        "genetic pathways for drought resistance in wheat"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 3,
+    "objective": "Reduce flowering time in Arabidopsis without affecting seed yield.",
+    "expected": {
+      "target_phenotypes": [
+        "early flowering",
+        "unchanged seed yield"
+      ],
+      "biological_processes": [
+        "floral transition",
+        "seed development"
+      ],
+      "desired_change": "decrease time to flowering while preserving seed yield",
+      "relevant_concepts": [
+        "flowering time genes",
+        "yield-flowering tradeoff"
+      ],
+      "retrieval_targets": [
+        "FT and CO gene regulation",
+        "flowering time QTLs"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "reduced flowering time"
+      ],
+      "biological_processes": [
+        "flower development"
+      ],
+      "desired_change": "reduce flowering time",
+      "relevant_concepts": [
+        "Arabidopsis",
+        "flowering time",
+        "seed yield"
+      ],
+      "retrieval_targets": [
+        "genes associated with flowering time in Arabidopsis",
+        "genetic pathways regulating flowering time",
+        "phenotypic effects of flowering time mutations on seed yield"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 4,
+    "objective": "Modify the FT gene expression level in Arabidopsis.",
+    "expected": {
+      "target_phenotypes": [
+        "altered flowering time"
+      ],
+      "biological_processes": [
+        "floral transition",
+        "photoperiod signaling"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "FT gene",
+        "flowering regulation"
+      ],
+      "retrieval_targets": [
+        "FT gene expression pathways in Arabidopsis"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": "increase or decrease expression level of FT gene",
+      "relevant_concepts": [
+        "FT gene",
+        "gene expression level",
+        "Arabidopsis"
+      ],
+      "retrieval_targets": [
+        "FT gene function in Arabidopsis",
+        "gene expression regulation mechanisms",
+        "methods to modify gene expression"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 5,
+    "objective": "Change the growth rate of maize.",
+    "expected": {
+      "target_phenotypes": [
+        "altered growth rate"
+      ],
+      "biological_processes": [
+        "cell division",
+        "vegetative growth"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "growth rate regulation",
+        "maize development"
+      ],
+      "retrieval_targets": [
+        "genes associated with growth rate in Zea mays"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "growth rate"
+      ],
+      "biological_processes": [
+        "cell division",
+        "metabolism"
+      ],
+      "desired_change": "increase",
+      "relevant_concepts": [
+        "maize",
+        "growth rate",
+        "genetic modification"
+      ],
+      "retrieval_targets": [
+        "maize growth rate genes",
+        "genetic pathways affecting growth rate"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 6,
+    "objective": "Adjust the fruit ripening time in tomato.",
+    "expected": {
+      "target_phenotypes": [
+        "altered fruit ripening time"
+      ],
+      "biological_processes": [
+        "fruit ripening",
+        "ethylene signaling"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "ripening regulation",
+        "tomato fruit development"
+      ],
+      "retrieval_targets": [
+        "genes controlling ripening time in Solanum lycopersicum"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "fruit ripening time"
+      ],
+      "biological_processes": [
+        "fruit ripening"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "tomato",
+        "ripening time",
+        "gene expression",
+        "developmental timing"
+      ],
+      "retrieval_targets": [
+        "genes involved in tomato fruit ripening",
+        "regulatory pathways affecting ripening time",
+        "phenotypic variation in ripening duration"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 7,
+    "objective": "Make the plant better.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 8,
+    "objective": "Improve the crop.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 9,
+    "objective": "I want to do something with gene editing in cotton.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 10,
+    "objective": "Enhance disease resistance in soybean against Phytophthora sojae.",
+    "expected": {
+      "target_phenotypes": [
+        "disease resistance"
+      ],
+      "biological_processes": [
+        "pathogen defense response",
+        "immune signaling"
+      ],
+      "desired_change": "increase resistance to Phytophthora sojae",
+      "relevant_concepts": [
+        "disease resistance genes",
+        "plant-pathogen interaction"
+      ],
+      "retrieval_targets": [
+        "resistance genes against Phytophthora sojae in Glycine max"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "disease resistance in soybean against Phytophthora sojae"
+      ],
+      "biological_processes": [
+        "defense response against pathogens"
+      ],
+      "desired_change": "enhance",
+      "relevant_concepts": [
+        "soybean",
+        "Phytophthora sojae",
+        "disease resistance",
+        "pathogen defense"
+      ],
+      "retrieval_targets": [
+        "genes associated with disease resistance in soybean",
+        "pathway mechanisms of Phytophthora sojae infection",
+        "existing genetic variants for resistance"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": false
+  },
+  {
+    "index": 11,
+    "objective": "I'd like soybean plants that resist Phytophthora sojae infection better.",
+    "expected": {
+      "target_phenotypes": [
+        "disease resistance"
+      ],
+      "biological_processes": [
+        "pathogen defense response",
+        "immune signaling"
+      ],
+      "desired_change": "increase resistance to Phytophthora sojae",
+      "relevant_concepts": [
+        "disease resistance genes",
+        "plant-pathogen interaction"
+      ],
+      "retrieval_targets": [
+        "resistance genes against Phytophthora sojae in Glycine max"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "resistance to Phytophthora sojae infection"
+      ],
+      "biological_processes": [
+        "pathogen defense response in plants"
+      ],
+      "desired_change": "improved resistance to Phytophthora sojae infection",
+      "relevant_concepts": [
+        "soybean",
+        "Phytophthora sojae",
+        "disease resistance",
+        "plant immune response"
+      ],
+      "retrieval_targets": [
+        "genes associated with resistance to Phytophthora sojae in soybean",
+        "molecular mechanisms of plant pathogen defense"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": false
+  },
+  {
+    "index": 12,
+    "objective": "Boost cold tolerance in banana plants during winter months.",
+    "expected": {
+      "target_phenotypes": [
+        "cold tolerance"
+      ],
+      "biological_processes": [
+        "cold stress response",
+        "membrane lipid regulation"
+      ],
+      "desired_change": "increase cold tolerance",
+      "relevant_concepts": [
+        "cold stress genes",
+        "chilling injury"
+      ],
+      "retrieval_targets": [
+        "cold tolerance genes in Musa species"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "cold tolerance in banana plants"
+      ],
+      "biological_processes": [
+        "cold stress response",
+        "plant temperature regulation"
+      ],
+      "desired_change": "increase cold tolerance",
+      "relevant_concepts": [
+        "banana plant physiology",
+        "cold stress tolerance",
+        "winter survival in plants"
+      ],
+      "retrieval_targets": [
+        "genes associated with cold tolerance in banana plants",
+        "molecular mechanisms of cold stress response in plants",
+        "winter survival traits in banana species"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 13,
+    "objective": "Change seed oil content in canola.",
+    "expected": {
+      "target_phenotypes": [
+        "altered seed oil content"
+      ],
+      "biological_processes": [
+        "lipid biosynthesis",
+        "seed development"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "oil content regulation",
+        "canola seed composition"
+      ],
+      "retrieval_targets": [
+        "genes controlling seed oil content in Brassica napus"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "seed oil content"
+      ],
+      "biological_processes": [
+        "oil biosynthesis in seeds"
+      ],
+      "desired_change": "increase",
+      "relevant_concepts": [
+        "canola",
+        "seed oil content",
+        "oil biosynthesis",
+        "seed development"
+      ],
+      "retrieval_targets": [
+        "genes involved in oil biosynthesis in canola",
+        "regulatory elements affecting seed oil content",
+        "existing genetic variants linked to high oil content in canola"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 14,
+    "objective": "Reduce seed oil content in canola to below 30% by modifying FAE1 gene activity.",
+    "expected": {
+      "target_phenotypes": [
+        "reduced seed oil content"
+      ],
+      "biological_processes": [
+        "lipid biosynthesis",
+        "seed development"
+      ],
+      "desired_change": "decrease seed oil content below 30% via FAE1 modification",
+      "relevant_concepts": [
+        "FAE1 gene",
+        "seed oil biosynthesis"
+      ],
+      "retrieval_targets": [
+        "FAE1 gene function in Brassica napus"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "reduced seed oil content"
+      ],
+      "biological_processes": [
+        "oil biosynthesis",
+        "gene regulation"
+      ],
+      "desired_change": "reduce seed oil content to below 30%",
+      "relevant_concepts": [
+        "FAE1 gene",
+        "seed oil content",
+        "gene activity modification"
+      ],
+      "retrieval_targets": [
+        "FAE1 gene function",
+        "oil biosynthesis pathway",
+        "seed oil content thresholds in canola"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 15,
+    "objective": "Increase yield in wheat while also improving drought tolerance and reducing water usage.",
+    "expected": {
+      "target_phenotypes": [
+        "increased yield",
+        "drought tolerance",
+        "reduced water usage"
+      ],
+      "biological_processes": [
+        "grain development",
+        "water use efficiency",
+        "stress response"
+      ],
+      "desired_change": "increase yield and drought tolerance simultaneously",
+      "relevant_concepts": [
+        "yield-stress tradeoff",
+        "multi-trait breeding"
+      ],
+      "retrieval_targets": [
+        "genes linked to yield under drought stress in wheat"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "increased yield in wheat",
+        "improved drought tolerance",
+        "reduced water usage"
+      ],
+      "biological_processes": [
+        "water use efficiency",
+        "stomatal regulation",
+        "photosynthetic efficiency"
+      ],
+      "desired_change": "increase yield in wheat",
+      "relevant_concepts": [
+        "wheat yield",
+        "drought tolerance",
+        "water usage efficiency"
+      ],
+      "retrieval_targets": [
+        "genes associated with drought tolerance in wheat",
+        "genetic pathways for water use efficiency",
+        "yield-related traits in wheat"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": false
+  },
+  {
+    "index": 16,
+    "objective": "I want higher yield in wheat but I'm not sure if that conflicts with drought tolerance.",
+    "expected": {
+      "target_phenotypes": [
+        "increased yield"
+      ],
+      "biological_processes": [
+        "grain development"
+      ],
+      "desired_change": "increase yield, tradeoff with drought tolerance unresolved",
+      "relevant_concepts": [
+        "yield-stress tradeoff"
+      ],
+      "retrieval_targets": [
+        "genes linked to yield under drought stress in wheat"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "higher yield in wheat",
+        "drought tolerance in wheat"
+      ],
+      "biological_processes": [
+        "photosynthesis",
+        "starch synthesis",
+        "water uptake"
+      ],
+      "desired_change": "higher yield",
+      "relevant_concepts": [
+        "wheat yield",
+        "drought tolerance",
+        "genetic trade-offs"
+      ],
+      "retrieval_targets": [
+        "genetic factors affecting wheat yield",
+        "genetic factors affecting drought tolerance",
+        "potential trade-offs between yield and drought tolerance"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 17,
+    "objective": "Alter petal color in petunia from purple to white.",
+    "expected": {
+      "target_phenotypes": [
+        "altered petal color"
+      ],
+      "biological_processes": [
+        "anthocyanin biosynthesis",
+        "pigmentation"
+      ],
+      "desired_change": "change petal color from purple to white",
+      "relevant_concepts": [
+        "anthocyanin pathway",
+        "flower color genetics"
+      ],
+      "retrieval_targets": [
+        "genes controlling anthocyanin biosynthesis in Petunia"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "white petal color"
+      ],
+      "biological_processes": [
+        "pigment biosynthesis in petunia petals"
+      ],
+      "desired_change": "change petal color from purple to white",
+      "relevant_concepts": [
+        "petunia petal color",
+        "anthocyanin biosynthesis",
+        "gene expression regulation"
+      ],
+      "retrieval_targets": [
+        "genes involved in petunia petal color",
+        "anthocyanin pathway genes",
+        "white petal mutation in petunia"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  },
+  {
+    "index": 18,
+    "objective": "Do something about the color of the flowers.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "flower color"
+      ],
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": [
+        "flower pigmentation"
+      ],
+      "retrieval_targets": [
+        "flower color genes",
+        "pigment biosynthesis pathways"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "status_match": true
+  },
+  {
+    "index": 19,
+    "objective": "Increase thermotolerance in tomato plants to withstand temperatures above 35C during flowering.",
+    "expected": {
+      "target_phenotypes": [
+        "heat tolerance"
+      ],
+      "biological_processes": [
+        "heat shock response",
+        "reproductive thermotolerance"
+      ],
+      "desired_change": "increase tolerance to temperatures above 35C during flowering",
+      "relevant_concepts": [
+        "heat shock proteins",
+        "reproductive stress tolerance"
+      ],
+      "retrieval_targets": [
+        "heat shock protein genes in Solanum lycopersicum"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "actual": {
+      "target_phenotypes": [
+        "thermotolerance in tomato plants"
+      ],
+      "biological_processes": [
+        "temperature response in plants",
+        "flowering stage regulation"
+      ],
+      "desired_change": "increase thermotolerance",
+      "relevant_concepts": [
+        "tomato plants",
+        "flowering",
+        "temperature tolerance",
+        "thermal stress response"
+      ],
+      "retrieval_targets": [
+        "genes associated with thermotolerance in tomato",
+        "molecular pathways in flowering under heat stress",
+        "temperature thresholds in plant development"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "status_match": true
+  }
+]
