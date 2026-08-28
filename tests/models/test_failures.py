@@ -7,7 +7,6 @@ from pydantic import ValidationError
 
 from app.models.failures import FailureCode, FailureDetail
 
-
 # ---------------------------------------------------------------------------
 # FailureCode enum
 # ---------------------------------------------------------------------------

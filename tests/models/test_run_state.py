@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
 
 from app.models.run_state import PostPlanAnalysisStatus, RunState, RunStatus
-
 
 # ---------------------------------------------------------------------------
 # RunStatus enum
@@ -74,7 +73,7 @@ class TestRunState:
         assert state.errors == []
 
     def test_full_valid_instance(self) -> None:
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         state = RunState(
             run_id="run-003",
             status=RunStatus.RUNNING,

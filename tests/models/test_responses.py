@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.models.failures import FailureCode, FailureDetail
-from app.models.graph import EntityType, GraphEdge, GraphNode
+from app.models.graph import GraphEdge
 from app.models.post_plan import PostPlanResult, PostPlanStatus
 from app.models.requests import (
     ProjectContext,
@@ -18,7 +18,6 @@ from app.models.requests import (
 from app.models.responses import RunResult, Strategy
 from app.models.run_state import RunStatus
 from app.models.validation import ValidationResult
-
 
 # ---------------------------------------------------------------------------
 # Helpers
