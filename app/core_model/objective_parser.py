@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -10,11 +9,11 @@ PROMPT_PATH = Path(__file__).parent / "prompts" / "objective_resolution.txt"
 
 
 class StructuredObjective(BaseModel):
-    target_phenotypes: Optional[list[str]]
-    biological_processes: Optional[list[str]]
-    desired_change: Optional[str]
-    relevant_concepts: Optional[list[str]]
-    retrieval_targets: Optional[list[str]]
+    target_phenotypes: list[str] | None
+    biological_processes: list[str] | None
+    desired_change: str | None
+    relevant_concepts: list[str] | None
+    retrieval_targets: list[str] | None
     ambiguity_status: str  # "CLEAR" or "CLARIFICATION_REQUIRED"
 
 
@@ -31,7 +30,9 @@ def _extract_json(raw_output: str) -> dict:
         start = raw_output.find("{")
         end = raw_output.rfind("}")
         if start == -1 or end == -1:
-            raise ValueError(f"No JSON object found in model output: {raw_output!r}")
+            raise ValueError(
+f"No JSON object found in model output: {raw_output!r}"
+) from None
         return json.loads(raw_output[start : end + 1])
 
 

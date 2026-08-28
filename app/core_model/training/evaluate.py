@@ -25,7 +25,14 @@ def run_eval() -> None:
         except Exception as e:
             print(f"[{i}] FAILED TO PARSE: {objective!r}")
             print(f"    Error: {e}")
-            results.append({"index": i, "objective": objective, "status": "parse_error", "error": str(e)})
+            results.append(
+    {
+        "index": i,
+        "objective": objective,
+        "status": "parse_error",
+        "error": str(e),
+    }
+)
             continue
 
         status_match = actual_dict["ambiguity_status"] == expected["ambiguity_status"]
