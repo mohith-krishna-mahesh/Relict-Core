@@ -13,6 +13,8 @@ Coverage
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from app.models.evidence import EvidenceRecord
@@ -59,20 +61,20 @@ def _run_config() -> RunConfiguration:
 
 def _make_orchestrator(
     *,
-    resolver: object | None = None,
-    retriever: object | None = None,
-    planner: object | None = None,
-    validator: object | None = None,
-    analyzer: object | None = None,
+    resolver: Any = None,
+    retriever: Any = None,
+    planner: Any = None,
+    validator: Any = None,
+    analyzer: Any = None,
 ) -> tuple[RunOrchestrator, RunRepository]:
     """Build an orchestrator with all-default stubs; individual stages are overrideable."""
     repo = RunRepository()
     orch = RunOrchestrator(
-        resolver=resolver or StubObjectiveResolver(),  # type: ignore[arg-type]
-        retriever=retriever or StubEvidenceRetriever(),  # type: ignore[arg-type]
-        planner=planner or StubStrategicPlanner(),  # type: ignore[arg-type]
-        validator=validator or StubStrategyValidator(),  # type: ignore[arg-type]
-        analyzer=analyzer or StubPostPlanAnalyzer(),  # type: ignore[arg-type]
+        resolver=resolver or StubObjectiveResolver(),
+        retriever=retriever or StubEvidenceRetriever(),
+        planner=planner or StubStrategicPlanner(),
+        validator=validator or StubStrategyValidator(),
+        analyzer=analyzer or StubPostPlanAnalyzer(),
         repository=repo,
     )
     return orch, repo

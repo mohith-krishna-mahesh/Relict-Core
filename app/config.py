@@ -1,4 +1,4 @@
-"""Application-wide configuration for Relict Core (Member 5 scope)."""
+"""Application-wide configuration for Relict Core."""
 
 from __future__ import annotations
 
@@ -6,6 +6,47 @@ from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class RetrievalSettings(BaseSettings):
+    """Configuration for the Knowledge Retrieval subsystem.
+
+    Values are read from environment variables (prefixed ``RELICT_``).
+    Provide sensible defaults for non-sensitive settings only.
+    """
+
+    model_config = SettingsConfigDict(
+        env_prefix="RELICT_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    # ── HTTP defaults ─────────────────────────────────────────────
+    http_timeout: float = 30.0
+    user_agent: str = "RelictCore/0.1.0 (https://github.com/relict-core)"
+    max_concurrency: int = 8
+
+    # ── Cache ─────────────────────────────────────────────────────
+    cache_db_path: str = "data/cache.sqlite3"
+
+    # ── DuckDB (for local bulk data such as AlphaMissense) ────────
+    duckdb_path: str = "data/alphamissense.duckdb"
+
+    # ── NCBI ──────────────────────────────────────────────────────
+    ncbi_api_key: str | None = None
+    ncbi_email: str | None = None
+
+    # ── BRENDA ────────────────────────────────────────────────────
+    brenda_email: str | None = None
+    brenda_password: str | None = None
+
+    # ── STRING ────────────────────────────────────────────────────
+    string_caller_identity: str = "relict-core"
+
+    # ── Minimum evidence threshold ────────────────────────────────
+    min_evidence_records: int = 1
 
 
 class Settings(BaseSettings):
@@ -16,11 +57,6 @@ class Settings(BaseSettings):
     A ``.env`` file at the project root is loaded automatically.
     Defaults are suitable for local development; production deployments
     must override them via environment variables.
-
-    Only settings owned by Member 5 (API server, Run Manager, persistence,
-    model client URL placeholder) are defined here.  Pipeline-stage
-    configuration for Knowledge Retrieval, Planner, Validator, and Post-Plan
-    Analysis will be added by their respective owners.
 
     Environment variable mapping (case-insensitive):
         RELICT_API_HOST                 → api_host

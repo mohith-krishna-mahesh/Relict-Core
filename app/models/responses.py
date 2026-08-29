@@ -1,10 +1,11 @@
-"""Response models for Relict Core API endpoints."""
+"""Response models for Relict Core API endpoints and pipeline stages."""
 
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from app.models.failures import FailureDetail
+from app.models.evidence import EvidenceRecord
+from app.models.failures import FailureCode, FailureDetail
 from app.models.graph import GraphEdge
 from app.models.post_plan import PostPlanResult
 from app.models.requests import ProjectContext, RunConfiguration, StrategyMode, StructuredObjective
@@ -49,6 +50,29 @@ class Strategy(BaseModel):
     supporting_edges: list[GraphEdge] = Field(default_factory=list)
     conflicting_edges: list[GraphEdge] = Field(default_factory=list)
     rationale: str
+
+
+class SourceStatus(BaseModel):
+    """Status report for a single source during a retrieval run."""
+
+    source_name: str
+    success: bool
+    record_count: int = 0
+    error_message: str | None = None
+
+
+class RetrievalResult(BaseModel):
+    """Output of the Knowledge Retrieval subsystem."""
+
+    records: list[EvidenceRecord] = Field(default_factory=list)
+    source_statuses: list[SourceStatus] = Field(default_factory=list)
+    failure_code: FailureCode | None = Field(
+        default=None,
+        description=(
+            "Set to INSUFFICIENT_EVIDENCE when the aggregate evidence "
+            "from all permitted sources is insufficient."
+        ),
+    )
 
 
 class RunResult(BaseModel):

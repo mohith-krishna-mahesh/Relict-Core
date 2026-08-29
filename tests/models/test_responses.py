@@ -83,19 +83,30 @@ class TestStrategy:
 
     def test_missing_edit_count_raises(self) -> None:
         with pytest.raises(ValidationError):
-            Strategy(strategy_type=StrategyMode.MINIMAL, score=0.5, rationale="x")  # type: ignore[call-arg]
+            Strategy(  # type: ignore[call-arg]
+                strategy_type=StrategyMode.MINIMAL, score=0.5, rationale="x"
+            )
 
     def test_missing_score_raises(self) -> None:
         with pytest.raises(ValidationError):
-            Strategy(strategy_type=StrategyMode.MINIMAL, edit_count=1, rationale="x")  # type: ignore[call-arg]
+            Strategy(  # type: ignore[call-arg]
+                strategy_type=StrategyMode.MINIMAL, edit_count=1, rationale="x"
+            )
 
     def test_missing_rationale_raises(self) -> None:
         with pytest.raises(ValidationError):
-            Strategy(strategy_type=StrategyMode.MINIMAL, edit_count=1, score=0.5)  # type: ignore[call-arg]
+            Strategy(  # type: ignore[call-arg]
+                strategy_type=StrategyMode.MINIMAL, edit_count=1, score=0.5
+            )
 
     def test_wrong_strategy_type_raises(self) -> None:
         with pytest.raises((ValueError, ValidationError)):
-            Strategy(strategy_type="optimal", edit_count=1, score=0.5, rationale="x")  # type: ignore[arg-type]
+            Strategy(
+                strategy_type="optimal",  # type: ignore
+                edit_count=1,
+                score=0.5,
+                rationale="x",
+            )
 
 
 # ---------------------------------------------------------------------------
