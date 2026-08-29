@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Any
-
-import duckdb
 
 from app.knowledge_retrieval.base_client import BaseClient
 from app.models.evidence import EvidenceRecord
@@ -24,29 +23,50 @@ class EpiDBClient(BaseClient):
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
         duckdb_path = getattr(self.settings, "duckdb_path", None)
-        
-        if not duckdb_path:
-            logger.warning("EpiDB local duckdb path not configured, returning empty.")
+
+        if not duckdb_path or not Path(duckdb_path).exists():
+            logger.info(
+                "EpiDB: local DuckDB not found at %s — returning empty results.",
+                duckdb_path,
+            )
             return records
 
         try:
-            conn = duckdb.connect(duckdb_path)
-            for target in targets:
-                # Placeholder for actual DuckDB querying logic
-                records.append(
-                    self._make_record(
-                        entity_a=target,
-                        relationship="gene_regulation",
-                        entity_b="EpiDB Portal",
-                        source_id=f"epidb_{target}",
-                        source_score=1.0,
-                        endpoint="local:duckdb",
-                        query_context={"target": target, "species": species},
-                        metadata={"source": "epidb"},
-                    )
-                )
-            conn.close()
+            import duckdb
+        except ImportError:
+            logger.warning("EpiDB: duckdb package not installed.")
+            return records
+
+        try:
+            conn = duckdb.connect(
+                duckdb_path,
+                read_only=True,
+                config={"access_mode": "read_only"},
+            )
+            try:
+                table_query = "SELECT table_name FROM information_schema.tables"
+                tables = [r[0] for r in conn.execute(table_query).fetchall()]
+                if "epidb" in tables:
+                    for target in targets:
+                        rows = conn.execute(
+                            "SELECT mark, region FROM epidb WHERE gene = ? LIMIT 100", [target]
+                        ).fetchall()
+                        for mark, region in rows:
+                            records.append(
+                                self._make_record(
+                                    entity_a=target,
+                                    relationship="gene_regulation",
+                                    entity_b=str(mark),
+                                    source_id=f"epidb_{target}_{region}",
+                                    source_score=1.0,
+                                    endpoint="local:duckdb",
+                                    query_context={"target": target, "species": species},
+                                    metadata={"region": region, "epigenetic_mark": mark},
+                                )
+                            )
+            finally:
+                conn.close()
         except Exception as e:
-            logger.warning(f"Error querying local EpiDB duckdb: {e}")
+            logger.warning("Error querying local EpiDB duckdb: %s", e)
 
         return records

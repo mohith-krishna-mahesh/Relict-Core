@@ -32,9 +32,9 @@ class FAANGClient(BaseClient):
 
             try:
                 response = await self._get(url, params=params)
-                data = response.json()
-                
-                hits = data.get("hits", {}).get("hits", [])
+                data = self._safe_json(response)
+
+                hits = data.get("hits", {}).get("hits", []) if isinstance(data, dict) else []
                 for hit in hits:
                     records.append(
                         self._make_record(

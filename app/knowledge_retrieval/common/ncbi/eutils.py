@@ -43,10 +43,10 @@ class NCBIeUtilsClient(BaseClient):
                     term = f"{target}[Gene] AND {species}[Organism]"
 
                 search_params = self._get_params(db="gene", term=term, retmax=5)
-                search_raw = await self._get(
-                    f"{self.BASE_URL}/esearch.fcgi", params=search_params
-                )
-                search_resp: dict[str, Any] = search_raw.json()
+                search_raw = await self._get(f"{self.BASE_URL}/esearch.fcgi", params=search_params)
+                search_resp = self._safe_json(search_raw)
+                if not isinstance(search_resp, dict):
+                    continue
 
                 if not search_resp or "esearchresult" not in search_resp:
                     continue
@@ -59,7 +59,9 @@ class NCBIeUtilsClient(BaseClient):
                 summary_raw = await self._get(
                     f"{self.BASE_URL}/esummary.fcgi", params=summary_params
                 )
-                summary_resp: dict[str, Any] = summary_raw.json()
+                summary_resp = self._safe_json(summary_raw)
+                if not isinstance(summary_resp, dict):
+                    continue
 
                 if not summary_resp or "result" not in summary_resp:
                     continue

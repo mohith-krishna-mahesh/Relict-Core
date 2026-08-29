@@ -210,9 +210,7 @@ class TestRunsPostSuccess:
 
 class TestRunsPostClarificationRequired:
     def setup_method(self) -> None:
-        orch, repo = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, repo = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         _override(orch, repo)
 
     def teardown_method(self) -> None:
@@ -311,9 +309,7 @@ class TestRunsPostValidationFailed:
 
 class TestRunsPostPartialAnalysis:
     def setup_method(self) -> None:
-        orch, repo = _make_orchestrator(
-            analyzer=StubPostPlanAnalyzer(return_status="partial")
-        )
+        orch, repo = _make_orchestrator(analyzer=StubPostPlanAnalyzer(return_status="partial"))
         _override(orch, repo)
 
     def teardown_method(self) -> None:
@@ -434,7 +430,7 @@ class TestConcurrencyAPI:
         orch, repo = _make_orchestrator()
         orch._max_concurrent_runs = 0  # Zero capacity
         tc = _client_with(orch, repo)
-        
+
         resp = tc.post("/v1/runs", json=_VALID_BODY)
         assert resp.status_code == 429
         assert "Server is at capacity" in resp.json()["detail"]
@@ -452,22 +448,23 @@ class TestTimeoutAPI:
     def test_timeout_run_exposed_via_get(self) -> None:
         orch, repo = _make_orchestrator()
         orch._run_timeout_seconds = 0  # Instant timeout
-        
+
         import time
+
         original_monotonic = time.monotonic
-        
+
         try:
             time.monotonic = lambda: original_monotonic() + 1
             tc = _client_with(orch, repo)
             post_resp = tc.post("/v1/runs", json=_VALID_BODY)
         finally:
             time.monotonic = original_monotonic
-            
+
         assert post_resp.status_code == 200
         run_id = post_resp.json()["run_id"]
         assert post_resp.json()["status"] == "failed"
         assert post_resp.json()["failure"]["code"] == FailureCode.RUN_TIMEOUT
-        
+
         # Verify exposed correctly through GET
         get_resp = tc.get(f"/v1/runs/{run_id}")
         assert get_resp.status_code == 200

@@ -39,7 +39,9 @@ class RCSBPDBClient(BaseClient):
                 }
 
                 raw_resp = await self._post(self.BASE_URL, json_data=query_body)
-                resp: dict[str, Any] = raw_resp.json()
+                resp = self._safe_json(raw_resp)
+                if not isinstance(resp, dict):
+                    continue
                 if not resp or "result_set" not in resp:
                     continue
 
@@ -48,7 +50,9 @@ class RCSBPDBClient(BaseClient):
                     score = float(result.get("score", 1.0))
 
                     data_raw = await self._get(f"{self.DATA_URL}/{entry_id}")
-                    data_resp: dict[str, Any] = data_raw.json()
+                    data_resp = self._safe_json(data_raw)
+                    if not isinstance(data_resp, dict):
+                        continue
                     if data_resp:
                         struct_info: dict[str, Any] = data_resp.get("struct", {})
                         title = struct_info.get("title", "")

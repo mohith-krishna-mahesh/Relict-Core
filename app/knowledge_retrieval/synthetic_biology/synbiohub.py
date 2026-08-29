@@ -31,8 +31,7 @@ class SynBioHubClient(BaseClient):
             params = {"q": target}
 
             try:
-                response = await self._get(url, params=params)
-                
+                await self._get(url, params=params)
                 records.append(
                     self._make_record(
                         entity_a=target,
@@ -46,6 +45,6 @@ class SynBioHubClient(BaseClient):
                     )
                 )
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying SynBioHub for {target}: {e}")
+                logger.warning("Error querying SynBioHub for %s: %s", target, e)
 
         return records

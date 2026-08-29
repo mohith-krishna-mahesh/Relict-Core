@@ -45,15 +45,45 @@ class RelationshipType(StrEnum):
     LITERATURE_ASSOCIATION = "literature_association"
 
 
-class EvidenceRecord(BaseModel):
-    """
-    Normalized representation of a single piece of evidence returned by
-    the Knowledge Retrieval stage (architecture §3.5).
+class EffectType(StrEnum):
+    """Mechanistic and functional effect classifications."""
 
-    Every field maps directly to the canonical spec.  No ``planner_weight``
-    field is present here: that value is an internal Planner quantity derived
-    from source_score, lives on the Planner's internal graph edge, and is
-    never part of the shared evidence contract.
+    ACTIVATION = "activation"
+    INHIBITION = "inhibition"
+    PRODUCTION = "production"
+    REGULATION = "regulation"
+    EXPRESSION = "expression"
+    CATALYSIS = "catalysis"
+    REQUIREMENT = "requirement"
+    LOSS_OF_FUNCTION = "loss_of_function"
+    GAIN_OF_FUNCTION = "gain_of_function"
+    ASSOCIATION = "association"
+    PERTURBATION = "perturbation"
+    UNKNOWN = "unknown"
+
+
+class EffectDirection(StrEnum):
+    """Directional trajectory of an effect."""
+
+    INCREASES = "increases"
+    DECREASES = "decreases"
+    NO_CHANGE = "no_change"
+    UNKNOWN = "unknown"
+
+
+class EvidenceEffect(BaseModel):
+    """Directional and functional effect details of an evidence relationship."""
+
+    direction: str | None = None
+    type: str | None = None
+    magnitude: float | None = None
+
+
+class EvidenceRecord(BaseModel):
+    """Normalized representation of a single piece of biological evidence.
+
+    Knowledge Retrieval returns EvidenceRecord instances wrapped in a
+    RetrievalResult.
 
     Fields
     ------
@@ -66,11 +96,13 @@ class EvidenceRecord(BaseModel):
     entity_b
         Secondary biological entity involved in the relationship.
     relationship
-        Relationship type as reported by the source
-        (e.g. ``"functional_association"``).
+        Relationship type as reported by the source (e.g. ``"catalytic"``, ``"association"``).
+    effect
+        Optional directional, mechanistic, or functional effect.
+    consequence
+        Optional explicit biological perturbation consequence if reported by source.
     source_score
         Score supplied by the originating source where available.
-        Not automatically a calibrated probability.
     provenance
         Human-readable provenance string (e.g. publication DOI, URL, version).
     metadata
@@ -82,6 +114,8 @@ class EvidenceRecord(BaseModel):
     entity_a: str
     entity_b: str | None = None
     relationship: str
+    effect: EvidenceEffect | None = None
+    consequence: str | None = None
     source_score: float | None = None
     provenance: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)

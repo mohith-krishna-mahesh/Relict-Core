@@ -30,9 +30,7 @@ def _extract_json(raw_output: str) -> dict:
         start = raw_output.find("{")
         end = raw_output.rfind("}")
         if start == -1 or end == -1:
-            raise ValueError(
-f"No JSON object found in model output: {raw_output!r}"
-) from None
+            raise ValueError(f"No JSON object found in model output: {raw_output!r}") from None
         return json.loads(raw_output[start : end + 1])
 
 

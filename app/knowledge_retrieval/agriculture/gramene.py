@@ -32,7 +32,7 @@ class GrameneClient(BaseClient):
 
             try:
                 response = await self._get(url, params=params)
-                data = response.json()
+                data = self._safe_json(response)
 
                 if isinstance(data, list) and data:
                     records.append(

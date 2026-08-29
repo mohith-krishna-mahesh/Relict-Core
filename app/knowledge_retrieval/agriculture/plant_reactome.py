@@ -31,8 +31,10 @@ class PlantReactomeClient(BaseClient):
 
             try:
                 response = await self._get(url)
-                data = response.json()
-                
+                data = self._safe_json(response)
+                if not isinstance(data, dict):
+                    continue
+
                 records.append(
                     self._make_record(
                         entity_a=target,

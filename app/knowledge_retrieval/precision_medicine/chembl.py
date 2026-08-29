@@ -32,8 +32,10 @@ class ChemblClient(BaseClient):
 
             try:
                 response = await self._get(url, params=params)
-                data = response.json()
-                
+                data = self._safe_json(response)
+                if not isinstance(data, dict):
+                    continue
+
                 targets_found = data.get("targets", [])
                 for t in targets_found:
                     records.append(

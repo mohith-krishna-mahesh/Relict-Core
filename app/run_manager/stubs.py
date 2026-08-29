@@ -12,6 +12,8 @@ need to change because it depends only on the Protocol interfaces in
 
 from __future__ import annotations
 
+from typing import Any
+
 from app.models.evidence import EvidenceRecord
 from app.models.graph import GraphEdge
 from app.models.post_plan import PostPlanResult, PostPlanStatus
@@ -22,7 +24,7 @@ from app.models.requests import (
     RunConfiguration,
     StructuredObjective,
 )
-from app.models.responses import Strategy
+from app.models.responses import RetrievalResult, SourceStatus, Strategy
 from app.models.validation import ValidationResult
 
 
@@ -79,6 +81,8 @@ class StubEvidenceRetriever:
         Return an empty list to trigger ``INSUFFICIENT_EVIDENCE``.
     raise_error:
         Raise ``RuntimeError`` to test unexpected-exception handling.
+    failure_code:
+        Explicit FailureCode to simulate stage failures.
     """
 
     def __init__(
@@ -86,16 +90,30 @@ class StubEvidenceRetriever:
         *,
         return_empty: bool = False,
         raise_error: bool = False,
+        failure_code: Any = None,
     ) -> None:
         self._return_empty = return_empty
         self._raise_error = raise_error
+        self._failure_code = failure_code
 
-    async def retrieve(self, context: RetrievalContext) -> list[EvidenceRecord]:
+    async def retrieve(self, context: RetrievalContext) -> RetrievalResult:
+        from app.models.responses import RetrievalResult
+
         if self._raise_error:
             raise RuntimeError("StubEvidenceRetriever: simulated error")
+        if self._failure_code:
+            return RetrievalResult(
+                records=[],
+                source_statuses=[],
+                failure_code=self._failure_code,
+            )
         if self._return_empty:
-            return []
-        return [
+            return RetrievalResult(
+                records=[],
+                source_statuses=[],
+                failure_code=None,
+            )
+        records = [
             EvidenceRecord(
                 source="STRING",
                 source_id="9606.ENSP00000000001",
@@ -115,6 +133,15 @@ class StubEvidenceRetriever:
                 provenance="KEGG Release 112.0",
             ),
         ]
+        statuses = [
+            SourceStatus(source_name="STRING", success=True, record_count=1),
+            SourceStatus(source_name="KEGG", success=True, record_count=1),
+        ]
+        return RetrievalResult(
+            records=records,
+            source_statuses=statuses,
+            failure_code=None,
+        )
 
 
 class StubStrategicPlanner:
@@ -252,7 +279,5 @@ class StubPostPlanAnalyzer:
                 "gene:TYRP1": "Stub: pigmentation-associated gene.",
                 "gene:DCT": "Stub: involved in melanin synthesis.",
             },
-            strategy_explanation=(
-                "Stub: strategy targets coat pigmentation via TYRP1 and DCT."
-            ),
+            strategy_explanation=("Stub: strategy targets coat pigmentation via TYRP1 and DCT."),
         )

@@ -52,12 +52,14 @@ class HPAClient(BaseClient):
             return []
 
         try:
-            data = resp.json()
+            data = self._safe_json(resp)
         except Exception:
             logger.warning("hpa: non-JSON response for %s", ensembl_id)
             return []
 
         records: list[EvidenceRecord] = []
+        if not isinstance(data, dict):
+            return []
         gene_name = data.get("Gene", ensembl_id)
         endpoint = f"/{ensembl_id}.json"
 

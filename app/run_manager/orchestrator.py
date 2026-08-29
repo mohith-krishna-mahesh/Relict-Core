@@ -68,7 +68,7 @@ from app.models.responses import RunResult, Strategy
 from app.models.run_state import PostPlanAnalysisStatus, RunState, RunStatus
 from app.models.validation import ValidationResult
 from app.run_manager.progress import ProgressTracker
-from app.run_manager.repository import RunRepository
+from app.run_manager.repository import RunRepositoryProtocol
 from app.run_manager.stages import (
     EvidenceRetriever,
     ObjectiveResolver,
@@ -129,7 +129,7 @@ class RunOrchestrator:
         planner: StrategicPlanner,
         validator: StrategyValidator,
         analyzer: PostPlanAnalyzer,
-        repository: RunRepository,
+        repository: RunRepositoryProtocol,
         event_bus: InMemoryRunEventBus | None = None,
         max_concurrent_runs: int | None = None,
         run_timeout_seconds: int | None = None,
@@ -149,14 +149,10 @@ class RunOrchestrator:
         from app.config import settings  # noqa: PLC0415 (avoid circular at module level)
 
         self._max_concurrent_runs: int = (
-            max_concurrent_runs
-            if max_concurrent_runs is not None
-            else settings.max_concurrent_runs
+            max_concurrent_runs if max_concurrent_runs is not None else settings.max_concurrent_runs
         )
         self._run_timeout_seconds: int = (
-            run_timeout_seconds
-            if run_timeout_seconds is not None
-            else settings.run_timeout_seconds
+            run_timeout_seconds if run_timeout_seconds is not None else settings.run_timeout_seconds
         )
         self._active_runs: int = 0
         self._active_runs_lock: threading.Lock = threading.Lock()
@@ -259,14 +255,17 @@ class RunOrchestrator:
         # ------------------------------------------------------------------
         if time.monotonic() - _run_start >= self._run_timeout_seconds:
             return self._short_circuit(
-                run_id=run_id, state=state,
+                run_id=run_id,
+                state=state,
                 code=FailureCode.RUN_TIMEOUT,
                 message=(
                     f"Run exceeded the {self._run_timeout_seconds}s wall-clock "
                     "budget before stage 1."
                 ),
                 stage=PipelineStage.OBJECTIVE_RESOLUTION,
-                project=project, run_config=run_config, warnings=warnings,
+                project=project,
+                run_config=run_config,
+                warnings=warnings,
             )
         state = self._enter_stage(state, PipelineStage.OBJECTIVE_RESOLUTION)
         self._repo.save_state(state)
@@ -312,15 +311,18 @@ class RunOrchestrator:
         # ------------------------------------------------------------------
         if time.monotonic() - _run_start >= self._run_timeout_seconds:
             return self._short_circuit(
-                run_id=run_id, state=state,
+                run_id=run_id,
+                state=state,
                 code=FailureCode.RUN_TIMEOUT,
                 message=(
                     f"Run exceeded the {self._run_timeout_seconds}s wall-clock "
                     "budget before stage 2."
                 ),
                 stage=PipelineStage.RETRIEVAL,
-                project=project, run_config=run_config,
-                structured_objective=structured_objective, warnings=warnings,
+                project=project,
+                run_config=run_config,
+                structured_objective=structured_objective,
+                warnings=warnings,
             )
         retrieval_ctx = RetrievalContext(
             project_context=project,
@@ -333,7 +335,7 @@ class RunOrchestrator:
         self._publish(state, warnings=warnings)
 
         try:
-            evidence = await self._retriever.retrieve(retrieval_ctx)
+            retrieval_result = await self._retriever.retrieve(retrieval_ctx)
         except Exception as exc:
             return self._short_circuit(
                 run_id=run_id,
@@ -347,6 +349,27 @@ class RunOrchestrator:
                 warnings=warnings,
             )
 
+        # Propagate per-source statuses into warnings/logging
+        for st in retrieval_result.source_statuses:
+            if not st.success and st.error_message:
+                warnings.append(f"Source {st.source_name}: {st.error_message}")
+
+        if retrieval_result.failure_code is not None:
+            return self._short_circuit(
+                run_id=run_id,
+                state=state,
+                code=retrieval_result.failure_code,
+                message=(
+                    f"Knowledge retrieval failed with code: {retrieval_result.failure_code.value}"
+                ),
+                stage=PipelineStage.RETRIEVAL,
+                project=project,
+                run_config=run_config,
+                structured_objective=structured_objective,
+                warnings=warnings,
+            )
+
+        evidence = retrieval_result.records
         if not evidence:
             return self._short_circuit(
                 run_id=run_id,
@@ -370,15 +393,18 @@ class RunOrchestrator:
         # ------------------------------------------------------------------
         if time.monotonic() - _run_start >= self._run_timeout_seconds:
             return self._short_circuit(
-                run_id=run_id, state=state,
+                run_id=run_id,
+                state=state,
                 code=FailureCode.RUN_TIMEOUT,
                 message=(
                     f"Run exceeded the {self._run_timeout_seconds}s wall-clock "
                     "budget before stage 3."
                 ),
                 stage=PipelineStage.PLANNING,
-                project=project, run_config=run_config,
-                structured_objective=structured_objective, warnings=warnings,
+                project=project,
+                run_config=run_config,
+                structured_objective=structured_objective,
+                warnings=warnings,
             )
         state = self._enter_stage(state, PipelineStage.PLANNING)
         self._repo.save_state(state)
@@ -404,10 +430,7 @@ class RunOrchestrator:
                 run_id=run_id,
                 state=state,
                 code=FailureCode.NO_FEASIBLE_PLAN,
-                message=(
-                    "Planner found no strategy satisfying the constraints "
-                    "and edit budget."
-                ),
+                message=("Planner found no strategy satisfying the constraints and edit budget."),
                 stage=PipelineStage.PLANNING,
                 project=project,
                 run_config=run_config,
@@ -427,16 +450,19 @@ class RunOrchestrator:
         # ------------------------------------------------------------------
         if time.monotonic() - _run_start >= self._run_timeout_seconds:
             return self._short_circuit(
-                run_id=run_id, state=state,
+                run_id=run_id,
+                state=state,
                 code=FailureCode.RUN_TIMEOUT,
                 message=(
                     f"Run exceeded the {self._run_timeout_seconds}s wall-clock "
                     "budget before stage 4."
                 ),
                 stage=PipelineStage.VALIDATION,
-                project=project, run_config=run_config,
+                project=project,
+                run_config=run_config,
                 structured_objective=structured_objective,
-                strategies=strategies, warnings=warnings,
+                strategies=strategies,
+                warnings=warnings,
             )
         state = self._enter_stage(state, PipelineStage.VALIDATION)
         self._repo.save_state(state)
@@ -459,11 +485,7 @@ class RunOrchestrator:
             )
 
         if not validation.valid:
-            summary = (
-                "; ".join(validation.violations)
-                if validation.violations
-                else "unspecified"
-            )
+            summary = "; ".join(validation.violations) if validation.violations else "unspecified"
             return self._short_circuit(
                 run_id=run_id,
                 state=state,
@@ -492,16 +514,20 @@ class RunOrchestrator:
         # EXCEPTION: a timeout before this stage short-circuits to FAILED.
         if time.monotonic() - _run_start >= self._run_timeout_seconds:
             return self._short_circuit(
-                run_id=run_id, state=state,
+                run_id=run_id,
+                state=state,
                 code=FailureCode.RUN_TIMEOUT,
                 message=(
                     f"Run exceeded the {self._run_timeout_seconds}s wall-clock "
                     "budget before stage 5."
                 ),
                 stage=PipelineStage.POST_PLAN,
-                project=project, run_config=run_config,
+                project=project,
+                run_config=run_config,
                 structured_objective=structured_objective,
-                strategies=strategies, validation=validation, warnings=warnings,
+                strategies=strategies,
+                validation=validation,
+                warnings=warnings,
             )
         post_plan_status = PostPlanAnalysisStatus.RUNNING
         state = self._enter_stage(state, PipelineStage.POST_PLAN)

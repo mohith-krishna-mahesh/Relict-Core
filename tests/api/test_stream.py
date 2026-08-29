@@ -128,9 +128,9 @@ def _parse_sse_body(text: str) -> list[dict]:
         current_data: str | None = None
         for line in block.splitlines():
             if line.startswith("event:"):
-                current_event_type = line[len("event:"):].strip()
+                current_event_type = line[len("event:") :].strip()
             elif line.startswith("data:"):
-                current_data = line[len("data:"):].strip()
+                current_data = line[len("data:") :].strip()
         if current_data:
             events.append(
                 {
@@ -151,9 +151,7 @@ def _collect_sse_events(client: TestClient, run_id: str) -> list[dict]:
     the read does not block.
     """
     with client.stream("GET", f"/v1/runs/{run_id}/stream") as resp:
-        assert resp.status_code == 200, (
-            f"Expected 200, got {resp.status_code}: {resp.text}"
-        )
+        assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text}"
         body = resp.read().decode()
     return _parse_sse_body(body)
 
@@ -218,16 +216,12 @@ class TestStreamSuccessfulRun:
     The bus replays buffered history; the client sees the full event sequence.
     """
 
-    def test_stream_returns_200(
-        self, success_client_and_run_id: tuple[TestClient, str]
-    ) -> None:
+    def test_stream_returns_200(self, success_client_and_run_id: tuple[TestClient, str]) -> None:
         client, run_id = success_client_and_run_id
         with client.stream("GET", f"/v1/runs/{run_id}/stream") as resp:
             assert resp.status_code == 200
 
-    def test_stream_has_events(
-        self, success_client_and_run_id: tuple[TestClient, str]
-    ) -> None:
+    def test_stream_has_events(self, success_client_and_run_id: tuple[TestClient, str]) -> None:
         client, run_id = success_client_and_run_id
         events = _collect_sse_events(client, run_id)
         assert len(events) > 0
@@ -423,18 +417,19 @@ class TestStreamTimeoutRun:
         orch, repo, bus = _make_orchestrator_with_bus()
         orch._run_timeout_seconds = 0  # Instant timeout
         _override_all(orch, repo, bus)
-        
+
         self._tc = TestClient(app)
-        
+
         import time
+
         original_monotonic = time.monotonic
-        
+
         try:
             time.monotonic = lambda: original_monotonic() + 1
             post_resp = self._tc.post("/v1/runs", json=_VALID_BODY)
         finally:
             time.monotonic = original_monotonic
-            
+
         assert post_resp.status_code == 200
         self._run_id = post_resp.json()["run_id"]
 

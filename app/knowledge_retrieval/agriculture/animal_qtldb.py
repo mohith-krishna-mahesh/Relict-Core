@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import logging
-import xml.etree.ElementTree as ET
 from typing import Any
+
+try:
+    import defusedxml.ElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET  # type: ignore[no-redef]
 
 import httpx
 
@@ -49,10 +53,14 @@ class AnimalQTLdbClient(BaseClient):
                                 metadata={"count": count},
                             )
                         )
-                except ET.ParseError:
-                    logger.warning(f"Failed to parse XML from AnimalQTLdb for {target}")
+                except (ET.ParseError, ValueError, Exception) as parse_err:
+                    logger.warning(
+                        "Failed to parse XML from AnimalQTLdb for %s: %s",
+                        target,
+                        parse_err,
+                    )
 
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying AnimalQTLdb for {target}: {e}")
+                logger.warning("Error querying AnimalQTLdb for %s: %s", target, e)
 
         return records

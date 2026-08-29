@@ -117,9 +117,7 @@ class AlphaMissenseClient(BaseClient):
                 uniprot_id = protein_variant = am_class = None
                 am_pathogenicity = None
 
-            variant_id = (
-                f"chr{chrom}:{pos}:{ref}>{alt}" if chrom and pos else str(row)
-            )
+            variant_id = f"chr{chrom}:{pos}:{ref}>{alt}" if chrom and pos else str(row)
             records.append(
                 self._make_record(
                     entity_a=variant_id,

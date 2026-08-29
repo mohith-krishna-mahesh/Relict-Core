@@ -1,16 +1,16 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Iterable
-
+from enum import StrEnum
+from typing import Any
 
 # =============================================================================
 # Constraint definitions
 # =============================================================================
 
 
-class ConstraintType(str, Enum):
+class ConstraintType(StrEnum):
     PRESERVE_FERTILITY = "preserve_fertility"
     MAXIMIZE_GENETIC_DIVERSITY = "maximize_genetic_diversity"
 
@@ -114,9 +114,7 @@ class ConstraintEvaluator:
         ConstraintResult
         """
 
-        selected_entities = self._extract_candidate_entities(
-            selected_candidates
-        )
+        selected_entities = self._extract_candidate_entities(selected_candidates)
 
         if not self.constraints:
             return ConstraintResult(valid=True)
@@ -133,26 +131,15 @@ class ConstraintEvaluator:
         # ---------------------------------------------------------------------
 
         if ConstraintType.PRESERVE_FERTILITY in self.constraints:
+            fertility_result = self._evaluate_fertility(relevant_edges)
 
-            fertility_result = self._evaluate_fertility(
-                relevant_edges
-            )
+            result.score_adjustment += fertility_result.score_adjustment
 
-            result.score_adjustment += (
-                fertility_result.score_adjustment
-            )
+            result.supporting_edges.extend(fertility_result.supporting_edges)
 
-            result.supporting_edges.extend(
-                fertility_result.supporting_edges
-            )
+            result.conflicting_edges.extend(fertility_result.conflicting_edges)
 
-            result.conflicting_edges.extend(
-                fertility_result.conflicting_edges
-            )
-
-            result.violations.extend(
-                fertility_result.violations
-            )
+            result.violations.extend(fertility_result.violations)
 
             if not fertility_result.valid:
                 result.valid = False
@@ -162,26 +149,15 @@ class ConstraintEvaluator:
         # ---------------------------------------------------------------------
 
         if ConstraintType.MAXIMIZE_GENETIC_DIVERSITY in self.constraints:
+            diversity_result = self._evaluate_genetic_diversity(relevant_edges)
 
-            diversity_result = self._evaluate_genetic_diversity(
-                relevant_edges
-            )
+            result.score_adjustment += diversity_result.score_adjustment
 
-            result.score_adjustment += (
-                diversity_result.score_adjustment
-            )
+            result.supporting_edges.extend(diversity_result.supporting_edges)
 
-            result.supporting_edges.extend(
-                diversity_result.supporting_edges
-            )
+            result.conflicting_edges.extend(diversity_result.conflicting_edges)
 
-            result.conflicting_edges.extend(
-                diversity_result.conflicting_edges
-            )
-
-            result.violations.extend(
-                diversity_result.violations
-            )
+            result.violations.extend(diversity_result.violations)
 
             if not diversity_result.valid:
                 result.valid = False
@@ -232,7 +208,6 @@ class ConstraintEvaluator:
         result = ConstraintResult(valid=True)
 
         for edge in edges:
-
             semantic_text = self._edge_semantic_text(edge)
 
             if not self._mentions_fertility(semantic_text):
@@ -240,25 +215,19 @@ class ConstraintEvaluator:
 
             score = self._edge_score(edge)
 
-            if self._indicates_negative_effect(
-                semantic_text
-            ):
+            if self._indicates_negative_effect(semantic_text):
                 result.conflicting_edges.append(edge)
 
                 result.score_adjustment -= score
 
                 if self.fertility_is_hard_constraint:
-
                     result.valid = False
 
                     result.violations.append(
-                        "Selected candidate has evidence indicating "
-                        "a negative effect on fertility."
+                        "Selected candidate has evidence indicating a negative effect on fertility."
                     )
 
-            elif self._indicates_positive_effect(
-                semantic_text
-            ):
+            elif self._indicates_positive_effect(semantic_text):
                 result.supporting_edges.append(edge)
 
                 result.score_adjustment += score
@@ -293,35 +262,26 @@ class ConstraintEvaluator:
         result = ConstraintResult(valid=True)
 
         for edge in edges:
-
             semantic_text = self._edge_semantic_text(edge)
 
-            if not self._mentions_genetic_diversity(
-                semantic_text
-            ):
+            if not self._mentions_genetic_diversity(semantic_text):
                 continue
 
             score = self._edge_score(edge)
 
-            if self._indicates_negative_effect(
-                semantic_text
-            ):
+            if self._indicates_negative_effect(semantic_text):
                 result.conflicting_edges.append(edge)
 
                 result.score_adjustment -= score
 
                 if self.diversity_is_hard_constraint:
-
                     result.valid = False
 
                     result.violations.append(
-                        "Selected candidate has evidence indicating "
-                        "reduced genetic diversity."
+                        "Selected candidate has evidence indicating reduced genetic diversity."
                     )
 
-            elif self._indicates_positive_effect(
-                semantic_text
-            ):
+            elif self._indicates_positive_effect(semantic_text):
                 result.supporting_edges.append(edge)
 
                 result.score_adjustment += score
@@ -359,7 +319,6 @@ class ConstraintEvaluator:
         seen_edges: set[tuple[Any, Any, Any]] = set()
 
         for entity in selected_entities:
-
             if entity not in graph:
                 continue
 
@@ -369,7 +328,6 @@ class ConstraintEvaluator:
                 keys=True,
                 data=True,
             ):
-
                 edge_id = (source, target, key)
 
                 if edge_id in seen_edges:
@@ -392,7 +350,6 @@ class ConstraintEvaluator:
                 keys=True,
                 data=True,
             ):
-
                 edge_id = (source, target, key)
 
                 if edge_id in seen_edges:
@@ -456,7 +413,6 @@ class ConstraintEvaluator:
         entities: set[str] = set()
 
         for candidate in selected_candidates:
-
             if candidate is None:
                 continue
 
@@ -465,7 +421,6 @@ class ConstraintEvaluator:
                 continue
 
             if isinstance(candidate, dict):
-
                 entity = (
                     candidate.get("entity")
                     or candidate.get("gene")
@@ -484,7 +439,6 @@ class ConstraintEvaluator:
                 "entity_id",
                 "target",
             ):
-
                 value = getattr(
                     candidate,
                     field_name,
@@ -531,11 +485,7 @@ class ConstraintEvaluator:
             edge.get("metadata"),
         ]
 
-        text = " ".join(
-            self._stringify(value)
-            for value in values
-            if value is not None
-        )
+        text = " ".join(self._stringify(value) for value in values if value is not None)
 
         return text.lower()
 
@@ -543,18 +493,12 @@ class ConstraintEvaluator:
     def _stringify(value: Any) -> str:
 
         if isinstance(value, dict):
-
             return " ".join(
-                f"{key} {ConstraintEvaluator._stringify(item)}"
-                for key, item in value.items()
+                f"{key} {ConstraintEvaluator._stringify(item)}" for key, item in value.items()
             )
 
         if isinstance(value, (list, tuple, set)):
-
-            return " ".join(
-                ConstraintEvaluator._stringify(item)
-                for item in value
-            )
+            return " ".join(ConstraintEvaluator._stringify(item) for item in value)
 
         return str(value)
 
@@ -576,10 +520,7 @@ class ConstraintEvaluator:
             "infertility",
         )
 
-        return any(
-            term in text
-            for term in fertility_terms
-        )
+        return any(term in text for term in fertility_terms)
 
     @staticmethod
     def _mentions_genetic_diversity(
@@ -595,10 +536,7 @@ class ConstraintEvaluator:
             "allele diversity",
         )
 
-        return any(
-            term in text
-            for term in diversity_terms
-        )
+        return any(term in text for term in diversity_terms)
 
     @staticmethod
     def _indicates_negative_effect(
@@ -625,10 +563,7 @@ class ConstraintEvaluator:
             "sterility",
         )
 
-        return any(
-            term in text
-            for term in negative_terms
-        )
+        return any(term in text for term in negative_terms)
 
     @staticmethod
     def _indicates_positive_effect(
@@ -654,10 +589,7 @@ class ConstraintEvaluator:
             "improved",
         )
 
-        return any(
-            term in text
-            for term in positive_terms
-        )
+        return any(term in text for term in positive_terms)
 
     # =========================================================================
     # Scoring
@@ -702,21 +634,13 @@ class ConstraintEvaluator:
         normalized: set[ConstraintType] = set()
 
         aliases = {
-            "preserve fertility":
-                ConstraintType.PRESERVE_FERTILITY,
-
-            "preserve_fertility":
-                ConstraintType.PRESERVE_FERTILITY,
-
-            "maximize genetic diversity":
-                ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
-
-            "maximize_genetic_diversity":
-                ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
+            "preserve fertility": ConstraintType.PRESERVE_FERTILITY,
+            "preserve_fertility": ConstraintType.PRESERVE_FERTILITY,
+            "maximize genetic diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
+            "maximize_genetic_diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
         }
 
         for constraint in constraints:
-
             if isinstance(constraint, ConstraintType):
                 normalized.add(constraint)
                 continue
@@ -724,9 +648,7 @@ class ConstraintEvaluator:
             value = str(constraint).strip().lower()
 
             if value not in aliases:
-                raise ValueError(
-                    f"Unsupported constraint: {constraint!r}"
-                )
+                raise ValueError(f"Unsupported constraint: {constraint!r}")
 
             normalized.add(aliases[value])
 

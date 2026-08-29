@@ -1,14 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from itertools import combinations
-from typing import Any, Iterable
+from typing import Any
 
 import networkx as nx
-
-from graph_builder import EvidenceGraph
 from constraints import ConstraintEvaluator, ConstraintResult
-
+from graph_builder import EvidenceGraph
 
 # =============================================================================
 # Strategy model
@@ -141,9 +140,7 @@ class StrategySearch:
     ) -> None:
 
         if max_edits < 1:
-            raise ValueError(
-                "max_edits must be at least 1."
-            )
+            raise ValueError("max_edits must be at least 1.")
 
         strategy_type = str(strategy_type).strip().lower()
 
@@ -151,10 +148,7 @@ class StrategySearch:
             "minimal",
             "redundant",
         }:
-            raise ValueError(
-                "strategy_type must be either "
-                "'minimal' or 'redundant'."
-            )
+            raise ValueError("strategy_type must be either 'minimal' or 'redundant'.")
 
         self.objective = objective
 
@@ -164,9 +158,7 @@ class StrategySearch:
 
         self.config = config or SearchConfig()
 
-        self.constraint_evaluator = ConstraintEvaluator(
-            constraints
-        )
+        self.constraint_evaluator = ConstraintEvaluator(constraints)
 
     # =========================================================================
     # Public API
@@ -245,12 +237,10 @@ class StrategySearch:
             1,
             maximum_size + 1,
         ):
-
             for combination in combinations(
                 candidate_nodes,
                 edit_count,
             ):
-
                 strategy = self._evaluate_combination(
                     graph=graph,
                     selected_candidates=list(combination),
@@ -263,18 +253,14 @@ class StrategySearch:
 
                 strategies.append(strategy)
 
-        strategies = self._deduplicate_strategies(
-            strategies
-        )
+        strategies = self._deduplicate_strategies(strategies)
 
         strategies.sort(
             key=self._strategy_sort_key,
             reverse=True,
         )
 
-        return strategies[
-            : self.config.max_strategies
-        ]
+        return strategies[: self.config.max_strategies]
 
     # =========================================================================
     # Objective extraction
@@ -309,16 +295,13 @@ class StrategySearch:
             "biological_processes",
             "relevant_concepts",
         ):
-
             value = self._get_field(
                 self.objective,
                 field_name,
                 [],
             )
 
-            terms.update(
-                self._normalize_terms(value)
-            )
+            terms.update(self._normalize_terms(value))
 
         return terms
 
@@ -361,13 +344,9 @@ class StrategySearch:
 
         targets: set[str] = set()
 
-        normalized_terms = {
-            term.lower()
-            for term in objective_terms
-        }
+        normalized_terms = {term.lower() for term in objective_terms}
 
         for node in graph.nodes:
-
             node_text = str(node).strip().lower()
 
             if node_text in normalized_terms:
@@ -375,7 +354,6 @@ class StrategySearch:
                 continue
 
             for term in normalized_terms:
-
                 if not term:
                     continue
 
@@ -418,10 +396,7 @@ class StrategySearch:
         nearby_nodes = {
             node
             for node, distance in distances.items()
-            if (
-                node not in target_nodes
-                and distance <= self.config.max_target_distance
-            )
+            if (node not in target_nodes and distance <= self.config.max_target_distance)
         }
 
         typed_gene_candidates = {
@@ -459,17 +434,11 @@ class StrategySearch:
 
         values: list[Any] = []
 
-        values.append(
-            data.get("entity_type")
-        )
+        values.append(data.get("entity_type"))
 
-        values.append(
-            data.get("type")
-        )
+        values.append(data.get("type"))
 
-        graph_node = data.get(
-            "graph_node"
-        )
+        graph_node = data.get("graph_node")
 
         if graph_node is not None:
             values.append(
@@ -495,7 +464,6 @@ class StrategySearch:
                 )
 
         for value in values:
-
             if value is None:
                 continue
 
@@ -523,7 +491,6 @@ class StrategySearch:
         scored_candidates = []
 
         for candidate in candidates:
-
             relevance = self._candidate_relevance_score(
                 graph=graph,
                 candidate=candidate,
@@ -545,12 +512,7 @@ class StrategySearch:
             reverse=True,
         )
 
-        return [
-            candidate
-            for _, candidate in scored_candidates[
-                : self.config.max_candidate_pool
-            ]
-        ]
+        return [candidate for _, candidate in scored_candidates[: self.config.max_candidate_pool]]
 
     def _candidate_relevance_score(
         self,
@@ -571,7 +533,6 @@ class StrategySearch:
         score = 0.0
 
         for target in target_nodes:
-
             distance = self._shortest_distance(
                 graph,
                 candidate,
@@ -585,9 +546,7 @@ class StrategySearch:
                 continue
 
             # Closer targets receive more relevance.
-            proximity = 1.0 / (
-                distance + 1
-            )
+            proximity = 1.0 / (distance + 1)
 
             score += proximity
 
@@ -596,10 +555,7 @@ class StrategySearch:
             graph,
             candidate,
         ):
-
-            score += self._edge_score(
-                edge_data
-            )
+            score += self._edge_score(edge_data)
 
         return score
 
@@ -624,11 +580,9 @@ class StrategySearch:
         # Evaluate constraints.
         # ---------------------------------------------------------------------
 
-        constraint_result = (
-            self.constraint_evaluator.evaluate(
-                selected_candidates=selected_candidates,
-                graph=graph,
-            )
+        constraint_result = self.constraint_evaluator.evaluate(
+            selected_candidates=selected_candidates,
+            graph=graph,
         )
 
         # Hard constraint violation.
@@ -659,9 +613,7 @@ class StrategySearch:
             covered_targets=covered_targets,
         )
 
-        conflicting_edges = list(
-            constraint_result.conflicting_edges
-        )
+        conflicting_edges = list(constraint_result.conflicting_edges)
 
         # ---------------------------------------------------------------------
         # Score strategy.
@@ -685,9 +637,7 @@ class StrategySearch:
             constraint_result=constraint_result,
         )
 
-        uncertainty = self._uncertainty_label(
-            uncertainty_score
-        )
+        uncertainty = self._uncertainty_label(uncertainty_score)
 
         rationale = self._build_rationale(
             selected_candidates=selected_candidates,
@@ -698,27 +648,14 @@ class StrategySearch:
 
         return Strategy(
             strategy_type=self.strategy_type,
-
             selected_candidates=selected_candidates,
-
-            covered_targets=sorted(
-                covered_targets
-            ),
-
-            edit_count=len(
-                selected_candidates
-            ),
-
+            covered_targets=sorted(covered_targets),
+            edit_count=len(selected_candidates),
             score=score,
-
             supporting_edges=supporting_edges,
-
             conflicting_edges=conflicting_edges,
-
             uncertainty=uncertainty,
-
             uncertainty_score=uncertainty_score,
-
             rationale=rationale,
         )
 
@@ -743,20 +680,14 @@ class StrategySearch:
         covered: set[str] = set()
 
         for target in target_nodes:
-
             for candidate in selected_candidates:
-
                 distance = self._shortest_distance(
                     graph,
                     candidate,
                     target,
                 )
 
-                if (
-                    distance is not None
-                    and distance
-                    <= self.config.max_target_distance
-                ):
+                if distance is not None and distance <= self.config.max_target_distance:
                     covered.add(target)
                     break
 
@@ -783,14 +714,10 @@ class StrategySearch:
 
         supporting: list[dict[str, Any]] = []
 
-        seen: set[
-            tuple[Any, Any, Any]
-        ] = set()
+        seen: set[tuple[Any, Any, Any]] = set()
 
         for candidate in selected_candidates:
-
             for target in covered_targets:
-
                 path = self._shortest_path(
                     graph,
                     candidate,
@@ -800,17 +727,14 @@ class StrategySearch:
                 if path is None:
                     continue
 
-                if (
-                    len(path) - 1
-                    > self.config.max_target_distance
-                ):
+                if len(path) - 1 > self.config.max_target_distance:
                     continue
 
                 for source, target_node in zip(
                     path,
                     path[1:],
+                    strict=False,
                 ):
-
                     edge_data = self._best_edge_between(
                         graph,
                         source,
@@ -823,9 +747,7 @@ class StrategySearch:
                     edge_key = (
                         source,
                         target_node,
-                        edge_data.get(
-                            "_edge_key"
-                        ),
+                        edge_data.get("_edge_key"),
                     )
 
                     if edge_key in seen:
@@ -833,9 +755,7 @@ class StrategySearch:
 
                     seen.add(edge_key)
 
-                    supporting.append(
-                        edge_data
-                    )
+                    supporting.append(edge_data)
 
         return supporting
 
@@ -866,25 +786,18 @@ class StrategySearch:
         # Coverage
         # ---------------------------------------------------------------------
 
-        coverage_ratio = (
-            len(covered_targets)
-            / len(target_nodes)
-        )
+        coverage_ratio = len(covered_targets) / len(target_nodes)
 
-        coverage_score = (
-            coverage_ratio * 100.0
-        )
+        coverage_score = coverage_ratio * 100.0
 
         # ---------------------------------------------------------------------
         # Evidence strength
         # ---------------------------------------------------------------------
 
         if supporting_edges:
-
-            evidence_score = sum(
-                self._edge_score(edge)
-                for edge in supporting_edges
-            ) / len(supporting_edges)
+            evidence_score = sum(self._edge_score(edge) for edge in supporting_edges) / len(
+                supporting_edges
+            )
 
             evidence_score *= 25.0
 
@@ -895,10 +808,7 @@ class StrategySearch:
         # Constraint score
         # ---------------------------------------------------------------------
 
-        constraint_score = (
-            constraint_result.score_adjustment
-            * 10.0
-        )
+        constraint_score = constraint_result.score_adjustment * 10.0
 
         # ---------------------------------------------------------------------
         # Strategy preference
@@ -907,33 +817,19 @@ class StrategySearch:
         strategy_adjustment = 0.0
 
         if self.strategy_type == "minimal":
-
             # Fewer edits are preferred.
-            strategy_adjustment -= (
-                len(selected_candidates)
-                * 5.0
-            )
+            strategy_adjustment -= len(selected_candidates) * 5.0
 
         elif self.strategy_type == "redundant":
-
             # Reward multiple independent selected candidates.
             #
             # This does not claim biological redundancy automatically.
             # It simply favours strategies with multiple routes/candidates
             # when they provide additional target coverage.
             if len(selected_candidates) > 1:
+                strategy_adjustment += len(selected_candidates) * 2.0
 
-                strategy_adjustment += (
-                    len(selected_candidates)
-                    * 2.0
-                )
-
-        return (
-            coverage_score
-            + evidence_score
-            + constraint_score
-            + strategy_adjustment
-        )
+        return coverage_score + evidence_score + constraint_score + strategy_adjustment
 
     # =========================================================================
     # Uncertainty
@@ -964,11 +860,9 @@ class StrategySearch:
 
         # Weak evidence increases uncertainty.
         if supporting_edges:
-
-            average_evidence = sum(
-                self._edge_score(edge)
-                for edge in supporting_edges
-            ) / len(supporting_edges)
+            average_evidence = sum(self._edge_score(edge) for edge in supporting_edges) / len(
+                supporting_edges
+            )
 
             # Assuming source_score is normally normalized to 0..1.
             evidence_uncertainty = max(
@@ -976,27 +870,17 @@ class StrategySearch:
                 1.0 - average_evidence,
             )
 
-            uncertainty_score += (
-                evidence_uncertainty * 50.0
-            )
+            uncertainty_score += evidence_uncertainty * 50.0
 
         else:
             uncertainty_score += 50.0
 
         # Conflicting evidence.
-        uncertainty_score += (
-            len(conflicting_edges)
-            * 15.0
-        )
+        uncertainty_score += len(conflicting_edges) * 15.0
 
         # Negative constraint adjustments.
-        if (
-            constraint_result.score_adjustment
-            < 0
-        ):
-            uncertainty_score += abs(
-                constraint_result.score_adjustment
-            ) * 10.0
+        if constraint_result.score_adjustment < 0:
+            uncertainty_score += abs(constraint_result.score_adjustment) * 10.0
 
         return min(
             uncertainty_score,
@@ -1036,20 +920,12 @@ class StrategySearch:
         No LLM generation is used here.
         """
 
-        coverage_ratio = (
-            len(covered_targets)
-            / len(target_nodes)
-        )
+        coverage_ratio = len(covered_targets) / len(target_nodes)
 
-        desired_change = (
-            self._get_desired_change()
-        )
+        desired_change = self._get_desired_change()
 
         parts = [
-            (
-                f"Selected {len(selected_candidates)} "
-                f"candidate(s)"
-            ),
+            (f"Selected {len(selected_candidates)} candidate(s)"),
             (
                 f"covering {len(covered_targets)} of "
                 f"{len(target_nodes)} objective target(s) "
@@ -1058,23 +934,15 @@ class StrategySearch:
         ]
 
         if desired_change:
-            parts.append(
-                f"for desired change '{desired_change}'"
-            )
+            parts.append(f"for desired change '{desired_change}'")
 
-        parts.append(
-            f"with {uncertainty} evidence uncertainty"
-        )
+        parts.append(f"with {uncertainty} evidence uncertainty")
 
         if self.strategy_type == "minimal":
-            parts.append(
-                "using a minimal-edit preference"
-            )
+            parts.append("using a minimal-edit preference")
 
         elif self.strategy_type == "redundant":
-            parts.append(
-                "using a redundancy preference"
-            )
+            parts.append("using a redundancy preference")
 
         return ", ".join(parts) + "."
 
@@ -1102,7 +970,6 @@ class StrategySearch:
         distances: dict[str, int] = {}
 
         for target in target_nodes:
-
             lengths = nx.single_source_shortest_path_length(
                 undirected,
                 target,
@@ -1110,11 +977,7 @@ class StrategySearch:
             )
 
             for node, distance in lengths.items():
-
-                if (
-                    node not in distances
-                    or distance < distances[node]
-                ):
+                if node not in distances or distance < distances[node]:
                     distances[node] = distance
 
         return distances
@@ -1216,9 +1079,7 @@ class StrategySearch:
         representative supporting path we select the highest source_score.
         """
 
-        candidates: list[
-            dict[str, Any]
-        ] = []
+        candidates: list[dict[str, Any]] = []
 
         # Forward direction.
         edge_bundle = graph.get_edge_data(
@@ -1228,7 +1089,6 @@ class StrategySearch:
         )
 
         for key, data in edge_bundle.items():
-
             edge = dict(data)
 
             edge["_edge_key"] = key
@@ -1241,7 +1101,6 @@ class StrategySearch:
         # The shortest path is generated on an undirected graph.
         # Therefore evidence may exist only in the reverse direction.
         if not candidates:
-
             reverse_bundle = graph.get_edge_data(
                 target,
                 source,
@@ -1249,7 +1108,6 @@ class StrategySearch:
             )
 
             for key, data in reverse_bundle.items():
-
                 edge = dict(data)
 
                 edge["_edge_key"] = key
@@ -1281,9 +1139,7 @@ class StrategySearch:
         Missing/invalid scores are treated as 0.5 neutral confidence.
         """
 
-        value = edge.get(
-            "source_score"
-        )
+        value = edge.get("source_score")
 
         if value is None:
             return 0.5
@@ -1320,24 +1176,14 @@ class StrategySearch:
         ] = {}
 
         for strategy in strategies:
-
-            key = tuple(
-                sorted(
-                    strategy.selected_candidates
-                )
-            )
+            key = tuple(sorted(strategy.selected_candidates))
 
             existing = unique.get(key)
 
-            if (
-                existing is None
-                or strategy.score > existing.score
-            ):
+            if existing is None or strategy.score > existing.score:
                 unique[key] = strategy
 
-        return list(
-            unique.values()
-        )
+        return list(unique.values())
 
     @staticmethod
     def _strategy_sort_key(
@@ -1393,16 +1239,10 @@ class StrategySearch:
             value = [value]
 
         try:
-            return {
-                str(item).strip()
-                for item in value
-                if str(item).strip()
-            }
+            return {str(item).strip() for item in value if str(item).strip()}
 
         except TypeError:
-            return {
-                str(value).strip()
-            }
+            return {str(value).strip()}
 
 
 # =============================================================================
@@ -1427,6 +1267,4 @@ def search_strategies(
         config=config,
     )
 
-    return search_engine.search(
-        evidence_graph
-    )
+    return search_engine.search(evidence_graph)

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class TimeTreeClient(BaseClient):
-    BASE_URL = "http://timetree.org/api"
+    BASE_URL = "https://timetree.org/api"
 
     @property
     def source_name(self) -> str:
@@ -35,8 +35,8 @@ class TimeTreeClient(BaseClient):
 
             try:
                 raw_resp = await self._get(f"{self.BASE_URL}/pairwise/{target}/{species}")
-                resp: dict[str, Any] = raw_resp.json()
-                if resp and "time" in resp:
+                resp = self._safe_json(raw_resp)
+                if isinstance(resp, dict) and "time" in resp:
                     est_time = resp.get("time")
                     try:
                         score = float(est_time) if est_time is not None else 0.0

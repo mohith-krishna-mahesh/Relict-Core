@@ -25,7 +25,7 @@ class HealthResponse(BaseModel):
     "/health",
     response_model=HealthResponse,
     summary="Liveness check",
-    description="Returns ``{\"status\": \"ok\"}`` when Core is running.",
+    description='Returns ``{"status": "ok"}`` when Core is running.',
     tags=["infrastructure"],
 )
 async def health() -> HealthResponse:

@@ -35,7 +35,9 @@ class GBIFClient(BaseClient):
                 raw_resp = await self._get(
                     f"{self.BASE_URL}/species/match", params={"name": query_term}
                 )
-                match_data: dict[str, Any] = raw_resp.json()
+                match_data = self._safe_json(raw_resp)
+                if not isinstance(match_data, dict):
+                    continue
 
                 if match_data and match_data.get("matchType") != "NONE":
                     taxon_key = match_data.get("usageKey")
@@ -60,7 +62,9 @@ class GBIFClient(BaseClient):
                             f"{self.BASE_URL}/occurrence/search",
                             params={"taxonKey": taxon_key, "limit": 1},
                         )
-                        occ_data: dict[str, Any] = occ_raw.json()
+                        occ_data = self._safe_json(occ_raw)
+                        if not isinstance(occ_data, dict):
+                            continue
                         count = occ_data.get("count", 0)
                         if count > 0:
                             records.append(

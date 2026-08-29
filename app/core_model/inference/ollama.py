@@ -1,4 +1,5 @@
 from typing import Any
+
 import ollama
 
 MODEL_NAME = "qwen3:4b-instruct"

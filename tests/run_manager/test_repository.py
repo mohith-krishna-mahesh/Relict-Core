@@ -109,21 +109,15 @@ class TestRepositoryContract:
         with pytest.raises(RunNotFoundError):
             repo.load_state("does-not-exist")
 
-    def test_save_state_twice_overwrites(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_save_state_twice_overwrites(self, repo: RunRepository | SQLiteRunRepository) -> None:
         repo.save_state(RunState(run_id="r2", status=RunStatus.PENDING))
         repo.save_state(RunState(run_id="r2", status=RunStatus.COMPLETE))
         assert repo.load_state("r2").status == RunStatus.COMPLETE
 
-    def test_all_states_empty_initially(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_all_states_empty_initially(self, repo: RunRepository | SQLiteRunRepository) -> None:
         assert repo.all_states() == []
 
-    def test_all_states_reflects_saved(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_all_states_reflects_saved(self, repo: RunRepository | SQLiteRunRepository) -> None:
         repo.save_state(RunState(run_id="r3", status=RunStatus.PENDING))
         repo.save_state(RunState(run_id="r4", status=RunStatus.RUNNING))
         ids = {s.run_id for s in repo.all_states()}
@@ -158,9 +152,7 @@ class TestRepositoryContract:
         with pytest.raises(RunNotFoundError):
             repo.load_result("does-not-exist")
 
-    def test_save_result_twice_overwrites(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_save_result_twice_overwrites(self, repo: RunRepository | SQLiteRunRepository) -> None:
         result_a = RunResult(
             run_id="rr2",
             status=RunStatus.RUNNING,
@@ -177,14 +169,10 @@ class TestRepositoryContract:
         repo.save_result(result_b)
         assert repo.load_result("rr2").status == RunStatus.COMPLETE
 
-    def test_has_result_false_before_save(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_has_result_false_before_save(self, repo: RunRepository | SQLiteRunRepository) -> None:
         assert repo.has_result("nonexistent") is False
 
-    def test_has_result_true_after_save(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_has_result_true_after_save(self, repo: RunRepository | SQLiteRunRepository) -> None:
         result = RunResult(
             run_id="rr3",
             status=RunStatus.FAILED,
@@ -202,9 +190,7 @@ class TestRepositoryContract:
         assert repo.load_state("x1").status == RunStatus.PENDING
         assert repo.load_state("x2").status == RunStatus.RUNNING
 
-    def test_state_fields_roundtrip(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_state_fields_roundtrip(self, repo: RunRepository | SQLiteRunRepository) -> None:
         """All relevant RunState fields survive a save/load cycle."""
         from app.models.run_state import PostPlanAnalysisStatus
 
@@ -221,9 +207,7 @@ class TestRepositoryContract:
         assert loaded.progress == pytest.approx(1.0)
         assert loaded.post_plan_analysis_status == PostPlanAnalysisStatus.COMPLETE
 
-    def test_result_fields_roundtrip(
-        self, repo: RunRepository | SQLiteRunRepository
-    ) -> None:
+    def test_result_fields_roundtrip(self, repo: RunRepository | SQLiteRunRepository) -> None:
         """Nested RunResult fields (project_context, run_configuration) survive roundtrip."""
         result = RunResult(
             run_id="rt2",
@@ -298,13 +282,11 @@ class TestSQLiteRunRepositorySpecific:
         db_path = tmp_path / "test_idempotent.db"
 
         conn = open_connection(db_path)
-        ensure_schema(conn)   # first call — creates tables
-        ensure_schema(conn)   # second call — must not raise
+        ensure_schema(conn)  # first call — creates tables
+        ensure_schema(conn)  # second call — must not raise
         conn.close()
 
-    def test_second_repository_instance_same_file_no_error(
-        self, tmp_path: Path
-    ) -> None:
+    def test_second_repository_instance_same_file_no_error(self, tmp_path: Path) -> None:
         """Constructing two repositories against the same file is safe."""
         db_path = tmp_path / "test_two_repos.db"
 
@@ -334,9 +316,7 @@ class TestSQLiteRunRepositorySpecific:
         assert repo.load_state("mem-001").status == RunStatus.QUEUED
         conn.close()
 
-    def test_open_connection_creates_parent_directories(
-        self, tmp_path: Path
-    ) -> None:
+    def test_open_connection_creates_parent_directories(self, tmp_path: Path) -> None:
         """``open_connection`` creates nested parent dirs that don't exist yet."""
         db_path = tmp_path / "nested" / "subdir" / "relict.db"
         conn = open_connection(db_path)

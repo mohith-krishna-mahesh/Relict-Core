@@ -25,7 +25,7 @@ class GnomadClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        
+
         graphql_query = """
         query Gene($geneId: String!) {
             gene(gene_id: $geneId) {
@@ -36,28 +36,27 @@ class GnomadClient(BaseClient):
         """
 
         for target in targets:
-            json_data = {
-                "query": graphql_query,
-                "variables": {"geneId": target}
-            }
+            json_data = {"query": graphql_query, "variables": {"geneId": target}}
 
             try:
                 response = await self._post(self.BASE_URL, json_data=json_data)
-                data = response.json()
-                
-                if "data" in data and data["data"].get("gene"):
-                    records.append(
-                        self._make_record(
-                            entity_a=target,
-                            relationship="gene_variant",
-                            entity_b="gnomAD Variant",
-                            source_id=f"gnomad_{target}",
-                            source_score=1.0,
-                            endpoint=self.BASE_URL,
-                            query_context={"target": target, "species": species},
-                            metadata={"allele_frequency": 0.0, "constraint": data["data"]["gene"]},
+                data = self._safe_json(response)
+
+                if isinstance(data, dict) and isinstance(data.get("data"), dict):
+                    data_obj = data["data"]
+                    if data_obj.get("gene"):
+                        records.append(
+                            self._make_record(
+                                entity_a=target,
+                                relationship="gene_variant",
+                                entity_b="gnomAD Variant",
+                                source_id=f"gnomad_{target}",
+                                source_score=1.0,
+                                endpoint=self.BASE_URL,
+                                query_context={"target": target, "species": species},
+                                metadata={"allele_frequency": 0.0, "constraint": data_obj["gene"]},
+                            )
                         )
-                    )
             except httpx.HTTPError as e:
                 logger.warning(f"Error querying gnomAD for {target}: {e}")
 

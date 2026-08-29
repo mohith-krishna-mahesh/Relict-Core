@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from app.models.evidence import EvidenceRecord
+from app.models.evidence import EvidenceEffect, EvidenceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -48,12 +48,30 @@ def normalize_record(
         if provenance is not None and not isinstance(provenance, str):
             provenance = str(provenance)
 
+        # Parse effect if present
+        effect_obj: EvidenceEffect | None = None
+        raw_effect = raw.get("effect")
+        if isinstance(raw_effect, dict):
+            effect_obj = EvidenceEffect(
+                direction=str(raw_effect["direction"]) if raw_effect.get("direction") else None,
+                type=str(raw_effect["type"]) if raw_effect.get("type") else None,
+                magnitude=_safe_float(raw_effect.get("magnitude")),
+            )
+        elif isinstance(raw_effect, EvidenceEffect):
+            effect_obj = raw_effect
+
+        consequence = raw.get("consequence")
+        if consequence is not None and not isinstance(consequence, str):
+            consequence = str(consequence)
+
         return EvidenceRecord(
             source=str(effective_source),
             source_id=str(raw["source_id"]) if raw.get("source_id") is not None else None,
             entity_a=str(entity_a),
             entity_b=str(raw["entity_b"]) if raw.get("entity_b") is not None else None,
             relationship=str(relationship),
+            effect=effect_obj,
+            consequence=consequence,
             source_score=_safe_float(raw.get("source_score")),
             provenance=provenance,
             metadata=dict(raw["metadata"]) if isinstance(raw.get("metadata"), dict) else {},

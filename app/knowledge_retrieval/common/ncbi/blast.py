@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
 import anyio
@@ -31,6 +32,7 @@ class NCBIBlastClient(BaseClient):
             return records
 
         sequence = context["sequence"]
+        max_wait = getattr(self.settings, "blast_max_wait_seconds", 30.0)
 
         for target in targets:
             try:
@@ -42,23 +44,24 @@ class NCBIBlastClient(BaseClient):
                     "FORMAT_TYPE": "JSON2",
                 }
 
-                resp = await self._http.post(self.BASE_URL, data=put_params)
-                resp.raise_for_status()
+                resp = await self._post(self.BASE_URL, data=put_params)
 
-                rid = None
+                rid: str | None = None
                 for line in resp.text.splitlines():
-                    if line.startswith("    RID = "):
-                        rid = line.split("=")[1].strip()
-                        break
+                    if "RID = " in line:
+                        parts = line.split("=")
+                        if len(parts) > 1:
+                            rid = parts[1].strip()
+                            break
 
                 if not rid:
                     continue
 
-                max_poll_attempts = 20
-                poll_interval = 10
+                poll_interval = 5.0
+                start_time = time.time()
+                blast_results: dict[str, Any] | None = None
 
-                blast_results = None
-                for _ in range(max_poll_attempts):
+                while (time.time() - start_time) < max_wait:
                     await anyio.sleep(poll_interval)
 
                     get_params = {
@@ -67,13 +70,14 @@ class NCBIBlastClient(BaseClient):
                         "RID": rid,
                     }
 
-                    status_resp = await self._http.get(self.BASE_URL, params=get_params)
+                    status_resp = await self._get(self.BASE_URL, params=get_params)
                     status_text = status_resp.text
 
                     if "Status=WAITING" in status_text:
                         continue
 
                     if "Status=FAILED" in status_text or "Status=UNKNOWN" in status_text:
+                        logger.warning("NCBI BLAST job %s failed or unknown status.", rid)
                         break
 
                     if "Status=READY" in status_text:
@@ -82,11 +86,17 @@ class NCBIBlastClient(BaseClient):
                             "FORMAT_TYPE": "JSON2",
                             "RID": rid,
                         }
-                        res = await self._http.get(self.BASE_URL, params=res_params)
-                        blast_results = res.json()
+                        res = await self._get(self.BASE_URL, params=res_params)
+                        blast_results = self._safe_json(res)
                         break
 
                 if not blast_results:
+                    logger.info(
+                        "NCBI BLAST for target %s (RID %s) did not finish within %.1fs budget.",
+                        target,
+                        rid,
+                        max_wait,
+                    )
                     continue
 
                 reports = blast_results.get("BlastOutput2", [])
@@ -94,7 +104,8 @@ class NCBIBlastClient(BaseClient):
                     search = report.get("report", {}).get("results", {}).get("search", {})
                     hits = search.get("hits", [])
                     for hit in hits:
-                        hit_desc = hit.get("description", [{}])[0]
+                        descriptions = hit.get("description", [])
+                        hit_desc = descriptions[0] if descriptions else {}
                         accession = hit_desc.get("accession", "")
                         title = hit_desc.get("title", "")
                         hsps = hit.get("hsps", [])
@@ -107,7 +118,7 @@ class NCBIBlastClient(BaseClient):
                                         relationship="gene_orthology",
                                         entity_b=title,
                                         source_id=accession,
-                                        source_score=evalue,
+                                        source_score=float(evalue),
                                         endpoint=self.BASE_URL,
                                         query_context={"sequence": sequence, "rid": rid},
                                         metadata=hit,
@@ -115,8 +126,8 @@ class NCBIBlastClient(BaseClient):
                                 )
 
             except httpx.HTTPError as e:
-                logger.error(f"HTTP Error querying NCBI BLAST for {target}: {e}")
+                logger.error("HTTP Error querying NCBI BLAST for %s: %s", target, e)
             except Exception as e:
-                logger.error(f"Error querying NCBI BLAST for {target}: {e}")
+                logger.error("Error querying NCBI BLAST for %s: %s", target, e)
 
         return records

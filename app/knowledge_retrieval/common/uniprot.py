@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+
 import httpx
 
 from app.knowledge_retrieval.base_client import BaseClient
 from app.models.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
+
 
 class UniprotClient(BaseClient):
     BASE_URL = "https://rest.uniprot.org"
@@ -24,24 +26,21 @@ class UniprotClient(BaseClient):
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
         org_name = species or "human"
-        
+
         for target in targets:
             try:
                 search_url = f"{self.BASE_URL}/uniprotkb/search"
-                params = {
-                    "query": f"gene:{target} AND organism_name:{org_name}",
-                    "format": "json"
-                }
+                params = {"query": f"gene:{target} AND organism_name:{org_name}", "format": "json"}
                 search_res = await self._http.get(search_url, params=params)
                 search_res.raise_for_status()
-                data = search_res.json()
-                
-                results = data.get("results", [])
+                data = self._safe_json(search_res)
+
+                results = data.get("results", []) if isinstance(data, dict) else []
                 for result in results:
                     accession = result.get("primaryAccession")
                     if not accession:
                         continue
-                        
+
                     records.append(
                         self._make_record(
                             entity_a=target,
@@ -51,10 +50,10 @@ class UniprotClient(BaseClient):
                             source_score=1.0,
                             endpoint="/uniprotkb/search",
                             query_context={"target": target},
-                            metadata={}
+                            metadata={},
                         )
                     )
-                    
+
                     comments = result.get("comments", [])
                     for comment in comments:
                         if comment.get("commentType") == "FUNCTION":
@@ -71,13 +70,13 @@ class UniprotClient(BaseClient):
                                             source_score=1.0,
                                             endpoint="/uniprotkb/search",
                                             query_context={"target": target},
-                                            metadata={"full_function": func_val}
+                                            metadata={"full_function": func_val},
                                         )
                                     )
-                                    
+
             except httpx.HTTPError as e:
                 logger.warning(f"UniProt HTTP Error for {target}: {e}")
             except Exception as e:
                 logger.warning(f"UniProt Error for {target}: {e}")
-                
+
         return records

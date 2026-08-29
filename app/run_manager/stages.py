@@ -23,7 +23,7 @@ from app.models.requests import (
     RunConfiguration,
     StructuredObjective,
 )
-from app.models.responses import Strategy
+from app.models.responses import RetrievalResult, Strategy
 from app.models.validation import ValidationResult
 
 
@@ -38,9 +38,9 @@ class ObjectiveResolver(Protocol):
 
 
 class EvidenceRetriever(Protocol):
-    """Knowledge Retrieval — returns source-backed ``EvidenceRecord`` list."""
+    """Knowledge Retrieval — returns source-backed ``RetrievalResult``."""
 
-    async def retrieve(self, context: RetrievalContext) -> list[EvidenceRecord]: ...
+    async def retrieve(self, context: RetrievalContext) -> RetrievalResult: ...
 
 
 class StrategicPlanner(Protocol):

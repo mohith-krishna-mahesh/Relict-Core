@@ -26,13 +26,13 @@ def run_eval() -> None:
             print(f"[{i}] FAILED TO PARSE: {objective!r}")
             print(f"    Error: {e}")
             results.append(
-    {
-        "index": i,
-        "objective": objective,
-        "status": "parse_error",
-        "error": str(e),
-    }
-)
+                {
+                    "index": i,
+                    "objective": objective,
+                    "status": "parse_error",
+                    "error": str(e),
+                }
+            )
             continue
 
         status_match = actual_dict["ambiguity_status"] == expected["ambiguity_status"]
@@ -43,19 +43,21 @@ def run_eval() -> None:
         print(f"    {'PASS' if status_match else 'FAIL'}")
         print()
 
-        results.append({
-            "index": i,
-            "objective": objective,
-            "expected": expected,
-            "actual": actual_dict,
-            "status_match": status_match,
-        })
+        results.append(
+            {
+                "index": i,
+                "objective": objective,
+                "expected": expected,
+                "actual": actual_dict,
+                "status_match": status_match,
+            }
+        )
 
     total = len(results)
     passed = sum(1 for r in results if r.get("status_match"))
     errors = sum(1 for r in results if r.get("status") == "parse_error")
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Total: {total} | Passed (ambiguity_status match): {passed} | Parse errors: {errors}")
 
     with open(Path(__file__).parent / "datasets" / "eval_results.json", "w", encoding="utf-8") as f:

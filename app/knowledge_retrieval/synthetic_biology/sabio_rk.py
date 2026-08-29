@@ -28,10 +28,10 @@ class SabioRkClient(BaseClient):
 
         for target in targets:
             url = f"{self.BASE_URL}/searchKineticLaws/entryIDs"
-            
+
             try:
                 response = await self._get(url, params={"q": target})
-                
+
                 records.append(
                     self._make_record(
                         entity_a=target,

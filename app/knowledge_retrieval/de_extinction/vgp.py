@@ -32,7 +32,7 @@ class VGPClient(BaseClient):
 
             try:
                 response = await self._get(url)
-                data = response.json()
+                data = self._safe_json(response)
                 if query_species in str(data):
                     records.append(
                         self._make_record(

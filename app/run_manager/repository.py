@@ -1,33 +1,8 @@
-"""
-RunRepository: persistence layer for ``RunState`` and ``RunResult`` records.
-
-This file contains:
-
-``RunNotFoundError``
-    Shared exception raised by all repository implementations when a
-    ``run_id`` is not present.  Lives here (not in the SQLite-specific file)
-    because it is part of the *interface* contract — any implementation or
-    caller that needs to catch it imports from this module.
-
-``RunRepository``
-    In-memory dict-backed store.  Fast, zero-setup — the default for the
-    test suite and the in-process double for Phases 2A–2C.
-
-The SQLite-backed implementation (``SQLiteRunRepository``) lives in
-``app/cache/sqlite_repository.py`` to keep infrastructure code (SQLite
-wiring) separate from this domain-level module.
-
-Both implementations share the same duck-typed interface:
-
-    save_state(state)   load_state(run_id)   all_states()
-    save_result(result) load_result(run_id)  has_result(run_id)
-
-``RunOrchestrator`` holds a reference typed as ``RunRepository`` but accepts
-either implementation; it does not need to change when the concrete class
-behind the reference changes — that is the point of this interface.
-"""
+"""RunRepository: persistence layer for ``RunState`` and ``RunResult`` records."""
 
 from __future__ import annotations
+
+from typing import Protocol
 
 from app.models.responses import RunResult
 from app.models.run_state import RunState
@@ -37,16 +12,28 @@ class RunNotFoundError(KeyError):
     """Raised when a ``run_id`` is not present in the repository."""
 
 
+class RunRepositoryProtocol(Protocol):
+    """Protocol defining the persistence layer interface."""
+
+    def save_state(self, state: RunState) -> None: ...
+
+    def load_state(self, run_id: str) -> RunState: ...
+
+    def all_states(self) -> list[RunState]: ...
+
+    def save_result(self, result: RunResult) -> None: ...
+
+    def load_result(self, run_id: str) -> RunResult: ...
+
+    def has_result(self, run_id: str) -> bool: ...
+
+
 class RunRepository:
     """In-memory repository keyed by ``run_id``."""
 
     def __init__(self) -> None:
         self._states: dict[str, RunState] = {}
         self._results: dict[str, RunResult] = {}
-
-    # ------------------------------------------------------------------
-    # RunState
-    # ------------------------------------------------------------------
 
     def save_state(self, state: RunState) -> None:
         """Persist (or overwrite) the ``RunState`` for ``state.run_id``."""
@@ -62,10 +49,6 @@ class RunRepository:
     def all_states(self) -> list[RunState]:
         """Return all currently stored ``RunState`` records."""
         return list(self._states.values())
-
-    # ------------------------------------------------------------------
-    # RunResult
-    # ------------------------------------------------------------------
 
     def save_result(self, result: RunResult) -> None:
         """Persist (or overwrite) the ``RunResult`` for ``result.run_id``."""

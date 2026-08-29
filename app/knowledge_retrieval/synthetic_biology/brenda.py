@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 
 from app.knowledge_retrieval.base_client import BaseClient
-from app.models.evidence import EvidenceRecord
+from app.models.evidence import EffectType, EvidenceEffect, EvidenceRecord
 
 logger = logging.getLogger(__name__)
 
@@ -41,15 +41,18 @@ class BrendaClient(BaseClient):
     </getKmValue>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>"""
-            
+
             try:
-                response = await self._post(self.BASE_URL, content=xml.encode("utf-8"))
+                await self._post(self.BASE_URL, content=xml.encode("utf-8"))
                 records.append(
                     self._make_record(
                         entity_a=target,
                         relationship="enzyme_reaction",
                         entity_b="BRENDA Enzyme",
-                        source_id=f"brenda_{target}",
+                        effect=EvidenceEffect(
+                            direction=None,
+                            type=EffectType.CATALYSIS,
+                        ),
                         source_score=1.0,
                         endpoint=self.BASE_URL,
                         query_context={"target": target, "species": species},
@@ -57,6 +60,6 @@ class BrendaClient(BaseClient):
                     )
                 )
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying BRENDA for {target}: {e}")
+                logger.warning("Error querying BRENDA for %s: %s", target, e)
 
         return records

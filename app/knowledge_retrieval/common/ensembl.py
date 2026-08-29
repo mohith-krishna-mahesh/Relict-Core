@@ -25,111 +25,102 @@ class EnsemblClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        species_name = species or "human"
+        species_name = (context.get("species_ensembl_name") if context else None) or (
+            species.lower().replace(" ", "_") if species else "homo_sapiens"
+        )
 
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
         for target in targets:
             try:
-                # Lookup
-                lookup_url = (
-                    f"{self.BASE_URL}/lookup/symbol/"
-                    f"{species_name}/{target}"
-                )
+                # 1. Gene Symbol Lookup
+                lookup_url = f"{self.BASE_URL}/lookup/symbol/{species_name}/{target}"
                 lookup_res = await self._get(lookup_url, headers=headers)
-                gene_data = lookup_res.json()
-
+                gene_data = self._safe_json(lookup_res)
+                if not gene_data or not isinstance(gene_data, dict):
+                    continue
                 gene_id = gene_data.get("id")
                 if not gene_id:
                     continue
 
-                # Xrefs
-                xrefs_url = f"{self.BASE_URL}/xrefs/id/{gene_id}"
-                xrefs_res = await self._get(xrefs_url, headers=headers)
-
-                for xref in xrefs_res.json():
-                    description = xref.get("description")
-                    if description:
-                        records.append(
-                            self._make_record(
-                                entity_a=target,
-                                relationship="gene_pathway",
-                                entity_b=description,
-                                source_id=gene_id,
-                                source_score=1.0,
-                                endpoint="/xrefs/id",
-                                query_context={"target": target},
-                                metadata=xref,
-                            )
-                        )
-
-                # Phenotypes
-                pheno_url = (
-                    f"{self.BASE_URL}/phenotype/gene/"
-                    f"{species_name}/{gene_id}"
-                )
-                pheno_res = await self._get(pheno_url, headers=headers)
-
-                for phenotype_data in pheno_res.json():
-                    phenotype = (
-                        phenotype_data.get("phenotype_description")
-                        or phenotype_data.get("phenotype")
-                    )
-
-                    if phenotype:
-                        records.append(
-                            self._make_record(
-                                entity_a=target,
-                                relationship="gene_phenotype",
-                                entity_b=phenotype,
-                                source_id=gene_id,
-                                source_score=1.0,
-                                endpoint="/phenotype/gene",
-                                query_context={"target": target},
-                                metadata=phenotype_data,
-                            )
-                        )
-
-                # Orthologs
-                homo_url = (
-                    f"{self.BASE_URL}/homology/symbol/"
-                    f"{species_name}/{target}"
-                )
-                homo_res = await self._get(homo_url, headers=headers)
-
-                data = homo_res.json()
-
-                if data and "data" in data and data["data"]:
-                    homologies = data["data"][0].get("homologies", [])
-
-                    for homology in homologies:
-                        ortholog = homology.get("target", {}).get("id")
-
-                        if ortholog:
-                            records.append(
-                                self._make_record(
-                                    entity_a=target,
-                                    relationship="gene_orthology",
-                                    entity_b=ortholog,
-                                    source_id=gene_id,
-                                    source_score=1.0,
-                                    endpoint="/homology/symbol",
-                                    query_context={"target": target},
-                                    metadata=homology,
+                # 2. Phenotypes
+                try:
+                    pheno_url = f"{self.BASE_URL}/phenotype/gene/{species_name}/{gene_id}"
+                    pheno_res = await self._get(pheno_url, headers=headers)
+                    pheno_data = self._safe_json(pheno_res)
+                    if isinstance(pheno_data, list):
+                        for p in pheno_data:
+                            phenotype = p.get("phenotype_description") or p.get("phenotype")
+                            if phenotype:
+                                records.append(
+                                    self._make_record(
+                                        entity_a=target,
+                                        relationship="gene_phenotype",
+                                        entity_b=str(phenotype),
+                                        source_id=gene_id,
+                                        source_score=1.0,
+                                        endpoint="/phenotype/gene",
+                                        query_context={"target": target, "species": species_name},
+                                        metadata=p,
+                                    )
                                 )
-                            )
+                except Exception as p_err:
+                    logger.debug("Ensembl phenotype query skipped for %s: %s", target, p_err)
 
-            except httpx.HTTPError as exc:
-                logger.warning(
-                    "Ensembl HTTP Error for %s: %s",
-                    target,
-                    exc,
-                )
-            except Exception as exc:
-                logger.warning(
-                    "Ensembl Error for %s: %s",
-                    target,
-                    exc,
-                )
+                # 3. Cross references
+                try:
+                    xref_url = f"{self.BASE_URL}/xrefs/id/{gene_id}"
+                    xref_res = await self._get(xref_url, headers=headers)
+                    xref_data = self._safe_json(xref_res)
+                    if isinstance(xref_data, list):
+                        for x in xref_data:
+                            dbname = x.get("dbname")
+                            primary_id = x.get("primary_id")
+                            if dbname == "GO" or "pathway" in str(dbname).lower():
+                                desc = x.get("description") or primary_id
+                                records.append(
+                                    self._make_record(
+                                        entity_a=target,
+                                        relationship="gene_pathway",
+                                        entity_b=str(desc),
+                                        source_id=str(primary_id),
+                                        source_score=1.0,
+                                        endpoint="/xrefs/id",
+                                        query_context={"target": target, "species": species_name},
+                                        metadata=x,
+                                    )
+                                )
+                except Exception as x_err:
+                    logger.debug("Ensembl xrefs query skipped for %s: %s", target, x_err)
+
+                # 4. Orthologs / Homologies
+                try:
+                    homo_url = f"{self.BASE_URL}/homology/symbol/{species_name}/{target}"
+                    homo_res = await self._get(homo_url, headers=headers)
+                    data = self._safe_json(homo_res)
+                    if isinstance(data, dict) and "data" in data and len(data["data"]) > 0:
+                        homologies = data["data"][0].get("homologies", [])
+                        for h in homologies:
+                            ortholog = h.get("target", {}).get("id")
+                            if ortholog:
+                                records.append(
+                                    self._make_record(
+                                        entity_a=target,
+                                        relationship="gene_orthology",
+                                        entity_b=str(ortholog),
+                                        source_id=gene_id,
+                                        source_score=1.0,
+                                        endpoint="/homology/symbol",
+                                        query_context={"target": target, "species": species_name},
+                                        metadata=h,
+                                    )
+                                )
+                except Exception as h_err:
+                    logger.debug("Ensembl homology query skipped for %s: %s", target, h_err)
+
+            except httpx.HTTPError as e:
+                logger.warning("Ensembl HTTP Error for %s: %s", target, e)
+            except Exception as e:
+                logger.warning("Ensembl Error for %s: %s", target, e)
 
         return records

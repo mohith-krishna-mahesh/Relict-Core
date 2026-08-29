@@ -204,36 +204,27 @@ class TestSuccessfulRun:
 
 class TestClarificationRequired:
     async def test_status_is_failed(self) -> None:
-        orch, _ = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, _ = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert result.status == RunStatus.FAILED
 
     async def test_failure_code(self) -> None:
-        orch, _ = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, _ = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert result.failure is not None
         assert result.failure.code == FailureCode.CLARIFICATION_REQUIRED
 
     async def test_structured_objective_returned(self) -> None:
         """Resolver produced a StructuredObjective before returning CLARIFICATION_REQUIRED."""
-        orch, _ = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, _ = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert result.structured_objective is not None
         assert (
-            result.structured_objective.ambiguity_status
-            == AmbiguityStatus.CLARIFICATION_REQUIRED
+            result.structured_objective.ambiguity_status == AmbiguityStatus.CLARIFICATION_REQUIRED
         )
 
     async def test_no_strategies(self) -> None:
-        orch, _ = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, _ = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert result.strategies == []
 
@@ -247,16 +238,12 @@ class TestClarificationRequired:
         assert tracker.called is False
 
     async def test_state_in_repo_is_failed(self) -> None:
-        orch, repo = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, repo = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert repo.load_state(result.run_id).status == RunStatus.FAILED
 
     async def test_failed_timestamp_present(self) -> None:
-        orch, repo = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, repo = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert "failed" in repo.load_state(result.run_id).timestamps
 
@@ -400,18 +387,14 @@ class TestPartialAnalysis:
         assert result.failure.code == FailureCode.PARTIAL_ANALYSIS
 
     async def test_post_plan_analysis_status_in_state(self) -> None:
-        orch, repo = _make_orchestrator(
-            analyzer=StubPostPlanAnalyzer(return_status="partial")
-        )
+        orch, repo = _make_orchestrator(analyzer=StubPostPlanAnalyzer(return_status="partial"))
         result = await orch.execute(_project(), _run_config())
         state = repo.load_state(result.run_id)
         assert state.post_plan_analysis_status == PostPlanAnalysisStatus.PARTIAL
 
     async def test_statuses_are_independent(self) -> None:
         """run.status=COMPLETE and post_plan_analysis_status=PARTIAL simultaneously."""
-        orch, repo = _make_orchestrator(
-            analyzer=StubPostPlanAnalyzer(return_status="partial")
-        )
+        orch, repo = _make_orchestrator(analyzer=StubPostPlanAnalyzer(return_status="partial"))
         result = await orch.execute(_project(), _run_config())
         state = repo.load_state(result.run_id)
         assert state.status == RunStatus.COMPLETE
@@ -465,9 +448,7 @@ class TestProgressTracker:
 
     async def test_failed_run_has_nonzero_progress_after_first_stage(self) -> None:
         """After OBJECTIVE_RESOLUTION completes and RETRIEVAL fails, progress > 0."""
-        orch, repo = _make_orchestrator(
-            retriever=StubEvidenceRetriever(return_empty=True)
-        )
+        orch, repo = _make_orchestrator(retriever=StubEvidenceRetriever(return_empty=True))
         result = await orch.execute(_project(), _run_config())
         assert repo.load_state(result.run_id).progress > 0.0
 
@@ -484,9 +465,7 @@ class TestStateTransitions:
         assert repo.load_state(result.run_id).status == RunStatus.COMPLETE
 
     async def test_failed_for_clarification_required(self) -> None:
-        orch, repo = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, repo = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert repo.load_state(result.run_id).status == RunStatus.FAILED
 
@@ -521,9 +500,7 @@ class TestStateTransitions:
         assert "completed" in repo.load_state(result.run_id).timestamps
 
     async def test_failed_timestamp_for_failed_run(self) -> None:
-        orch, repo = _make_orchestrator(
-            resolver=StubObjectiveResolver(clarification_required=True)
-        )
+        orch, repo = _make_orchestrator(resolver=StubObjectiveResolver(clarification_required=True))
         result = await orch.execute(_project(), _run_config())
         assert "failed" in repo.load_state(result.run_id).timestamps
 
@@ -670,15 +647,15 @@ class TestConcurrencyGuard:
     async def test_concurrent_admission_rejected(self) -> None:
         orch, _ = _make_orchestrator()
         orch._max_concurrent_runs = 1
-        
+
         from app.run_manager.orchestrator import RunAtCapacityError
-        
+
         # We manually hold the lock/increment to simulate an in-flight run
         orch._active_runs = 1
-        
+
         with pytest.raises(RunAtCapacityError, match="Server is at capacity"):
             await orch.execute(_project(), _run_config())
-            
+
         assert orch._active_runs == 1
 
     async def test_completed_runs_do_not_count(self) -> None:
@@ -691,18 +668,18 @@ class TestConcurrencyGuard:
 
     async def test_failed_runs_do_not_count(self) -> None:
         from app.run_manager.stubs import StubObjectiveResolver
-        
+
         class FailingResolver(StubObjectiveResolver):
             async def resolve(self, project, run_config):
                 raise ValueError("Oops")
-                
+
         orch, _ = _make_orchestrator(resolver=FailingResolver())
         orch._max_concurrent_runs = 1
-        
+
         res1 = await orch.execute(_project(), _run_config())
         assert res1.status == RunStatus.FAILED
         assert orch._active_runs == 0
-        
+
         # Second run should be accepted and also fail the same way
         res2 = await orch.execute(_project(), _run_config())
         assert res2.status == RunStatus.FAILED
@@ -710,16 +687,16 @@ class TestConcurrencyGuard:
     async def test_active_counter_released_on_unhandled_exception(self) -> None:
         orch, _ = _make_orchestrator()
         orch._max_concurrent_runs = 1
-        
+
         # Mock _execute_inner to bypass catch blocks and raise directly
         async def _mock_inner(*args, **kwargs):
             raise RuntimeError("Catastrophic")
-            
+
         orch._execute_inner = _mock_inner  # type: ignore
-        
+
         with pytest.raises(RuntimeError):
             await orch.execute(_project(), _run_config())
-            
+
         # The finally block should have decremented it back to 0
         assert orch._active_runs == 0
 
@@ -733,8 +710,9 @@ class TestTimeoutGuard:
     async def test_run_timeout_fails_and_persists(self) -> None:
         orch, repo = _make_orchestrator()
         orch._run_timeout_seconds = 0  # Instant timeout
-        
+
         import time
+
         # We mock time.monotonic to ensure it definitely exceeds the 0s budget
         original_monotonic = time.monotonic
         try:
@@ -742,19 +720,20 @@ class TestTimeoutGuard:
             res = await orch.execute(_project(), _run_config())
         finally:
             time.monotonic = original_monotonic
-            
+
         assert res.status == RunStatus.FAILED
         assert res.failure is not None
         assert res.failure.code == FailureCode.RUN_TIMEOUT
         assert res.failure.stage == PipelineStage.OBJECTIVE_RESOLUTION
-        
+
         # Verify persistence
         state = repo.load_state(res.run_id)
         assert state.status == RunStatus.FAILED
         assert "wall-clock budget" in state.errors[0].lower()
-        
+
         persisted_res = repo.load_result(res.run_id)
         assert persisted_res.status == RunStatus.FAILED
+        assert persisted_res.failure is not None
         assert persisted_res.failure.code == FailureCode.RUN_TIMEOUT
 
     async def test_successful_run_unaffected_when_under_timeout(self) -> None:
@@ -764,18 +743,22 @@ class TestTimeoutGuard:
         assert res.status == RunStatus.COMPLETE
 
     async def test_downstream_stages_do_not_execute_after_timeout(self) -> None:
+        from app.models.requests import RetrievalContext
+        from app.models.responses import RetrievalResult
         from app.run_manager.stubs import StubEvidenceRetriever
-        
+
         class MockRetriever(StubEvidenceRetriever):
             called = False
-            async def retrieve(self, ctx):
+
+            async def retrieve(self, context: RetrievalContext) -> RetrievalResult:
                 MockRetriever.called = True
-                return []
-                
+                return RetrievalResult(records=[])
+
         retriever = MockRetriever()
         orch, _ = _make_orchestrator(retriever=retriever)
-        
+
         import time
+
         original_monotonic = time.monotonic
         call_count = 0
         try:
@@ -787,16 +770,16 @@ class TestTimeoutGuard:
                 if call_count <= 2:  # 1 for _run_start, 2 for Stage 1 check
                     return original_monotonic()
                 return original_monotonic() + 10  # Jump ahead for Stage 2 check
-            
+
             orch._run_timeout_seconds = 5
             time.monotonic = slow_monotonic
             res = await orch.execute(_project(), _run_config())
         finally:
             time.monotonic = original_monotonic
-            
+
         assert res.status == RunStatus.FAILED
+        assert res.failure is not None
         assert res.failure.code == FailureCode.RUN_TIMEOUT
-        
+
         # Verify downstream stage was never executed
         assert not retriever.called
-

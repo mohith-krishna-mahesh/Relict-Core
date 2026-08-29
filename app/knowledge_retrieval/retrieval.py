@@ -44,6 +44,12 @@ from app.knowledge_retrieval.precision_medicine.gtex import GTExClient
 from app.knowledge_retrieval.precision_medicine.hpa import HPAClient
 from app.knowledge_retrieval.precision_medicine.opentargets import OpenTargetsClient
 from app.knowledge_retrieval.registry import get_sources_for_scope
+from app.knowledge_retrieval.species import (
+    CanonicalSpecies,
+    SpeciesResolutionError,
+    SpeciesResolver,
+    get_species_resolver,
+)
 from app.knowledge_retrieval.synthetic_biology.brenda import BrendaClient
 from app.knowledge_retrieval.synthetic_biology.sabio_rk import SabioRkClient
 from app.knowledge_retrieval.synthetic_biology.synbiohub import SynBioHubClient
@@ -117,10 +123,16 @@ def deduplicate(records: list[EvidenceRecord]) -> list[EvidenceRecord]:
 
     Evidence from different sources is NEVER merged.
     """
-    seen: set[tuple[str, str | None, str, str | None, str]] = set()
+    seen: set[tuple[str, str, str, str, str]] = set()
     unique: list[EvidenceRecord] = []
     for r in records:
-        key = (r.source, r.source_id, r.entity_a, r.entity_b, r.relationship)
+        key = (
+            r.source.strip().lower(),
+            (r.source_id or "").strip(),
+            r.entity_a.strip(),
+            (r.entity_b or "").strip(),
+            r.relationship.strip().lower(),
+        )
         if key not in seen:
             seen.add(key)
             unique.append(r)
@@ -136,29 +148,49 @@ class RetrievalOrchestrator:
     """Orchestrates Knowledge Retrieval for a single run.
 
     Workflow:
-    1. Resolve scope → permitted sources via registry.
-    2. Map retrieval targets to source-specific queries.
-    3. Invoke source clients concurrently.
-    4. Collect and deduplicate EvidenceRecord[].
-    5. Evaluate aggregate sufficiency.
-    6. Return RetrievalResult.
+    1. Pre-resolve species from canonical species knowledge base.
+    2. Resolve scope → permitted sources via registry.
+    3. Map retrieval targets to source-specific queries.
+    4. Invoke source clients concurrently with bounded concurrency.
+    5. Collect and deduplicate EvidenceRecord[].
+    6. Evaluate aggregate sufficiency.
+    7. Return RetrievalResult.
     """
 
     def __init__(
         self,
         settings: RetrievalSettings | None = None,
         cache: CacheProtocol | None = None,
+        species_resolver: SpeciesResolver | None = None,
     ) -> None:
         self.settings = settings or RetrievalSettings()
         self.cache = cache or NullCache()
+        self.species_resolver = species_resolver or get_species_resolver()
 
     async def retrieve(self, ctx: RetrievalContext) -> RetrievalResult:
         """Execute retrieval for the given context."""
         scope = ctx.project_context.scope
-        species = ctx.project_context.species
+        raw_species = ctx.project_context.species
+
+        # 1. Pre-retrieval canonical species resolution
+        canonical_species: CanonicalSpecies | None = None
+        if raw_species:
+            canonical_species = self.species_resolver.resolve(raw_species)
+            if canonical_species is None:
+                logger.error(
+                    "Species '%s' could not be resolved in canonical species registry.",
+                    raw_species,
+                )
+                raise SpeciesResolutionError(
+                    f"Species '{raw_species}' could not be resolved in canonical species registry."
+                )
+
+        effective_species_name = (
+            canonical_species.scientific_name if canonical_species else raw_species
+        )
         permitted = get_sources_for_scope(scope)
 
-        # Build retrieval targets from the structured objective
+        # 2. Build retrieval targets from the structured objective & run configuration
         targets = self._build_targets(ctx)
         if not targets:
             return RetrievalResult(
@@ -166,21 +198,19 @@ class RetrievalOrchestrator:
                 source_statuses=[],
             )
 
-        # Build context dict for source clients
-        query_context = self._build_query_context(ctx)
+        # 3. Build enriched context dict for source clients
+        query_context = self._build_query_context(ctx, canonical_species)
 
-        # Instantiate permitted source clients
+        # 4. Instantiate permitted source clients
         clients: list[tuple[str, BaseClient]] = []
         for source_name in permitted:
             client_cls = _CLIENT_REGISTRY.get(source_name)
             if client_cls is None:
                 logger.warning("No client registered for source: %s", source_name)
                 continue
-            clients.append(
-                (source_name, client_cls(settings=self.settings, cache=self.cache))
-            )
+            clients.append((source_name, client_cls(settings=self.settings, cache=self.cache)))
 
-        # Run all source queries concurrently
+        # 5. Run all source queries concurrently
         all_records: list[EvidenceRecord] = []
         statuses: list[SourceStatus] = []
 
@@ -189,7 +219,7 @@ class RetrievalOrchestrator:
         ) -> tuple[str, list[EvidenceRecord], SourceStatus]:
             try:
                 records = await client.query(
-                    targets=targets, species=species, context=query_context
+                    targets=targets, species=effective_species_name, context=query_context
                 )
                 status = SourceStatus(
                     source_name=name,
@@ -226,10 +256,10 @@ class RetrievalOrchestrator:
             all_records.extend(records)
             statuses.append(status)
 
-        # Deduplicate
+        # 6. Deduplicate
         deduped = deduplicate(all_records)
 
-        # Evaluate aggregate sufficiency
+        # 7. Evaluate aggregate sufficiency
         failure_code: FailureCode | None = None
         if len(deduped) < self.settings.min_evidence_records:
             failure_code = FailureCode.INSUFFICIENT_EVIDENCE
@@ -265,9 +295,13 @@ class RetrievalOrchestrator:
                 unique.append(t.strip())
         return unique
 
-    def _build_query_context(self, ctx: RetrievalContext) -> dict[str, Any]:
-        """Build a context dict that source clients can use."""
-        return {
+    def _build_query_context(
+        self,
+        ctx: RetrievalContext,
+        species: CanonicalSpecies | None = None,
+    ) -> dict[str, Any]:
+        """Build an enriched context dict that source clients can use."""
+        query_ctx: dict[str, Any] = {
             "project_id": ctx.project_context.project_id,
             "scope": ctx.project_context.scope.value,
             "species": ctx.project_context.species,
@@ -279,3 +313,14 @@ class RetrievalOrchestrator:
             "candidate_genes": ctx.run_configuration.candidate_genes,
             "constraints": ctx.run_configuration.constraints,
         }
+
+        if species:
+            query_ctx["species_binomial"] = species.binomial
+            query_ctx["species_tax_id"] = species.taxonomy_id
+            query_ctx["species_ensembl_name"] = species.ensembl_name
+            query_ctx["species_common_name"] = species.common_name
+            query_ctx["species_is_extinct"] = species.is_extinct
+            query_ctx["species_has_genome_data"] = species.has_genome_data
+            query_ctx["species_tags"] = species.tags
+
+        return query_ctx

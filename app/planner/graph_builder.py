@@ -6,7 +6,6 @@ from typing import Any
 
 import networkx as nx
 
-
 # =============================================================================
 # Graph models
 # =============================================================================
@@ -133,16 +132,12 @@ def _normalize_relationship(relationship: Any) -> str:
     """Validate a relationship."""
 
     if relationship is None:
-        raise GraphBuilderError(
-            "EvidenceRecord has a missing relationship."
-        )
+        raise GraphBuilderError("EvidenceRecord has a missing relationship.")
 
     value = str(relationship).strip()
 
     if not value:
-        raise GraphBuilderError(
-            "EvidenceRecord has an empty relationship."
-        )
+        raise GraphBuilderError("EvidenceRecord has an empty relationship.")
 
     return value
 
@@ -164,9 +159,7 @@ def _normalize_score(score: Any) -> float | None:
         return float(score)
 
     except (TypeError, ValueError) as exc:
-        raise GraphBuilderError(
-            f"Invalid source_score: {score!r}"
-        ) from exc
+        raise GraphBuilderError(f"Invalid source_score: {score!r}") from exc
 
 
 def _normalize_metadata(metadata: Any) -> dict[str, Any]:
@@ -254,32 +247,22 @@ class GraphBuilder:
         Returns the created GraphEdge.
         """
 
-        entity_a = _normalize_entity(
-            _get_field(record, "entity_a")
-        )
+        entity_a = _normalize_entity(_get_field(record, "entity_a"))
 
-        entity_b = _normalize_entity(
-            _get_field(record, "entity_b")
-        )
+        entity_b = _normalize_entity(_get_field(record, "entity_b"))
 
-        relationship = _normalize_relationship(
-            _get_field(record, "relationship")
-        )
+        relationship = _normalize_relationship(_get_field(record, "relationship"))
 
         source = _get_field(record, "source")
         source_id = _get_field(record, "source_id")
 
         effect = _get_field(record, "effect")
 
-        source_score = _normalize_score(
-            _get_field(record, "source_score")
-        )
+        source_score = _normalize_score(_get_field(record, "source_score"))
 
         provenance = _get_field(record, "provenance")
 
-        metadata = _normalize_metadata(
-            _get_field(record, "metadata", {})
-        )
+        metadata = _normalize_metadata(_get_field(record, "metadata", {}))
 
         consequence = _get_field(record, "consequence")
 
@@ -297,20 +280,13 @@ class GraphBuilder:
         edge = GraphEdge(
             source_node=entity_a,
             target_node=entity_b,
-
             relationship=relationship,
-
             source=source,
             source_id=source_id,
-
             effect=effect,
-
             source_score=source_score,
-
             provenance=provenance,
-
             metadata=metadata,
-
             consequence=consequence,
         )
 
@@ -323,22 +299,14 @@ class GraphBuilder:
         self._graph.add_edge(
             entity_a,
             entity_b,
-
             relationship=relationship,
-
             source=source,
             source_id=source_id,
-
             effect=effect,
-
             source_score=source_score,
-
             provenance=provenance,
-
             metadata=metadata,
-
             consequence=consequence,
-
             evidence_index=record_index,
         )
 

@@ -43,7 +43,7 @@ class NCBIDatasetsV2Client(BaseClient):
                     f"{self.BASE_URL}/gene/symbol/{target}/taxon/{taxon}", headers=headers
                 )
                 gene_resp.raise_for_status()
-                gene_data = gene_resp.json()
+                gene_data = self._safe_json(gene_resp)
 
                 if not gene_data or "reports" not in gene_data:
                     continue
@@ -74,7 +74,7 @@ class NCBIDatasetsV2Client(BaseClient):
                         f"{self.BASE_URL}/gene/id/{gene_id}/orthologs", headers=headers
                     )
                     ortho_resp.raise_for_status()
-                    ortho_data = ortho_resp.json()
+                    ortho_data = self._safe_json(ortho_resp)
 
                     if ortho_data and "reports" in ortho_data:
                         for ortho_wrapper in ortho_data.get("reports", []):

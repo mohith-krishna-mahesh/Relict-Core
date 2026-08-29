@@ -25,7 +25,7 @@ class OpenTargetsClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        
+
         graphql_query = """
         query target($ensemblId: String!){
             target(ensemblId: $ensemblId) {
@@ -36,28 +36,27 @@ class OpenTargetsClient(BaseClient):
         """
 
         for target in targets:
-            json_data = {
-                "query": graphql_query,
-                "variables": {"ensemblId": target}
-            }
+            json_data = {"query": graphql_query, "variables": {"ensemblId": target}}
 
             try:
                 response = await self._post(self.BASE_URL, json_data=json_data)
-                data = response.json()
-                
-                if "data" in data and data["data"].get("target"):
-                    records.append(
-                        self._make_record(
-                            entity_a=target,
-                            relationship="gene_disease",
-                            entity_b="OpenTargets Association",
-                            source_id=f"opentargets_{target}",
-                            source_score=1.0,
-                            endpoint=self.BASE_URL,
-                            query_context={"target": target, "species": species},
-                            metadata=data["data"]["target"],
+                data = self._safe_json(response)
+
+                if isinstance(data, dict) and isinstance(data.get("data"), dict):
+                    data_obj = data["data"]
+                    if data_obj.get("target"):
+                        records.append(
+                            self._make_record(
+                                entity_a=target,
+                                relationship="gene_disease",
+                                entity_b="OpenTargets Association",
+                                source_id=f"opentargets_{target}",
+                                source_score=1.0,
+                                endpoint=self.BASE_URL,
+                                query_context={"target": target, "species": species},
+                                metadata=data_obj["target"],
+                            )
                         )
-                    )
             except httpx.HTTPError as e:
                 logger.warning(f"Error querying OpenTargets for {target}: {e}")
 

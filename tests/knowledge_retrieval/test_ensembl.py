@@ -21,9 +21,7 @@ async def test_ensembl_query_success() -> None:
         {"primary_id": "P51587", "dbname": "UniProtKB/Swiss-Prot"},
         {"primary_id": "GO:0006281", "dbname": "GO", "description": "DNA repair"},
     ]
-    phenotype_data = [
-        {"phenotype": "Breast cancer susceptibility", "source": "ClinVar"}
-    ]
+    phenotype_data = [{"phenotype": "Breast cancer susceptibility", "source": "ClinVar"}]
     homology_data = {
         "data": [
             {

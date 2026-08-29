@@ -23,20 +23,27 @@ class RetrievalSettings(BaseSettings):
         extra="ignore",
     )
 
-    # ── HTTP defaults ─────────────────────────────────────────────
+    # ── HTTP defaults & resilience ───────────────────────────────
     http_timeout: float = 30.0
     user_agent: str = "RelictCore/0.1.0 (https://github.com/relict-core)"
     max_concurrency: int = 8
+    http_retries: int = 3
+    retry_backoff_factor: float = 0.5
 
-    # ── Cache ─────────────────────────────────────────────────────
+    # ── Cache & TTL ───────────────────────────────────────────────
     cache_db_path: str = "data/cache.sqlite3"
+    default_cache_ttl_seconds: int = 86400
+
+    # ── Species Knowledge Base ────────────────────────────────────
+    species_csv_path: str = "data/species/species.csv"
 
     # ── DuckDB (for local bulk data such as AlphaMissense) ────────
     duckdb_path: str = "data/alphamissense.duckdb"
 
-    # ── NCBI ──────────────────────────────────────────────────────
+    # ── NCBI & BLAST ──────────────────────────────────────────────
     ncbi_api_key: str | None = None
     ncbi_email: str | None = None
+    blast_max_wait_seconds: float = 30.0
 
     # ── BRENDA ────────────────────────────────────────────────────
     brenda_email: str | None = None
@@ -118,8 +125,7 @@ class Settings(BaseSettings):
         default=3600,
         ge=1,
         description=(
-            "Maximum wall-clock seconds allowed per run before the Run Manager "
-            "marks it as FAILED."
+            "Maximum wall-clock seconds allowed per run before the Run Manager marks it as FAILED."
         ),
     )
 

@@ -31,7 +31,7 @@ class VectorBaseClient(BaseClient):
 
             try:
                 await self._get(url)
-                
+
                 records.append(
                     self._make_record(
                         entity_a=target,

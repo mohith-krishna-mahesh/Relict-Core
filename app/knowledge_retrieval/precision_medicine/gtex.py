@@ -48,15 +48,17 @@ class GTExClient(BaseClient):
             return []
 
         try:
-            data = resp.json()
+            data = self._safe_json(resp)
         except Exception:
             return []
 
         records: list[EvidenceRecord] = []
         if isinstance(data, list):
             items = data
-        else:
+        elif isinstance(data, dict):
             items = data.get("data", data.get("medianGeneExpression", []))
+        else:
+            items = []
         if not isinstance(items, list):
             return []
 
@@ -92,15 +94,17 @@ class GTExClient(BaseClient):
             return []
 
         try:
-            data = resp.json()
+            data = self._safe_json(resp)
         except Exception:
             return []
 
         records: list[EvidenceRecord] = []
         if isinstance(data, list):
             items = data
-        else:
+        elif isinstance(data, dict):
             items = data.get("data", data.get("singleTissueEqtl", []))
+        else:
+            items = []
         if not isinstance(items, list):
             return []
 

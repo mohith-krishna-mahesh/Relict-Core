@@ -76,13 +76,15 @@ class TestEvidenceRecord:
             )
 
     def test_canonical_fields_exactly(self) -> None:
-        """Verify the canonical field set matches architecture §3.5."""
+        """Verify the canonical field set matches revised evidence model."""
         expected_fields = {
             "source",
             "source_id",
             "entity_a",
             "entity_b",
             "relationship",
+            "effect",
+            "consequence",
             "source_score",
             "provenance",
             "metadata",
