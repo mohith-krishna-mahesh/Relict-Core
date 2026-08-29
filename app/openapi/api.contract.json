@@ -1,0 +1,29 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Relict Core", "version": "0.1.0-contract-snapshot"},
+  "servers": [{"url": "https://core.example.invalid"}],
+  "security": [{"bearerAuth": []}],
+  "components": {
+    "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer"}},
+    "schemas": {
+      "VerifyResponse": {"type": "object", "required": ["status", "core_version", "instance_type", "identity"], "properties": {"status": {"type": "string"}, "core_version": {"type": "string"}, "instance_type": {"type": "string"}, "identity": {"type": "object", "required": ["user_or_org", "scopes"], "properties": {"user_or_org": {"type": "string"}, "scopes": {"type": "array", "items": {"type": "string"}}}}}},
+      "Species": {"type": "object", "required": ["name", "taxonomy_id"], "properties": {"name": {"type": "string"}, "taxonomy_id": {"type": "string"}}},
+      "Gene": {"type": "object", "required": ["symbol", "name"], "properties": {"symbol": {"type": "string"}, "name": {"type": "string"}}},
+      "RunRequest": {"type": "object", "required": ["species", "research_objective", "candidate_genes", "constraints", "presets"], "properties": {"species": {"type": "string"}, "research_objective": {"type": "string"}, "candidate_genes": {"type": "array", "items": {"type": "string"}}, "constraints": {"$ref": "#/components/schemas/RunConstraints"}, "presets": {"type": "array", "items": {"type": "string", "enum": ["minimal", "redundant"]}}}},
+      "RunConstraints": {"type": "object", "required": ["max_edits", "preserve_fertility", "maximize_diversity"], "properties": {"max_edits": {"type": "integer"}, "preserve_fertility": {"type": "boolean"}, "maximize_diversity": {"type": "boolean"}}},
+      "StartRunResponse": {"type": "object", "required": ["run_id"], "properties": {"run_id": {"type": "string"}}},
+      "GraphNode": {"type": "object", "required": ["id", "type", "label"], "properties": {"id": {"type": "string"}, "type": {"type": "string"}, "label": {"type": "string"}, "rationale": {"type": "string"}, "confidence": {"type": "string", "enum": ["evidence", "model_estimated", "unknown"]}}},
+      "GraphEdge": {"type": "object", "required": ["id", "source", "target", "type", "confidence", "weight"], "properties": {"id": {"type": "string"}, "source": {"type": "string"}, "target": {"type": "string"}, "type": {"type": "string"}, "confidence": {"type": "string", "enum": ["evidence", "model_estimated", "unknown"]}, "weight": {"type": "number"}, "rationale": {"type": "string"}}},
+      "Strategy": {"type": "object", "required": ["id", "included", "excluded", "risk_score", "rationale"], "properties": {"id": {"type": "string"}, "included": {"type": "array", "items": {"type": "string"}}, "excluded": {"type": "array", "items": {"type": "string"}}, "risk_score": {"type": "number"}, "rationale": {"type": "string"}, "stages": {"type": "array", "items": {"type": "object", "additionalProperties": true}}}},
+      "RunResult": {"type": "object", "required": ["run_id", "status", "nodes", "edges", "strategies"], "properties": {"run_id": {"type": "string"}, "status": {"type": "string", "enum": ["queued", "running", "complete", "failed"]}, "objective": {"type": "string"}, "created_at": {"type": "string", "format": "date-time"}, "duration_ms": {"type": "integer"}, "nodes": {"type": "array", "items": {"$ref": "#/components/schemas/GraphNode"}}, "edges": {"type": "array", "items": {"$ref": "#/components/schemas/GraphEdge"}}, "strategies": {"type": "array", "items": {"$ref": "#/components/schemas/Strategy"}}}}
+    }
+  },
+  "paths": {
+    "/v1/auth/verify": {"post": {"responses": {"200": {"description": "Verified", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VerifyResponse"}}}}, "401": {"description": "Unauthorized"}}}},
+    "/v1/search/species": {"get": {"parameters": [{"name": "q", "in": "query", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Species", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Species"}}}}}}}},
+    "/v1/search/genes": {"get": {"parameters": [{"name": "q", "in": "query", "required": true, "schema": {"type": "string"}}, {"name": "species", "in": "query", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Genes", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Gene"}}}}}}}},
+    "/v1/runs": {"post": {"requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunRequest"}}}}, "responses": {"200": {"description": "Started", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/StartRunResponse"}}}}}}},
+    "/v1/runs/{run_id}": {"get": {"parameters": [{"name": "run_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Full run result", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunResult"}}}}}}},
+    "/v1/runs/{run_id}/stream": {"get": {"parameters": [{"name": "run_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "SSE event stream", "content": {"text/event-stream": {"schema": {"type": "string"}}}}}}}
+  }
+}
