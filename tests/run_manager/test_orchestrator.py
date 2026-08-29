@@ -650,3 +650,151 @@ class TestRunRepository:
         repo.save_state(RunState(run_id="r6", status=RunStatus.PENDING))
         repo.save_state(RunState(run_id="r6", status=RunStatus.COMPLETE))
         assert repo.load_state("r6").status == RunStatus.COMPLETE
+
+
+# ===========================================================================
+# Phase 2E: Concurrency Guard
+# ===========================================================================
+
+
+class TestConcurrencyGuard:
+    async def test_request_accepted_below_limit(self) -> None:
+        orch, _ = _make_orchestrator()
+        orch._max_concurrent_runs = 1
+        res = await orch.execute(_project(), _run_config())
+        assert res.status == RunStatus.COMPLETE
+        assert orch._active_runs == 0
+
+    async def test_concurrent_admission_rejected(self) -> None:
+        orch, _ = _make_orchestrator()
+        orch._max_concurrent_runs = 1
+        
+        from app.run_manager.orchestrator import RunAtCapacityError
+        
+        # We manually hold the lock/increment to simulate an in-flight run
+        orch._active_runs = 1
+        
+        with pytest.raises(RunAtCapacityError, match="Server is at capacity"):
+            await orch.execute(_project(), _run_config())
+            
+        assert orch._active_runs == 1
+
+    async def test_completed_runs_do_not_count(self) -> None:
+        orch, _ = _make_orchestrator()
+        orch._max_concurrent_runs = 1
+        await orch.execute(_project(), _run_config())
+        # The first run completed, so active runs should be 0, second should pass
+        res2 = await orch.execute(_project(), _run_config())
+        assert res2.status == RunStatus.COMPLETE
+
+    async def test_failed_runs_do_not_count(self) -> None:
+        from app.run_manager.stubs import StubObjectiveResolver
+        
+        class FailingResolver(StubObjectiveResolver):
+            async def resolve(self, project, run_config):
+                raise ValueError("Oops")
+                
+        orch, _ = _make_orchestrator(resolver=FailingResolver())
+        orch._max_concurrent_runs = 1
+        
+        res1 = await orch.execute(_project(), _run_config())
+        assert res1.status == RunStatus.FAILED
+        assert orch._active_runs == 0
+        
+        # Second run should be accepted and also fail the same way
+        res2 = await orch.execute(_project(), _run_config())
+        assert res2.status == RunStatus.FAILED
+
+    async def test_active_counter_released_on_unhandled_exception(self) -> None:
+        orch, _ = _make_orchestrator()
+        orch._max_concurrent_runs = 1
+        
+        # Mock _execute_inner to bypass catch blocks and raise directly
+        async def _mock_inner(*args, **kwargs):
+            raise RuntimeError("Catastrophic")
+            
+        orch._execute_inner = _mock_inner  # type: ignore
+        
+        with pytest.raises(RuntimeError):
+            await orch.execute(_project(), _run_config())
+            
+        # The finally block should have decremented it back to 0
+        assert orch._active_runs == 0
+
+
+# ===========================================================================
+# Phase 2E: Timeout Guard
+# ===========================================================================
+
+
+class TestTimeoutGuard:
+    async def test_run_timeout_fails_and_persists(self) -> None:
+        orch, repo = _make_orchestrator()
+        orch._run_timeout_seconds = 0  # Instant timeout
+        
+        import time
+        # We mock time.monotonic to ensure it definitely exceeds the 0s budget
+        original_monotonic = time.monotonic
+        try:
+            time.monotonic = lambda: original_monotonic() + 1
+            res = await orch.execute(_project(), _run_config())
+        finally:
+            time.monotonic = original_monotonic
+            
+        assert res.status == RunStatus.FAILED
+        assert res.failure is not None
+        assert res.failure.code == FailureCode.RUN_TIMEOUT
+        assert res.failure.stage == PipelineStage.OBJECTIVE_RESOLUTION
+        
+        # Verify persistence
+        state = repo.load_state(res.run_id)
+        assert state.status == RunStatus.FAILED
+        assert "wall-clock budget" in state.errors[0].lower()
+        
+        persisted_res = repo.load_result(res.run_id)
+        assert persisted_res.status == RunStatus.FAILED
+        assert persisted_res.failure.code == FailureCode.RUN_TIMEOUT
+
+    async def test_successful_run_unaffected_when_under_timeout(self) -> None:
+        orch, _ = _make_orchestrator()
+        orch._run_timeout_seconds = 3600  # Generous timeout
+        res = await orch.execute(_project(), _run_config())
+        assert res.status == RunStatus.COMPLETE
+
+    async def test_downstream_stages_do_not_execute_after_timeout(self) -> None:
+        from app.run_manager.stubs import StubEvidenceRetriever
+        
+        class MockRetriever(StubEvidenceRetriever):
+            called = False
+            async def retrieve(self, ctx):
+                MockRetriever.called = True
+                return []
+                
+        retriever = MockRetriever()
+        orch, _ = _make_orchestrator(retriever=retriever)
+        
+        import time
+        original_monotonic = time.monotonic
+        call_count = 0
+        try:
+            # We hook into monotonic to simulate a slow Stage 1
+            # so that it times out before Stage 2
+            def slow_monotonic():
+                nonlocal call_count
+                call_count += 1
+                if call_count <= 2:  # 1 for _run_start, 2 for Stage 1 check
+                    return original_monotonic()
+                return original_monotonic() + 10  # Jump ahead for Stage 2 check
+            
+            orch._run_timeout_seconds = 5
+            time.monotonic = slow_monotonic
+            res = await orch.execute(_project(), _run_config())
+        finally:
+            time.monotonic = original_monotonic
+            
+        assert res.status == RunStatus.FAILED
+        assert res.failure.code == FailureCode.RUN_TIMEOUT
+        
+        # Verify downstream stage was never executed
+        assert not retriever.called
+

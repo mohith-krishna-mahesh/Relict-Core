@@ -13,18 +13,22 @@ from app.models.failures import FailureCode, FailureDetail
 
 
 class TestFailureCodeEnum:
-    def test_failure_code_has_exactly_five_values(self) -> None:
-        """Architecture §3.12 mandates exactly five failure codes."""
+    def test_failure_code_has_exactly_six_values(self) -> None:
+        """
+        Architecture §3.12 plus Phase 2E infrastructure addition mandates exactly
+        six failure codes.
+        """
         expected = {
             "CLARIFICATION_REQUIRED",
             "INSUFFICIENT_EVIDENCE",
             "NO_FEASIBLE_PLAN",
             "VALIDATION_FAILED",
             "PARTIAL_ANALYSIS",
+            "RUN_TIMEOUT",
         }
         actual = {fc.value for fc in FailureCode}
         assert actual == expected, f"Unexpected values: {actual ^ expected}"
-        assert len(FailureCode) == 5
+        assert len(FailureCode) == 6
 
     def test_failure_code_values_are_strings(self) -> None:
         """FailureCode uses StrEnum, so members should compare equal to strings."""
@@ -33,6 +37,7 @@ class TestFailureCodeEnum:
         assert FailureCode.NO_FEASIBLE_PLAN == "NO_FEASIBLE_PLAN"
         assert FailureCode.VALIDATION_FAILED == "VALIDATION_FAILED"
         assert FailureCode.PARTIAL_ANALYSIS == "PARTIAL_ANALYSIS"
+        assert FailureCode.RUN_TIMEOUT == "RUN_TIMEOUT"
 
     def test_failure_code_is_serialisable_as_string(self) -> None:
         fd = FailureDetail(code=FailureCode.VALIDATION_FAILED, message="bad strategy")

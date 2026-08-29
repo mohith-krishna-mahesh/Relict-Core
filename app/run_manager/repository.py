@@ -1,10 +1,30 @@
 """
 RunRepository: persistence layer for ``RunState`` and ``RunResult`` records.
 
-The Phase 2A implementation is an in-memory dict-backed store.  Later phases
-can swap in a SQLite or DuckDB backend by implementing the same
-``save_state`` / ``load_state`` / ``save_result`` / ``load_result`` interface;
-the orchestrator does not need to change.
+This file contains:
+
+``RunNotFoundError``
+    Shared exception raised by all repository implementations when a
+    ``run_id`` is not present.  Lives here (not in the SQLite-specific file)
+    because it is part of the *interface* contract — any implementation or
+    caller that needs to catch it imports from this module.
+
+``RunRepository``
+    In-memory dict-backed store.  Fast, zero-setup — the default for the
+    test suite and the in-process double for Phases 2A–2C.
+
+The SQLite-backed implementation (``SQLiteRunRepository``) lives in
+``app/cache/sqlite_repository.py`` to keep infrastructure code (SQLite
+wiring) separate from this domain-level module.
+
+Both implementations share the same duck-typed interface:
+
+    save_state(state)   load_state(run_id)   all_states()
+    save_result(result) load_result(run_id)  has_result(run_id)
+
+``RunOrchestrator`` holds a reference typed as ``RunRepository`` but accepts
+either implementation; it does not need to change when the concrete class
+behind the reference changes — that is the point of this interface.
 """
 
 from __future__ import annotations

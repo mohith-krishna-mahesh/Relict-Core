@@ -19,6 +19,7 @@ dependencies = [
     "numpy",
     "duckdb",
     "huggingface-hub",
+    "sse-starlette",
 ]
 
 [project.optional-dependencies]
