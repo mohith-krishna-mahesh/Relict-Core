@@ -51,16 +51,15 @@ from app.run_manager.stubs import (
 # ---------------------------------------------------------------------------
 
 _VALID_BODY: dict = {
-    "project": {
-        "project_id": "test-proj-stream-001",
-        "species": "Canis lupus",
-        "scope": "de-extinction",
-        "objective": "Make the coat white.",
-    },
-    "run": {
+    "species": "Canis lupus",
+    "research_objective": "Make the coat white.",
+    "candidate_genes": [],
+    "constraints": {
         "max_edits": 3,
-        "strategy": "minimal",
+        "preserve_fertility": False,
+        "maximize_diversity": False,
     },
+    "presets": ["minimal"],
 }
 
 
@@ -164,20 +163,62 @@ def _collect_sse_events(client: TestClient, run_id: str) -> list[dict]:
 @pytest.fixture()
 def success_client_and_run_id() -> Generator[tuple[TestClient, str], None, None]:
     """
-    Fixture that submits a successful run and yields ``(client, run_id)``.
+    Fixture that runs a successful pipeline and yields ``(client, run_id)``.
 
-    The client has DI overrides wired for orchestrator, repository, and
-    event bus so the SSE stream is populated with real events from a real
-    (stub-backed) run.
+    Phase 2E compatibility note
+    ---------------------------
+    ``POST /v1/runs`` now returns immediately (async dispatch).  The stream
+    tests require the pipeline to be **complete** before the SSE client opens
+    the connection (the bus replays buffered history).  To ensure this, the
+    fixture runs the orchestrator directly via ``asyncio.run()`` rather than
+    going through the HTTP submission endpoint.
+
+    The ``run_id`` yielded is the orchestrator's own internal UUID (from the
+    returned ``RunResult``), which is the same ID the event bus used when
+    publishing events.  The repository state is saved under this same ID so
+    the stream endpoint's ``load_state(run_id)`` succeeds.
+
+    This matches the original Phase 2C fixture behaviour (pipeline inline
+    before stream opens) while being compatible with the async dispatch route.
     """
+    import asyncio
+
+    from app.models.requests import ProjectContext, RunConfiguration, Scope, StrategyMode
+    from app.models.run_state import RunState
+
     orch, repo, bus = _make_orchestrator_with_bus()
     _override_all(orch, repo, bus)
+
+    # Build minimal internal models (mirrors route logic)
+    project = ProjectContext(
+        project_id="stream-test-project",
+        species="Canis lupus",
+        scope=Scope.DE_EXTINCTION,
+        objective="Make the coat white.",
+    )
+    run_config = RunConfiguration(
+        candidate_genes=[],
+        max_edits=3,
+        constraints=[],
+        strategy=StrategyMode.MINIMAL,
+    )
+
+    # Run pipeline synchronously so bus is fully populated before stream opens.
+    # The orchestrator publishes events under its own internal run_id and also
+    # saves state to the repo under that same run_id.
+    internal_result = asyncio.run(orch.execute(project, run_config))
+    orch_run_id = internal_result.run_id
+
+    # Ensure state is present in the repository (orchestrator already saved it,
+    # but save_state is idempotent -- this is a safety net).
+    repo.save_state(RunState(run_id=orch_run_id, status=internal_result.status))
+
     tc = TestClient(app)
-    post_resp = tc.post("/v1/runs", json=_VALID_BODY)
-    assert post_resp.status_code == 200
-    run_id = post_resp.json()["run_id"]
-    yield tc, run_id
+    yield tc, orch_run_id
     _clear()
+
+
+
 
 
 # ===========================================================================
@@ -360,14 +401,33 @@ class TestStreamFailedRun:
     """
 
     def setup_method(self) -> None:
+        import asyncio
+
+        from app.models.requests import ProjectContext, RunConfiguration, Scope, StrategyMode
+        from app.models.run_state import RunState
+
         orch, repo, bus = _make_orchestrator_with_bus(
             retriever=StubEvidenceRetriever(return_empty=True)
         )
         _override_all(orch, repo, bus)
+
+        project = ProjectContext(
+            project_id="stream-test-fail-project",
+            species="Canis lupus",
+            scope=Scope.DE_EXTINCTION,
+            objective="Make the coat white.",
+        )
+        run_config = RunConfiguration(
+            candidate_genes=[],
+            max_edits=3,
+            constraints=[],
+            strategy=StrategyMode.MINIMAL,
+        )
+
+        internal_result = asyncio.run(orch.execute(project, run_config))
+        self._run_id = internal_result.run_id
+        repo.save_state(RunState(run_id=self._run_id, status=internal_result.status))
         self._tc = TestClient(app)
-        post_resp = self._tc.post("/v1/runs", json=_VALID_BODY)
-        assert post_resp.status_code == 200
-        self._run_id = post_resp.json()["run_id"]
 
     def teardown_method(self) -> None:
         _clear()
@@ -414,24 +474,40 @@ class TestStreamTimeoutRun:
     """
 
     def setup_method(self) -> None:
+        import asyncio
+        import time
+
+        from app.models.requests import ProjectContext, RunConfiguration, Scope, StrategyMode
+        from app.models.run_state import RunState
+
         orch, repo, bus = _make_orchestrator_with_bus()
         orch._run_timeout_seconds = 0  # Instant timeout
         _override_all(orch, repo, bus)
 
-        self._tc = TestClient(app)
-
-        import time
+        project = ProjectContext(
+            project_id="stream-test-timeout-project",
+            species="Canis lupus",
+            scope=Scope.DE_EXTINCTION,
+            objective="Make the coat white.",
+        )
+        run_config = RunConfiguration(
+            candidate_genes=[],
+            max_edits=3,
+            constraints=[],
+            strategy=StrategyMode.MINIMAL,
+        )
 
         original_monotonic = time.monotonic
 
         try:
             time.monotonic = lambda: original_monotonic() + 1
-            post_resp = self._tc.post("/v1/runs", json=_VALID_BODY)
+            internal_result = asyncio.run(orch.execute(project, run_config))
         finally:
             time.monotonic = original_monotonic
 
-        assert post_resp.status_code == 200
-        self._run_id = post_resp.json()["run_id"]
+        self._run_id = internal_result.run_id
+        repo.save_state(RunState(run_id=self._run_id, status=internal_result.status))
+        self._tc = TestClient(app)
 
     def teardown_method(self) -> None:
         _clear()

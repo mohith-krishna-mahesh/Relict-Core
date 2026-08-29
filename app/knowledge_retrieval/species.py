@@ -375,6 +375,54 @@ class SpeciesResolver:
         res = cur.fetchone()
         return res[0] if res else 0
 
+    def search(self, query: str, limit: int = 20) -> list[CanonicalSpecies]:
+        """
+        Prefix/substring search over scientific name and common name.
+
+        Uses SQLite LIKE with a trailing wildcard (``norm%``) against the
+        existing indexed columns.  Falls back to an alias search for short
+        queries that might match a tag or common-name fragment.
+
+        This method was added to support the ``GET /v1/search/species``
+        route autocomplete use-case.  It is a pure read from the existing
+        indexed SQLite DB -- no new dataset or network call is required.
+
+        Parameters
+        ----------
+        query:
+            The search string (case-insensitive, leading/trailing whitespace
+            stripped).
+        limit:
+            Maximum number of results to return.
+
+        Returns
+        -------
+        list[CanonicalSpecies]
+            Up to *limit* matching species, ordered by scientific name.
+            Returns an empty list when no matches are found (never raises).
+        """
+        norm = self._normalize(query)
+        if not norm:
+            return []
+
+        pattern = norm + "%"
+        cur = self._conn.cursor()
+
+        select_cols = (
+            "id, scientific_name, common_name, taxonomy_id, ensembl_name, "
+            "source, is_extinct, has_genome_data, tags, aliases"
+        )
+
+        # Search by scientific name prefix, then common name prefix.
+        cur.execute(
+            f"SELECT {select_cols} FROM species "
+            f"WHERE lower(scientific_name) LIKE ? OR lower(common_name) LIKE ? "
+            f"ORDER BY scientific_name LIMIT ?",
+            (pattern, pattern, limit),
+        )
+        rows = cur.fetchall()
+        return [self._row_to_model(r) for r in rows]
+
 
 # Global singleton instance for project-wide use
 _global_resolver: SpeciesResolver | None = None

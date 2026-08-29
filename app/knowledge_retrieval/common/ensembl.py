@@ -124,3 +124,28 @@ class EnsemblClient(BaseClient):
                 logger.warning("Ensembl Error for %s: %s", target, e)
 
         return records
+
+    async def lookup_symbol(self, species_ensembl_name: str, symbol: str) -> dict | None:
+        """
+        Look up a gene symbol via Ensembl REST API (exact match only).
+        Returns the parsed JSON dictionary, or None on failure (e.g. 404).
+        """
+        url = f"{self.BASE_URL}/lookup/symbol/{species_ensembl_name}/{symbol}"
+        headers = {"Accept": "application/json"}
+        try:
+            res = await self._get(url, headers=headers)
+            data = self._safe_json(res)
+            if isinstance(data, dict):
+                return data
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code != 404:
+                logger.warning(
+                    "Ensembl lookup error for %s in %s: %s",
+                    symbol, species_ensembl_name, e
+                )
+        except Exception as e:
+            logger.warning(
+                "Ensembl lookup error for %s in %s: %s",
+                symbol, species_ensembl_name, e
+            )
+        return None

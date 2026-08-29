@@ -19,14 +19,14 @@ On shutdown:
 Router mounting
 ---------------
 All routes are registered under the ``/v1`` prefix:
+  POST /v1/auth/verify
+  GET  /v1/search/species
+  GET  /v1/search/genes
   GET  /v1/health
   GET  /v1/system
   POST /v1/runs
   GET  /v1/runs/{run_id}
-  GET  /v1/runs/{run_id}/stream   ← Phase 2C
-
-The ``auth`` and ``search`` route files remain stubs and are intentionally
-not mounted until their Phase owners implement them.
+  GET  /v1/runs/{run_id}/stream   <- Phase 2C
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ from fastapi import FastAPI
 from app.cache.sqlite_client import ensure_schema, open_connection
 from app.cache.sqlite_repository import SQLiteRunRepository
 from app.config import settings
-from app.routes import health, runs, system
+from app.routes import auth, health, runs, search, system
 from app.routes import stream as stream_routes
 from app.run_manager.events import InMemoryRunEventBus
 from app.run_manager.orchestrator import RunOrchestrator
@@ -110,5 +110,7 @@ app = FastAPI(
 
 app.include_router(health.router, prefix="/v1")
 app.include_router(system.router, prefix="/v1")
+app.include_router(auth.router, prefix="/v1")
+app.include_router(search.router, prefix="/v1")
 app.include_router(runs.router, prefix="/v1")
 app.include_router(stream_routes.router, prefix="/v1")

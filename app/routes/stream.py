@@ -46,7 +46,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sse_starlette.event import ServerSentEvent
 from sse_starlette.sse import EventSourceResponse
 
-from app.dependencies import get_event_bus, get_repository
+from app.dependencies import get_bearer_token, get_event_bus, get_repository
 from app.run_manager.events import InMemoryRunEventBus, RunEvent
 from app.run_manager.repository import RunNotFoundError, RunRepository
 
@@ -103,6 +103,7 @@ async def stream_run(
     run_id: str,
     repository: RunRepository = Depends(get_repository),  # noqa: B008
     event_bus: InMemoryRunEventBus = Depends(get_event_bus),  # noqa: B008
+    _token: str = Depends(get_bearer_token),  # noqa: B008
 ) -> EventSourceResponse:
     """Stream ``RunEvent`` objects for *run_id* as Server-Sent Events."""
     # Validate run_id existence using the same repository the GET endpoint uses.

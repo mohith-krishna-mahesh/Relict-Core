@@ -66,14 +66,17 @@ class Settings(BaseSettings):
     must override them via environment variables.
 
     Environment variable mapping (case-insensitive):
-        RELICT_API_HOST                 → api_host
-        RELICT_API_PORT                 → api_port
-        RELICT_DEBUG                    → debug
-        RELICT_DATABASE_PATH            → database_path
-        RELICT_MAX_CONCURRENT_RUNS      → max_concurrent_runs
-        RELICT_RUN_TIMEOUT_SECONDS      → run_timeout_seconds
-        RELICT_MODEL_CLIENT_URL         → model_client_url
+        RELICT_API_HOST                     → api_host
+        RELICT_API_PORT                     → api_port
+        RELICT_DEBUG                        → debug
+        RELICT_DATABASE_PATH                → database_path
+        RELICT_MAX_CONCURRENT_RUNS          → max_concurrent_runs
+        RELICT_RUN_TIMEOUT_SECONDS          → run_timeout_seconds
+        RELICT_MODEL_CLIENT_URL             → model_client_url
         RELICT_MODEL_CLIENT_TIMEOUT_SECONDS → model_client_timeout_seconds
+        RELICT_API_TOKENS                   → api_tokens (JSON list or space-separated)
+        RELICT_AUTH_ENABLED                 → auth_enabled (default False)
+        RELICT_INSTANCE_TYPE                → instance_type
     """
 
     model_config = SettingsConfigDict(
@@ -143,6 +146,38 @@ class Settings(BaseSettings):
         default=120,
         ge=1,
         description="HTTP timeout in seconds for requests sent to the model client.",
+    )
+
+    # ------------------------------------------------------------------
+    # Auth — bearer token validation
+    # ------------------------------------------------------------------
+    api_tokens: list[str] = Field(
+        default_factory=list,
+        description=(
+            "List of valid bearer tokens accepted by the API. "
+            "Set via RELICT_API_TOKENS as a JSON array or space-separated string. "
+            "Empty list means no tokens are configured (all requests rejected when "
+            "auth_enabled=True)."
+        ),
+    )
+    auth_enabled: bool = Field(
+        default=False,
+        description=(
+            "Enable bearer-token authentication on all /v1 endpoints. "
+            "Defaults to False for local development and test environments. "
+            "Must be True in production deployments."
+        ),
+    )
+
+    # ------------------------------------------------------------------
+    # Instance metadata
+    # ------------------------------------------------------------------
+    instance_type: str = Field(
+        default="relict-core-standard",
+        description=(
+            "Human-readable deployment type label returned in POST /v1/auth/verify. "
+            "Override via RELICT_INSTANCE_TYPE in production."
+        ),
     )
 
 

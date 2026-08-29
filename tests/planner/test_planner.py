@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from app.models.evidence import EffectDirection, EffectType, EvidenceEffect, EvidenceRecord
 from app.models.requests import StructuredObjective
-
 from app.planner.graph_builder import GraphBuilder
 from app.planner.search import SearchConfig, StrategySearch
 
