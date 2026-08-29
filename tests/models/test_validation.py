@@ -46,8 +46,8 @@ class TestValidationResult:
         # truthiness rules, so we use a list — an unconvertible type — to
         # ensure ValidationError is actually raised.
         with pytest.raises(ValidationError):
-            ValidationResult(valid=["not", "a", "bool"])  # type: ignore[arg-type]
+            ValidationResult(valid=["not", "a", "bool"])  # type: ignore
 
     def test_wrong_violations_type_raises(self) -> None:
         with pytest.raises(ValidationError):
-            ValidationResult(valid=False, violations="not a list")  # type: ignore[arg-type]
+            ValidationResult(valid=False, violations="not a list")  # type: ignore

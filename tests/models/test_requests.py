@@ -44,7 +44,12 @@ class TestScope:
 
     def test_invalid_scope_raises(self) -> None:
         with pytest.raises((ValueError, ValidationError)):
-            ProjectContext(project_id="p1", species="X", scope="unknown", objective="y")
+            ProjectContext(
+                project_id="p1",
+                species="X",
+                scope="unknown",  # type: ignore
+                objective="y",
+            )
 
 
 class TestAmbiguityStatus:
@@ -84,11 +89,18 @@ class TestProjectContext:
 
     def test_missing_species_raises(self) -> None:
         with pytest.raises(ValidationError):
-            ProjectContext(project_id="p", scope=Scope.CONSERVATION, objective="x")  # type: ignore[call-arg]
+            ProjectContext(  # type: ignore[call-arg]
+                project_id="p", scope=Scope.CONSERVATION, objective="x"
+            )
 
     def test_invalid_scope_string_raises(self) -> None:
         with pytest.raises((ValueError, ValidationError)):
-            ProjectContext(project_id="p", species="X", scope="invalid", objective="y")  # type: ignore[arg-type]
+            ProjectContext(
+                project_id="p",
+                species="X",
+                scope="invalid",  # type: ignore
+                objective="y",
+            )
 
 
 # ---------------------------------------------------------------------------

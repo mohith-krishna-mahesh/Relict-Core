@@ -1,0 +1,15 @@
+{
+  "typeCheckingMode": "standard",
+  "pythonVersion": "3.11",
+  "include": ["app", "tests"],
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "reportExplicitAny": false,
+  "reportImplicitOverride": false,
+  "reportUnusedCallResult": false,
+  "reportUnannotatedClassAttribute": false,
+  "reportAny": false
+}
