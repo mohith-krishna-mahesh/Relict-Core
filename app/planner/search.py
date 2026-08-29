@@ -6,8 +6,13 @@ from itertools import combinations
 from typing import Any
 
 import networkx as nx
-from constraints import ConstraintEvaluator, ConstraintResult
-from graph_builder import EvidenceGraph
+
+try:
+    from app.planner.constraints import ConstraintEvaluator, ConstraintResult
+    from app.planner.graph_builder import EvidenceGraph
+except ImportError:
+    from constraints import ConstraintEvaluator, ConstraintResult  # type: ignore[no-redef]
+    from graph_builder import EvidenceGraph  # type: ignore[no-redef]
 
 # =============================================================================
 # Strategy model
@@ -620,6 +625,7 @@ class StrategySearch:
         # ---------------------------------------------------------------------
 
         score = self._score_strategy(
+            graph=graph,
             selected_candidates=selected_candidates,
             target_nodes=target_nodes,
             covered_targets=covered_targets,
@@ -765,6 +771,7 @@ class StrategySearch:
 
     def _score_strategy(
         self,
+        graph: nx.MultiDiGraph,
         selected_candidates: list[str],
         target_nodes: set[str],
         covered_targets: set[str],
@@ -775,43 +782,60 @@ class StrategySearch:
         Calculate deterministic strategy score.
 
         Components:
-
             1. Objective coverage
-            2. Evidence strength
+            2. Evidence strength (with multi-source consensus)
             3. Constraint adjustment
-            4. Strategy-type preference
+            4. Directional trajectory alignment
+            5. Pleiotropy & specificity adjustment
+            6. Strategy-type preference (with disjoint path redundancy)
         """
 
         # ---------------------------------------------------------------------
-        # Coverage
+        # 1. Coverage
         # ---------------------------------------------------------------------
 
         coverage_ratio = len(covered_targets) / len(target_nodes)
-
         coverage_score = coverage_ratio * 100.0
 
         # ---------------------------------------------------------------------
-        # Evidence strength
+        # 2. Evidence strength
         # ---------------------------------------------------------------------
 
         if supporting_edges:
             evidence_score = sum(self._edge_score(edge) for edge in supporting_edges) / len(
                 supporting_edges
             )
-
             evidence_score *= 25.0
-
         else:
             evidence_score = 0.0
 
         # ---------------------------------------------------------------------
-        # Constraint score
+        # 3. Constraint score
         # ---------------------------------------------------------------------
 
         constraint_score = constraint_result.score_adjustment * 10.0
 
         # ---------------------------------------------------------------------
-        # Strategy preference
+        # 4. Directional trajectory alignment
+        # ---------------------------------------------------------------------
+
+        directional_score = self._evaluate_directional_alignment(
+            supporting_edges=supporting_edges,
+            desired_change=self._get_desired_change(),
+        )
+
+        # ---------------------------------------------------------------------
+        # 5. Pleiotropy & Off-target specificity penalty
+        # ---------------------------------------------------------------------
+
+        pleiotropy_penalty = self._calculate_pleiotropy_penalty(
+            graph=graph,
+            selected_candidates=selected_candidates,
+            target_nodes=target_nodes,
+        )
+
+        # ---------------------------------------------------------------------
+        # 6. Strategy preference & Redundancy
         # ---------------------------------------------------------------------
 
         strategy_adjustment = 0.0
@@ -821,15 +845,174 @@ class StrategySearch:
             strategy_adjustment -= len(selected_candidates) * 5.0
 
         elif self.strategy_type == "redundant":
-            # Reward multiple independent selected candidates.
-            #
-            # This does not claim biological redundancy automatically.
-            # It simply favours strategies with multiple routes/candidates
-            # when they provide additional target coverage.
-            if len(selected_candidates) > 1:
-                strategy_adjustment += len(selected_candidates) * 2.0
+            # Reward independent, parallel biological routes over single linear bottlenecks.
+            strategy_adjustment += self._calculate_redundancy_adjustment(
+                graph=graph,
+                selected_candidates=selected_candidates,
+                covered_targets=covered_targets,
+            )
 
-        return coverage_score + evidence_score + constraint_score + strategy_adjustment
+        return (
+            coverage_score
+            + evidence_score
+            + constraint_score
+            + directional_score
+            - pleiotropy_penalty
+            + strategy_adjustment
+        )
+
+    def _evaluate_directional_alignment(
+        self,
+        supporting_edges: list[dict[str, Any]],
+        desired_change: str | None,
+    ) -> float:
+        """
+        Evaluate directional alignment between candidate intervention paths
+        and objective desired_change.
+
+        Returns:
+          +5.0 if directional evidence supports the desired change trajectory
+          -10.0 if directional evidence directly opposes the desired change trajectory
+          0.0 if neutral or purely associative
+        """
+        if not desired_change or not supporting_edges:
+            return 0.0
+
+        desired_lower = desired_change.lower()
+        target_sign = 0
+        if any(
+            w in desired_lower
+            for w in (
+                "increase",
+                "enhance",
+                "higher",
+                "up",
+                "production",
+                "elevate",
+                "activate",
+                "boost",
+            )
+        ):
+            target_sign = 1
+        elif any(
+            w in desired_lower
+            for w in (
+                "decrease",
+                "reduce",
+                "lower",
+                "down",
+                "inhibit",
+                "suppress",
+                "silence",
+                "knockout",
+                "loss",
+                "abolish",
+            )
+        ):
+            target_sign = -1
+
+        if target_sign == 0:
+            return 0.0
+
+        path_signs: list[int] = []
+        for edge in supporting_edges:
+            effect = edge.get("effect")
+            if effect is None:
+                continue
+
+            eff_type = getattr(effect, "type", None) or (
+                effect.get("type") if isinstance(effect, dict) else None
+            )
+            eff_dir = getattr(effect, "direction", None) or (
+                effect.get("direction") if isinstance(effect, dict) else None
+            )
+
+            edge_sign = 0
+            if eff_dir:
+                dir_str = str(getattr(eff_dir, "value", eff_dir)).lower()
+                if dir_str == "increases":
+                    edge_sign = 1
+                elif dir_str == "decreases":
+                    edge_sign = -1
+
+            if edge_sign == 0 and eff_type:
+                type_str = str(getattr(eff_type, "value", eff_type)).lower()
+                if type_str in ("activation", "production", "expression", "gain_of_function"):
+                    edge_sign = 1
+                elif type_str in ("inhibition", "loss_of_function"):
+                    edge_sign = -1
+
+            if edge_sign != 0:
+                path_signs.append(edge_sign)
+
+        if not path_signs:
+            return 0.0
+
+        net_path_sign = 1
+        for s in path_signs:
+            net_path_sign *= s
+
+        if net_path_sign == target_sign:
+            return 5.0
+        elif net_path_sign == -target_sign:
+            return -10.0
+        return 0.0
+
+    def _calculate_pleiotropy_penalty(
+        self,
+        graph: nx.MultiDiGraph,
+        selected_candidates: list[str],
+        target_nodes: set[str],
+    ) -> float:
+        """
+        Calculate specificity penalty for candidate genes that are hyper-connected promiscuous hubs.
+        """
+        penalty = 0.0
+        for cand in selected_candidates:
+            if cand in graph:
+                neighbors = set(graph.predecessors(cand)) | set(graph.successors(cand))
+                non_target_neighbors = neighbors - target_nodes
+                if len(non_target_neighbors) > 15:
+                    penalty += min(5.0, (len(non_target_neighbors) - 15) * 0.2)
+        return min(penalty, 10.0)
+
+    def _calculate_redundancy_adjustment(
+        self,
+        graph: nx.MultiDiGraph,
+        selected_candidates: list[str],
+        covered_targets: set[str],
+    ) -> float:
+        """
+        Calculate redundancy score for multiple candidate edits.
+        Rewards candidates that reach targets via independent/disjoint intermediate paths.
+        """
+        if len(selected_candidates) <= 1:
+            return 0.0
+
+        intermediate_sets: list[set[str]] = []
+        for cand in selected_candidates:
+            cand_intermediates: set[str] = set()
+            for tgt in covered_targets:
+                path = self._shortest_path(graph, cand, tgt)
+                if path and len(path) > 2:
+                    cand_intermediates.update(path[1:-1])
+            intermediate_sets.append(cand_intermediates)
+
+        is_disjoint = True
+        for i in range(len(intermediate_sets)):
+            for j in range(i + 1, len(intermediate_sets)):
+                if (
+                    intermediate_sets[i]
+                    and intermediate_sets[j]
+                    and (intermediate_sets[i] & intermediate_sets[j])
+                ):
+                    is_disjoint = False
+                    break
+
+        if is_disjoint:
+            return len(selected_candidates) * 4.0
+        else:
+            return len(selected_candidates) * 2.0
 
     # =========================================================================
     # Uncertainty
@@ -1120,43 +1303,51 @@ class StrategySearch:
         if not candidates:
             return None
 
-        return max(
+        best = max(
             candidates,
             key=self._edge_score,
         )
+
+        # If multiple independent source edges connect this pair, compute Noisy-OR consensus
+        if len(candidates) > 1:
+            prob_failure = 1.0
+            for c in candidates:
+                s = self._raw_score(c)
+                prob_failure *= 1.0 - 0.7 * s
+            consensus_score = max(self._raw_score(best), min(1.0, 1.0 - prob_failure))
+            best = dict(best)
+            best["_consensus_score"] = consensus_score
+            best["_corroborating_sources_count"] = len(candidates)
+
+        return best
 
     # =========================================================================
     # Evidence utilities
     # =========================================================================
 
     @staticmethod
+    def _raw_score(edge: dict[str, Any]) -> float:
+        value = edge.get("source_score")
+        if value is None:
+            return 0.5
+        try:
+            score = float(value)
+        except (TypeError, ValueError):
+            return 0.5
+        return max(0.0, min(score, 1.0))
+
+    @classmethod
     def _edge_score(
+        cls,
         edge: dict[str, Any],
     ) -> float:
         """
-        Read source evidence score.
-
+        Read source evidence score or multi-source consensus score.
         Missing/invalid scores are treated as 0.5 neutral confidence.
         """
-
-        value = edge.get("source_score")
-
-        if value is None:
-            return 0.5
-
-        try:
-            score = float(value)
-
-        except (
-            TypeError,
-            ValueError,
-        ):
-            return 0.5
-
-        return max(
-            0.0,
-            min(score, 1.0),
-        )
+        if "_consensus_score" in edge:
+            return float(edge["_consensus_score"])
+        return cls._raw_score(edge)
 
     # =========================================================================
     # Deduplication / ranking

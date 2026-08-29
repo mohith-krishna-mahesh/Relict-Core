@@ -43,7 +43,8 @@ import json
 from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, Depends, HTTPException
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent
+from sse_starlette.event import ServerSentEvent
+from sse_starlette.sse import EventSourceResponse
 
 from app.dependencies import get_event_bus, get_repository
 from app.run_manager.events import InMemoryRunEventBus, RunEvent
