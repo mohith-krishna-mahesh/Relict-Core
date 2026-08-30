@@ -106,7 +106,7 @@ class SearchConfig:
 
     max_strategies: int = 10
 
-    max_candidate_pool: int = 30
+    max_candidate_pool: int = 15
 
     max_target_distance: int = 2
 
