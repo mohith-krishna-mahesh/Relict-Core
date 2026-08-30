@@ -38,6 +38,11 @@ app/core_model/weights/*
 # ────────────────────────────────────────────────
 data/*
 !data/.gitkeep
+!data/species/
+!data/species/species.csv.gz
+data/species/species.csv
+data/species/*.db
+data/species/*.tmp
 
 # ────────────────────────────────────────────────
 # Local databases

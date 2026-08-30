@@ -19,7 +19,9 @@ dependencies = [
     "numpy",
     "duckdb",
     "huggingface-hub",
+    "sse-starlette",
 ]
+
 
 [project.optional-dependencies]
 dev = [
@@ -59,5 +61,20 @@ indent-style = "space"
 python_version = "3.11"
 strict = true
 
+[tool.pyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.11"
+reportMissingImports = false
+reportMissingTypeStubs = false
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.11"
+reportMissingImports = false
+reportMissingTypeStubs = false
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

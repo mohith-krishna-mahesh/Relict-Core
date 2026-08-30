@@ -60,14 +60,15 @@ def run_eval() -> None:
     b_errors = sum(1 for r in results if "baseline_error" in r)
     f_errors = sum(1 for r in results if "finetuned_error" in r)
 
-    print(f"\n{'='*60}")
-    print(f"Total examples: {total}")
-    print(f"Baseline  â€” ambiguity_status matches: {b_passed}/{total}  (parse errors: {b_errors})")
-    print(f"Finetuned â€” ambiguity_status matches: {f_passed}/{total}  (parse errors: {f_errors})")
+    print(f"\n{'='*50}")
+    print(f"Total: {total}")
+    print(f"Baseline  — passed: {b_passed}/{total} | parse errors: {b_errors}")
+    print(f"Finetuned — passed: {f_passed}/{total} | parse errors: {f_errors}")
     print(f"Delta: {f_passed - b_passed:+d}")
 
     with open(RESULTS_PATH, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
+
     print(f"\nFull results written to {RESULTS_PATH}")
 
 

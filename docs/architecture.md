@@ -998,7 +998,6 @@ PARTIAL_ANALYSIS
 
 `PARTIAL_ANALYSIS` does not invalidate an otherwise successful Planner + Validator result. It indicates that one or more optional Post-Plan outputs were unavailable.
 
-
 # 4. End-to-End Pipeline
 
 The complete execution flow is:
@@ -1146,30 +1145,29 @@ Core API
 
 Failures short-circuit the pipeline at the stage where they occur. Post-Plan Analysis never runs for an unvalidated or validation-failed strategy.
 
-
 # 5. Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Core | Python |
-| Open-weight model | Qwen3-4B-Instruct |
-| Fine-tuning | PyTorch, Transformers, PEFT/LoRA, QLoRA |
-| Model serving | vLLM, Ollama, or llama.cpp |
-| API | FastAPI |
-| Validation | Pydantic |
-| HTTP | httpx |
-| Async execution | asyncio |
+| Layer             | Technology                              |
+| ----------------- | --------------------------------------- |
+| Core              | Python                                  |
+| Open-weight model | Qwen3-4B-Instruct                       |
+| Fine-tuning       | PyTorch, Transformers, PEFT/LoRA, QLoRA |
+| Model serving     | vLLM, Ollama, or llama.cpp              |
+| API               | FastAPI                                 |
+| Validation        | Pydantic                                |
+| HTTP              | httpx                                   |
+| Async execution   | asyncio                                 |
 | Runtime / workers | Persistent worker processes / job queue |
-| Graph | NetworkX |
-| Cache | SQLite |
-| Interactions | STRING |
-| Pathways | KEGG, Reactome, WikiPathways |
-| Gene/protein | Ensembl, UniProt, NCBI |
-| Evolution | Ensembl Compara, BLAST, TimeTree |
-| Guide analysis | CRISPOR, CHOPCHOP |
-| Sequence/risk | Evo 2 |
-| Streaming | Server-Sent Events |
-| API contract | OpenAPI |
+| Graph             | NetworkX                                |
+| Cache             | SQLite                                  |
+| Interactions      | STRING                                  |
+| Pathways          | KEGG, Reactome, WikiPathways            |
+| Gene/protein      | Ensembl, UniProt, NCBI                  |
+| Evolution         | Ensembl Compara, BLAST, TimeTree        |
+| Guide analysis    | CRISPOR, CHOPCHOP                       |
+| Sequence/risk     | Evo 2                                   |
+| Streaming         | Server-Sent Events                      |
+| API contract      | OpenAPI                                 |
 
 ---
 
@@ -1293,7 +1291,7 @@ Unknown evidence is not treated as proof of safety, compatibility, conflict, or 
                     ┌─────────────────┐
                     │   Run Manager   │
                     │ Persistent      │
-                    │ Orchestrator   │
+                    │ Orchestrator    │
                     └───────┬─────────┘
                             │
                   continuously orchestrates
@@ -1344,7 +1342,6 @@ Unknown evidence is not treated as proof of safety, compatibility, conflict, or 
 ```
 
 > **The Core Model interprets. Knowledge Retrieval supplies evidence. The Planner computes. The Validator verifies. Post-Plan Analysis evaluates and explains. The Run Manager orchestrates execution. The Core API exposes the system.**
-
 
 ---
 
