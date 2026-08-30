@@ -29,12 +29,28 @@ class TimeTreeClient(BaseClient):
         if not species or not targets:
             return records
 
-        for target in targets:
-            if target.lower() == species.lower():
-                continue
+        # TimeTree only accepts pairwise species comparisons (e.g. "Pan troglodytes" vs "Gorilla gorilla")
+        # Filter out gene symbols, pathways, and single-word keywords
+        candidate_taxa = []
+        if context and context.get("related_species"):
+            candidate_taxa.append(context["related_species"])
 
+        for target in targets:
+            words = target.strip().split()
+            # Valid binomial species name has exactly 2 words, begins with uppercase letter, and has no digits/punctuation
+            if (
+                len(words) == 2
+                and words[0][0].isupper()
+                and words[1].islower()
+                and words[0].isalpha()
+                and words[1].isalpha()
+                and target.lower() != species.lower()
+            ):
+                candidate_taxa.append(target)
+
+        for taxon in set(candidate_taxa):
             try:
-                raw_resp = await self._get(f"{self.BASE_URL}/pairwise/{target}/{species}")
+                raw_resp = await self._get(f"{self.BASE_URL}/pairwise/{taxon}/{species}")
                 resp = self._safe_json(raw_resp)
                 if isinstance(resp, dict) and "time" in resp:
                     est_time = resp.get("time")
@@ -45,19 +61,19 @@ class TimeTreeClient(BaseClient):
 
                     records.append(
                         self._make_record(
-                            entity_a=target,
+                            entity_a=taxon,
                             relationship="species_divergence",
                             entity_b=species,
-                            source_id=f"{target}_{species}",
+                            source_id=f"{taxon}_{species}",
                             source_score=score,
                             endpoint=f"{self.BASE_URL}/pairwise",
-                            query_context={"taxon_a": target, "taxon_b": species},
+                            query_context={"taxon_a": taxon, "taxon_b": species},
                             metadata=resp,
                         )
                     )
             except httpx.HTTPError as e:
-                logger.error("HTTP Error querying TimeTree for %s vs %s: %s", target, species, e)
+                logger.warning("HTTP Error querying TimeTree for %s vs %s: %s", taxon, species, e)
             except Exception as e:
-                logger.error("Error querying TimeTree for %s vs %s: %s", target, species, e)
+                logger.warning("Error querying TimeTree for %s vs %s: %s", taxon, species, e)
 
         return records

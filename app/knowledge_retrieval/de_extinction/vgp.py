@@ -25,28 +25,30 @@ class VGPClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        if not species:
+            return records
 
-        for target in targets:
-            query_species = species or target
-            url = f"{self.BASE_URL}/genomeark.json"
+        url = f"{self.BASE_URL}/genomeark.json"
 
-            try:
-                response = await self._get(url)
-                data = self._safe_json(response)
-                if query_species in str(data):
-                    records.append(
-                        self._make_record(
-                            entity_a=query_species,
-                            relationship="species_assembly",
-                            entity_b="VGP Assembly",
-                            source_id=f"vgp_{query_species.replace(' ', '_')}",
-                            source_score=1.0,
-                            endpoint=url,
-                            query_context={"target": target, "species": species},
-                            metadata={"status": "available", "url": url},
-                        )
+        try:
+            response = await self._get(url)
+            data = self._safe_json(response)
+            if species in str(data):
+                records.append(
+                    self._make_record(
+                        entity_a=species,
+                        relationship="species_assembly",
+                        entity_b="VGP Assembly",
+                        source_id=f"vgp_{species.replace(' ', '_')}",
+                        source_score=1.0,
+                        endpoint=url,
+                        query_context={"species": species},
+                        metadata={"status": "available", "url": url},
                     )
-            except httpx.HTTPError as e:
-                logger.warning(f"Error querying VGP for {query_species}: {e}")
+                )
+        except httpx.HTTPError as e:
+            logger.warning(f"Error querying VGP for {species}: {e}")
+        except Exception as e:
+            logger.warning(f"Unexpected error in VGP query for {species}: {e}")
 
         return records

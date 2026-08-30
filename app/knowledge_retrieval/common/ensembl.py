@@ -32,6 +32,14 @@ class EnsemblClient(BaseClient):
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
         for target in targets:
+            # Ensembl symbol lookup expects single clean gene symbols (no spaces or multi-word phrases)
+            if (
+                " " in target
+                or len(target) > 20
+                or not target.replace("-", "").replace("_", "").replace(";", "").isalnum()
+            ):
+                continue
+
             try:
                 # 1. Gene Symbol Lookup
                 lookup_url = f"{self.BASE_URL}/lookup/symbol/{species_name}/{target}"
