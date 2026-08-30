@@ -72,8 +72,8 @@ class TimeTreeClient(BaseClient):
                         )
                     )
             except httpx.HTTPError as e:
-                logger.warning("HTTP Error querying TimeTree for %s vs %s: %s", taxon, species, e)
+                logger.debug("HTTP Error querying TimeTree for %s vs %s: %s", taxon, species, e)
             except Exception as e:
-                logger.warning("Error querying TimeTree for %s vs %s: %s", taxon, species, e)
+                logger.debug("Error querying TimeTree for %s vs %s: %s", taxon, species, e)
 
         return records

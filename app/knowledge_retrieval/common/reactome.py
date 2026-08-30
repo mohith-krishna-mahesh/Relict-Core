@@ -11,6 +11,22 @@ from app.models.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
 
+REACTOME_SUPPORTED_SPECIES: set[str] = {
+    "Homo sapiens",
+    "Mus musculus",
+    "Rattus norvegicus",
+    "Danio rerio",
+    "Drosophila melanogaster",
+    "Caenorhabditis elegans",
+    "Saccharomyces cerevisiae",
+    "Sus scrofa",
+    "Gallus gallus",
+    "Oryza sativa",
+    "Arabidopsis thaliana",
+    "Canis lupus familiaris",
+    "Bos taurus",
+}
+
 
 class ReactomeClient(BaseClient):
     BASE_URL = "https://reactome.org/ContentService"
@@ -26,9 +42,22 @@ class ReactomeClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        species_name = species or "Homo sapiens"
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
 
-        for target in targets:
+        # Reactome is indexed primarily for model organisms; fallback to Homo sapiens for primates/mammals
+        species_name = "Homo sapiens"
+        if species and species in REACTOME_SUPPORTED_SPECIES:
+            species_name = species
+
+        # Only query Reactome for clean gene symbols or top candidates
+        clean_targets = [
+            t
+            for t in targets
+            if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10) or len(t.split()) <= 2)
+            and len(t) <= 25
+        ][:3]
+
+        for target in clean_targets:
             try:
                 # 1. Search Reactome entities with caching
                 search_res = await self._get(
@@ -40,8 +69,8 @@ class ReactomeClient(BaseClient):
                 results = search_data.get("results", []) if isinstance(search_data, dict) else []
                 entries = results[0].get("entries", []) if results else []
 
-                # Limit to top 5 relevant entries to avoid hundreds of sequential requests
-                top_entries = entries[:5]
+                # Limit to top 3 relevant entries
+                top_entries = entries[:3]
 
                 async def _fetch_pathways(st_id: str) -> list[dict[str, Any]]:
                     path_url = f"{self.BASE_URL}/data/pathways/low/entity/{st_id}"
@@ -76,8 +105,8 @@ class ReactomeClient(BaseClient):
                                     )
                                 )
             except httpx.HTTPError as e:
-                logger.warning(f"Reactome HTTP Error for {target}: {e}")
+                logger.debug("Reactome HTTP Error for %s: %s", target, e)
             except Exception as e:
-                logger.warning(f"Reactome Error for {target}: {e}")
+                logger.debug("Reactome Error for %s: %s", target, e)
 
         return records

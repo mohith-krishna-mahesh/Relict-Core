@@ -92,8 +92,8 @@ class GBIFClient(BaseClient):
                                     )
                                 )
             except httpx.HTTPError as e:
-                logger.warning("HTTP Error querying GBIF for %s: %s", query_term, e)
+                logger.debug("HTTP Error querying GBIF for %s: %s", query_term, e)
             except Exception as e:
-                logger.warning("Error querying GBIF for %s: %s", query_term, e)
+                logger.debug("Error querying GBIF for %s: %s", query_term, e)
 
         return records

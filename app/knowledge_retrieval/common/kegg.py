@@ -73,8 +73,8 @@ class KeggClient(BaseClient):
                                 )
                             )
             except httpx.HTTPError as e:
-                logger.warning(f"KEGG HTTP Error for {target}: {e}")
+                logger.debug("KEGG HTTP Error for %s: %s", target, e)
             except Exception as e:
-                logger.warning(f"KEGG Error for {target}: {e}")
+                logger.debug("KEGG Error for %s: %s", target, e)
 
         return records
