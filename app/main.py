@@ -39,43 +39,42 @@ from fastapi import FastAPI
 from app.cache.sqlite_client import ensure_schema, open_connection
 from app.cache.sqlite_repository import SQLiteRunRepository
 from app.config import settings
+from app.core_model.resolver import CoreModelObjectiveResolver
+from app.knowledge_retrieval.retrieval import RetrievalOrchestrator
+from app.planner.adapter import ProductionStrategicPlanner
+from app.post_plan.analyzer import DefaultPostPlanAnalyzer
 from app.routes import auth, health, runs, search, system
 from app.routes import stream as stream_routes
 from app.run_manager.events import InMemoryRunEventBus
 from app.run_manager.orchestrator import RunOrchestrator
-from app.run_manager.stubs import (
-    StubEvidenceRetriever,
-    StubObjectiveResolver,
-    StubPostPlanAnalyzer,
-    StubStrategicPlanner,
-    StubStrategyValidator,
-)
+from app.validator.plan_validator import PlanValidator
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
-    Application lifespan: open the SQLite store and build the orchestrator.
-
-    Phase 2D: the in-memory ``RunRepository`` is replaced by
-    ``SQLiteRunRepository`` backed by ``settings.database_path``.  The
-    schema is created idempotently on every startup so no manual migration
-    step is needed.
-
-    Replace stubs with real implementations stage-by-stage in Phases 3–5
-    without modifying this file.
+    Application lifespan: open the SQLite store and build the orchestrator
+    with full production pipeline stages.
     """
     db_conn = open_connection(settings.database_path)
     ensure_schema(db_conn)
 
     repository = SQLiteRunRepository(db_conn)
     event_bus = InMemoryRunEventBus()
+
+    # Wire real production stage implementations
+    resolver = CoreModelObjectiveResolver()
+    retriever = RetrievalOrchestrator()
+    planner = ProductionStrategicPlanner()
+    validator = PlanValidator()
+    analyzer = DefaultPostPlanAnalyzer()
+
     orchestrator = RunOrchestrator(
-        resolver=StubObjectiveResolver(),
-        retriever=StubEvidenceRetriever(),
-        planner=StubStrategicPlanner(),
-        validator=StubStrategyValidator(),
-        analyzer=StubPostPlanAnalyzer(),
+        resolver=resolver,
+        retriever=retriever,
+        planner=planner,
+        validator=validator,
+        analyzer=analyzer,
         repository=repository,
         event_bus=event_bus,
     )

@@ -34,9 +34,7 @@ def _load():
         return _model, _tokenizer
 
     if not ADAPTER_DIR.exists():
-        raise FileNotFoundError(
-            f"No adapter found at {ADAPTER_DIR} — run train_qlora.py first."
-        )
+        raise FileNotFoundError(f"No adapter found at {ADAPTER_DIR} — run train_qlora.py first.")
 
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -77,9 +75,7 @@ def generate(prompt: str, max_new_tokens: int = 512) -> str:
     model, tokenizer = _load()
 
     messages = [{"role": "user", "content": prompt}]
-    input_text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
-    )
+    input_text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
 
     with torch.no_grad():
@@ -90,5 +86,5 @@ def generate(prompt: str, max_new_tokens: int = 512) -> str:
             pad_token_id=tokenizer.pad_token_id,
         )
 
-    generated_tokens = output_ids[0][inputs["input_ids"].shape[1]:]
+    generated_tokens = output_ids[0][inputs["input_ids"].shape[1] :]
     return tokenizer.decode(generated_tokens, skip_special_tokens=True)

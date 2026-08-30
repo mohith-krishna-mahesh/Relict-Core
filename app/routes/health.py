@@ -29,5 +29,12 @@ class HealthResponse(BaseModel):
     tags=["infrastructure"],
 )
 async def health() -> HealthResponse:
-    """Return a static liveness response."""
+    """Return runtime health status based on local database accessibility."""
+    from pathlib import Path
+    from app.config import settings
+
+    db_path = Path(settings.database_path)
+    if not db_path.exists():
+        return HealthResponse(status="degraded")
+
     return HealthResponse(status="ok")

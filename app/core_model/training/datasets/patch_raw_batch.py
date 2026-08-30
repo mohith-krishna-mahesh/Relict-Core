@@ -6,9 +6,17 @@ recs = [json.loads(l) for l in open(path, encoding="utf-8")]
 for r in recs:
     if r["category"] == "fully_vague":
         out = r["expected_output"]
-        for k in ["target_phenotypes", "biological_processes", "desired_change", "relevant_concepts", "retrieval_targets"]:
+        for k in [
+            "target_phenotypes",
+            "biological_processes",
+            "desired_change",
+            "relevant_concepts",
+            "retrieval_targets",
+        ]:
             out.setdefault(k, None)
-        out.setdefault("ambiguity_status", "CLARIFICATION_REQUIRED")  # record 22 was missing this key entirely
+        out.setdefault(
+            "ambiguity_status", "CLARIFICATION_REQUIRED"
+        )  # record 22 was missing this key entirely
     if r["category"] == "multi_goal_clear" and "retrie-than_targets" in r["expected_output"]:
         r["expected_output"]["retrieval_targets"] = r["expected_output"].pop("retrie-than_targets")
 

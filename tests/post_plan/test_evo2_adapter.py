@@ -50,9 +50,7 @@ async def test_successful_evo2_inference():
     """Test successful Evo 2 inference with mocked runner output."""
     adapter = Evo2Adapter()
 
-    runner_stdout = (
-        b'{"success": true, "raw_log_likelihood": -128.5, "mean_log_likelihood": -1.285, "len": 100}'
-    )
+    runner_stdout = b'{"success": true, "raw_log_likelihood": -128.5, "mean_log_likelihood": -1.285, "len": 100}'
 
     mock_proc = MagicMock()
     mock_proc.returncode = 0

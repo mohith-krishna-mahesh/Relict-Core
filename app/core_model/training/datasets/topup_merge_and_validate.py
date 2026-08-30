@@ -16,8 +16,12 @@ from collections import Counter
 from difflib import SequenceMatcher
 
 REQUIRED_KEYS = {
-    "target_phenotypes", "biological_processes", "desired_change",
-    "relevant_concepts", "retrieval_targets", "ambiguity_status",
+    "target_phenotypes",
+    "biological_processes",
+    "desired_change",
+    "relevant_concepts",
+    "retrieval_targets",
+    "ambiguity_status",
 }
 
 
@@ -63,7 +67,11 @@ def validate_record(rec, idx):
         if nonnull:
             errors.append(f"CLARIFICATION_REQUIRED but non-null fields present: {nonnull}")
 
-    if "objective" not in rec or not isinstance(rec["objective"], str) or not rec["objective"].strip():
+    if (
+        "objective" not in rec
+        or not isinstance(rec["objective"], str)
+        or not rec["objective"].strip()
+    ):
         errors.append("missing or empty 'objective' field")
 
     if "category" not in rec:
@@ -138,7 +146,7 @@ def main():
     print()
     print("Final category breakdown:")
     for c, n in cats.most_common():
-        print(f"  {c}: {n} ({100*n/total:.1f}%)")
+        print(f"  {c}: {n} ({100 * n / total:.1f}%)")
     print()
     print(f"Wrote {args.output}")
 

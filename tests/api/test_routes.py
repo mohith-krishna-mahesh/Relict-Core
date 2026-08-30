@@ -232,9 +232,7 @@ class TestAuthVerify:
         resp = client.post("/v1/auth/verify")
         assert isinstance(resp.json()["identity"]["scopes"], list)
 
-    def test_verify_missing_token_returns_401_when_auth_enabled(
-        self, client: TestClient
-    ) -> None:
+    def test_verify_missing_token_returns_401_when_auth_enabled(self, client: TestClient) -> None:
         """When auth is enabled, a missing token must return 401."""
         original = _settings.auth_enabled
         _settings.auth_enabled = True
@@ -244,9 +242,7 @@ class TestAuthVerify:
         finally:
             _settings.auth_enabled = original
 
-    def test_verify_bad_token_returns_401_when_auth_enabled(
-        self, client: TestClient
-    ) -> None:
+    def test_verify_bad_token_returns_401_when_auth_enabled(self, client: TestClient) -> None:
         """When auth is enabled, an invalid token must return 401."""
         original_enabled = _settings.auth_enabled
         original_tokens = _settings.api_tokens
@@ -262,9 +258,7 @@ class TestAuthVerify:
             _settings.auth_enabled = original_enabled
             _settings.api_tokens = original_tokens
 
-    def test_verify_valid_token_returns_200_when_auth_enabled(
-        self, client: TestClient
-    ) -> None:
+    def test_verify_valid_token_returns_200_when_auth_enabled(self, client: TestClient) -> None:
         """When auth is enabled, a correct token must return 200."""
         original_enabled = _settings.auth_enabled
         original_tokens = _settings.api_tokens
@@ -580,9 +574,7 @@ class TestRunsGetContractShape:
     "evidence" or "unknown" -- never "model_estimated" (architecture Sec. 8).
     """
 
-    def _post_and_wait(
-        self, tc: TestClient, wait_s: float = 0.5
-    ) -> tuple[str, dict]:
+    def _post_and_wait(self, tc: TestClient, wait_s: float = 0.5) -> tuple[str, dict]:
         """Submit a run, wait briefly for background task, then GET the result."""
         post_resp = tc.post("/v1/runs", json=_VALID_BODY)
         assert post_resp.status_code == 200

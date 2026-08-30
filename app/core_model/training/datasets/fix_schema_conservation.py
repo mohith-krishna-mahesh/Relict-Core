@@ -11,6 +11,7 @@ Splits records into three outputs:
 Usage:
     python fix_schema_conservation.py <input.jsonl>
 """
+
 import json
 import re
 import sys
@@ -68,10 +69,11 @@ def main():
     counts = Counter()
     objective_words = Counter()
 
-    with open(in_path, encoding="utf-8") as f_in, \
-         open(fixed_path, "w", encoding="utf-8") as f_fixed, \
-         open(review_path, "w", encoding="utf-8") as f_review:
-
+    with (
+        open(in_path, encoding="utf-8") as f_in,
+        open(fixed_path, "w", encoding="utf-8") as f_fixed,
+        open(review_path, "w", encoding="utf-8") as f_review,
+    ):
         for idx, line in enumerate(f_in, start=1):
             line = line.strip()
             if not line:

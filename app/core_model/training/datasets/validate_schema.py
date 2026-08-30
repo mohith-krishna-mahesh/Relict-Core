@@ -2,9 +2,14 @@ import json, sys
 from pathlib import Path
 
 REQUIRED_KEYS = {
-    "target_phenotypes", "biological_processes", "desired_change",
-    "relevant_concepts", "retrieval_targets", "ambiguity_status"
+    "target_phenotypes",
+    "biological_processes",
+    "desired_change",
+    "relevant_concepts",
+    "retrieval_targets",
+    "ambiguity_status",
 }
+
 
 def check_file(path):
     bad = []
@@ -27,7 +32,9 @@ def check_file(path):
             if status == "CLARIFICATION_REQUIRED":
                 non_null = {k: v for k, v in other_fields.items() if v is not None}
                 if non_null:
-                    issues.append(f"CLARIFICATION_REQUIRED but non-null fields: {list(non_null.keys())}")
+                    issues.append(
+                        f"CLARIFICATION_REQUIRED but non-null fields: {list(non_null.keys())}"
+                    )
             elif status == "CLEAR":
                 null_fields = {k for k, v in other_fields.items() if v is None}
                 if null_fields:
@@ -52,6 +59,7 @@ def check_file(path):
             print(f"  [{i}] {obj!r} - {'; '.join(issues)}")
     else:
         print(f"{path}: all records pass schema + null-consistency + category checks.")
+
 
 if __name__ == "__main__":
     check_file(sys.argv[1])

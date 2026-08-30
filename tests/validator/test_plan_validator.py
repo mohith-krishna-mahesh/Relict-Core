@@ -8,7 +8,13 @@ import pytest
 
 from app.models.evidence import EvidenceRecord
 from app.models.graph import GraphEdge
-from app.models.requests import ProjectContext, RunConfiguration, Scope, StrategyMode, StructuredObjective
+from app.models.requests import (
+    ProjectContext,
+    RunConfiguration,
+    Scope,
+    StrategyMode,
+    StructuredObjective,
+)
 from app.models.responses import Strategy
 from app.validator.plan_validator import PlanValidator
 

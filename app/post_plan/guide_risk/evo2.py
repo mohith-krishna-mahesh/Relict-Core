@@ -125,7 +125,10 @@ class Evo2Adapter:
         valid_bases = set("ACGTUNRYKMSWBDHV")
         invalid = set(cleaned) - valid_bases
         if invalid:
-            return False, f"Sequence contains invalid nucleotide characters: {', '.join(sorted(invalid))}"
+            return (
+                False,
+                f"Sequence contains invalid nucleotide characters: {', '.join(sorted(invalid))}",
+            )
         return True, ""
 
     async def analyze_sequence(
@@ -238,11 +241,18 @@ class Evo2Adapter:
             try:
                 payload = json.loads(stdout_str)
             except Exception:
-                payload = {"success": False, "error": f"Malformed JSON from Evo 2 runner: {stdout_str}"}
+                payload = {
+                    "success": False,
+                    "error": f"Malformed JSON from Evo 2 runner: {stdout_str}",
+                }
 
             if not payload.get("success"):
                 err_text = payload.get("error", "Unknown inference error")
-                status = ProviderStatus.UNAVAILABLE if "not found" in err_text.lower() or "no module" in err_text.lower() else ProviderStatus.FAILED
+                status = (
+                    ProviderStatus.UNAVAILABLE
+                    if "not found" in err_text.lower() or "no module" in err_text.lower()
+                    else ProviderStatus.FAILED
+                )
                 return Evo2AnalysisResult(
                     provider_status=status,
                     model_name=self.config.model_name,

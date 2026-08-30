@@ -69,7 +69,9 @@ class PlanValidator:
         # 1. Edit Budget Check
         # ---------------------------------------------------------------------
         checks.append("edit_budget")
-        edit_count = getattr(strategy, "edit_count", len(getattr(strategy, "selected_candidates", [])))
+        edit_count = getattr(
+            strategy, "edit_count", len(getattr(strategy, "selected_candidates", []))
+        )
         max_edits = run_config.max_edits
 
         if edit_count > max_edits:
@@ -95,7 +97,9 @@ class PlanValidator:
         elif structured_objective and structured_objective.retrieval_targets:
             # Check if covered targets overlap with expected targets
             matched = set(covered).intersection(set(structured_objective.retrieval_targets))
-            if not matched and not set(covered).intersection(set(structured_objective.target_phenotypes)):
+            if not matched and not set(covered).intersection(
+                set(structured_objective.target_phenotypes)
+            ):
                 warnings.append(
                     f"target_coverage: Strategy covered_targets ({covered}) does not explicitly match objective retrieval targets ({structured_objective.retrieval_targets})."
                 )
@@ -157,7 +161,9 @@ class PlanValidator:
             src = getattr(edge, "source_node_id", "")
             tgt = getattr(edge, "target_node_id", "")
             if not src or not tgt:
-                violations.append("graph_integrity: Supporting edge has missing source or target node ID.")
+                violations.append(
+                    "graph_integrity: Supporting edge has missing source or target node ID."
+                )
             if src == tgt:
                 warnings.append(f"graph_integrity: Self-referential edge detected on node '{src}'.")
 
@@ -168,7 +174,9 @@ class PlanValidator:
         for edge in supporting:
             source_name = getattr(edge, "source", "")
             if not source_name:
-                warnings.append("evidence_provenance: Supporting edge lacks source database provenance.")
+                warnings.append(
+                    "evidence_provenance: Supporting edge lacks source database provenance."
+                )
             score_val = getattr(edge, "source_score", None)
             if score_val is None:
                 warnings.append("evidence_provenance: Supporting edge has no source-native score.")

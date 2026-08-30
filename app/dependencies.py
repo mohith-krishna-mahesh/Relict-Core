@@ -65,7 +65,7 @@ def get_bearer_token(request: Request) -> str:
             status_code=401,
             detail="Missing or invalid Authorization header (expected: Bearer <token>)",
         )
-    token = auth_header[len("Bearer "):].strip()
+    token = auth_header[len("Bearer ") :].strip()
     if token not in settings.api_tokens:
         raise HTTPException(
             status_code=401,

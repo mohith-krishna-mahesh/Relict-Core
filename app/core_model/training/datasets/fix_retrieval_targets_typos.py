@@ -5,8 +5,12 @@ path = "app/core_model/training/datasets/sft_task1_raw.jsonl"
 recs = [json.loads(l) for l in open(path, encoding="utf-8")]
 
 REQUIRED_KEYS = {
-    "target_phenotypes", "biological_processes", "desired_change",
-    "relevant_concepts", "retrieval_targets", "ambiguity_status"
+    "target_phenotypes",
+    "biological_processes",
+    "desired_change",
+    "relevant_concepts",
+    "retrieval_targets",
+    "ambiguity_status",
 }
 
 fixed = 0

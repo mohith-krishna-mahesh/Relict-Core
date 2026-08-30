@@ -49,6 +49,8 @@ class DefaultPostPlanAnalyzer:
         validation: ValidationResult | None = None,
         species: str = "Unknown",
         genome: str = "Unknown",
+        project_context: Any | None = None,
+        structured_objective: Any | None = None,
     ) -> PostPlanResult:
         """
         Execute downstream analysis for a validated strategy.
@@ -67,6 +69,10 @@ class DefaultPostPlanAnalyzer:
             Authoritative species from ProjectContext.
         genome:
             Resolved genome assembly identifier.
+        project_context:
+            Optional ProjectContext for explanation grounding.
+        structured_objective:
+            Optional StructuredObjective for explanation grounding.
         """
         overall_status = PostPlanStatus.COMPLETE
 
@@ -106,43 +112,19 @@ class DefaultPostPlanAnalyzer:
             overall_status = PostPlanStatus.PARTIAL
 
         # ---------------------------------------------------------------------
-        # 3. Deterministic Node & Edge Explanations
+        # 3. Deterministic Node, Edge, and Whole-Strategy Explanations (Task 2 Model Bypass)
         # ---------------------------------------------------------------------
-        node_explanations: dict[str, str] = {}
-        for candidate in strategy.selected_candidates:
-            # Collect evidence sources for candidate
-            candidate_sources = [
-                rec.source
-                for rec in evidence
-                if rec.entity_a == candidate or rec.entity_b == candidate
-            ]
-            node_explanations[f"gene:{candidate}"] = explain_node(
-                node_id=candidate,
-                role=f"Target candidate for {', '.join(strategy.covered_targets)}",
-                why_it_matters=f"Selected in {strategy.strategy_type} strategy with evidence score backing.",
-                evidence_sources=list(set(candidate_sources)) if candidate_sources else None,
-            )
+        from app.post_plan.explanations import generate_deterministic_explanations
 
-        edge_explanations: dict[str, str] = {}
-        for edge in strategy.supporting_edges:
-            src = getattr(edge, "source_node_id", "")
-            tgt = getattr(edge, "target_node_id", "")
-            edge_key = f"{src} -> {tgt}"
-            edge_explanations[edge_key] = explain_edge(
-                source_node=src,
-                target_node=tgt,
-                relationship=getattr(edge, "relationship", "associated_with"),
-                source_db=getattr(edge, "source", "Knowledge Base"),
-                source_score=getattr(edge, "source_score", None),
+        node_explanations, edge_explanations, strat_explanation = (
+            generate_deterministic_explanations(
+                strategy=strategy,
+                evidence=evidence,
+                run_config=run_config,
+                project_context=project_context,
+                structured_objective=structured_objective,
+                validation=validation,
             )
-
-        # ---------------------------------------------------------------------
-        # 4. Whole-Strategy Explanation
-        # ---------------------------------------------------------------------
-        strat_explanation = explain_strategy(
-            strategy=strategy,
-            run_config=run_config,
-            validation=validation,
         )
 
         return PostPlanResult(

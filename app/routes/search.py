@@ -67,10 +67,7 @@ async def search_species(
         logger.warning("SpeciesResolver.search(%r) raised: %s", q, exc)
         results = []
 
-    return [
-        Species(name=cs.scientific_name, taxonomy_id=cs.taxonomy_id)
-        for cs in results
-    ]
+    return [Species(name=cs.scientific_name, taxonomy_id=cs.taxonomy_id) for cs in results]
 
 
 # ---------------------------------------------------------------------------
@@ -119,11 +116,10 @@ async def search_genes(
         data = await client.lookup_symbol(ensembl_name, q)
         if not data:
             return []
-            
+
         symbol = data.get("display_name") or data.get("id") or q
         description = data.get("description") or symbol
         return [Gene(symbol=symbol, name=description)]
     except Exception as exc:  # noqa: BLE001
         logger.warning("Ensembl gene lookup failed for %r / %r: %s", q, ensembl_name, exc)
         return []
-

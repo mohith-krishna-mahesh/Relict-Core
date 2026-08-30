@@ -181,9 +181,7 @@ async def submit_run(
     # states with PENDING/QUEUED/RUNNING status in the repository.
     # Note: this approximates the orchestrator's internal _active_runs
     # counter -- they are separate state (known limitation, flagged).
-    active_count = sum(
-        1 for s in repository.all_states() if s.status in _ACTIVE_STATUSES
-    )
+    active_count = sum(1 for s in repository.all_states() if s.status in _ACTIVE_STATUSES)
     if active_count >= settings.max_concurrent_runs:
         raise HTTPException(
             status_code=429,
@@ -200,8 +198,7 @@ async def submit_run(
     # Scope gap: use DE_EXTINCTION as documented default.
     # Product decision required before changing this default.
     logger.warning(
-        "POST /v1/runs: contract has no scope field; "
-        "using default scope=de-extinction for run %s",
+        "POST /v1/runs: contract has no scope field; using default scope=de-extinction for run %s",
         route_run_id,
     )
 

@@ -69,8 +69,8 @@ def stratified_split(records, train_frac=0.8, val_frac=0.1):
         n_train = int(n * train_frac)
         n_val = int(n * val_frac)
         train += items[:n_train]
-        val += items[n_train:n_train + n_val]
-        test += items[n_train + n_val:]
+        val += items[n_train : n_train + n_val]
+        test += items[n_train + n_val :]
         print(f"  {cat}: {n} total -> train={n_train} val={n_val} test={n - n_train - n_val}")
 
     random.shuffle(train)
@@ -102,14 +102,18 @@ def build_prompt_completion(rec, prompt_template):
 
 def main():
     if TRAIN_PATH.exists() and VAL_PATH.exists():
-        print(f"Loading pre-split train/val from {TRAIN_PATH.name} / {VAL_PATH.name} "
-              f"(produced by build_final_dataset.py — not re-splitting here).")
+        print(
+            f"Loading pre-split train/val from {TRAIN_PATH.name} / {VAL_PATH.name} "
+            f"(produced by build_final_dataset.py — not re-splitting here)."
+        )
         train_recs = load_records(TRAIN_PATH)
         val_recs = load_records(VAL_PATH)
         print(f"train={len(train_recs)} val={len(val_recs)}\n")
     else:
-        print(f"No pre-split files found at {TRAIN_PATH} — falling back to "
-              f"loading {MERGED_FALLBACK_PATH.name} and splitting here.")
+        print(
+            f"No pre-split files found at {TRAIN_PATH} — falling back to "
+            f"loading {MERGED_FALLBACK_PATH.name} and splitting here."
+        )
         if not MERGED_FALLBACK_PATH.exists():
             raise FileNotFoundError(
                 f"Neither pre-split files ({TRAIN_PATH.name}/{VAL_PATH.name}) nor "
@@ -137,9 +141,12 @@ def main():
     if OUTPUT_DIR.exists():
         import shutil
         from datetime import datetime
+
         backup_dir = OUTPUT_DIR.parent / f"{OUTPUT_DIR.name}_prev_{datetime.now():%Y%m%d_%H%M%S}"
-        print(f"Existing checkpoint dir found at {OUTPUT_DIR} — moving to {backup_dir} "
-              f"before starting a new run.")
+        print(
+            f"Existing checkpoint dir found at {OUTPUT_DIR} — moving to {backup_dir} "
+            f"before starting a new run."
+        )
         shutil.move(str(OUTPUT_DIR), str(backup_dir))
 
     if not PROMPT_TEMPLATE_PATH.exists():
@@ -175,36 +182,37 @@ def main():
         bias="none",
         task_type="CAUSAL_LM",
         target_modules=[
-            "q_proj", "k_proj", "v_proj", "o_proj",
-            "gate_proj", "up_proj", "down_proj",
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
         ],
     )
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
 
-    train_ds = Dataset.from_list(
-        [build_prompt_completion(r, prompt_template) for r in train_recs]
-    )
-    val_ds = Dataset.from_list(
-        [build_prompt_completion(r, prompt_template) for r in val_recs]
-    )
+    train_ds = Dataset.from_list([build_prompt_completion(r, prompt_template) for r in train_recs])
+    val_ds = Dataset.from_list([build_prompt_completion(r, prompt_template) for r in val_recs])
 
     training_args = SFTConfig(
-    output_dir=str(OUTPUT_DIR),
-    per_device_train_batch_size=1,
-    gradient_accumulation_steps=8,
-    num_train_epochs=3,
-    learning_rate=2e-4,
-    logging_steps=5,
-    eval_strategy="epoch",
-    save_strategy="epoch",
-    save_total_limit=2,
-    gradient_checkpointing=True,
-    bf16=True,
-    report_to="none",
-    max_length=1024,          # was max_seq_length
-    completion_only_loss=True,  # loss computed only on the target JSON, not the instruction prompt
-    seed=SEED,
+        output_dir=str(OUTPUT_DIR),
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=8,
+        num_train_epochs=3,
+        learning_rate=2e-4,
+        logging_steps=5,
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        save_total_limit=2,
+        gradient_checkpointing=True,
+        bf16=True,
+        report_to="none",
+        max_length=1024,  # was max_seq_length
+        completion_only_loss=True,  # loss computed only on the target JSON, not the instruction prompt
+        seed=SEED,
     )
 
     trainer = SFTTrainer(
@@ -221,7 +229,9 @@ def main():
     trainer.save_model(str(OUTPUT_DIR))
     tokenizer.save_pretrained(str(OUTPUT_DIR))
     print(f"\nDone. Adapter saved to {OUTPUT_DIR}")
-    print("Next: run evaluate.py against sft_task1_test.jsonl and compare to baseline eval numbers.")
+    print(
+        "Next: run evaluate.py against sft_task1_test.jsonl and compare to baseline eval numbers."
+    )
 
 
 if __name__ == "__main__":

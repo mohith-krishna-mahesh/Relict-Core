@@ -11,7 +11,9 @@ class LlamaCppClient(ModelClient):
     def __init__(self, model_path: str, n_ctx: int = 4096, n_gpu_layers: int = -1):
         if not Path(model_path).exists():
             raise FileNotFoundError(f"GGUF model not found at {model_path}")
-        self._llm = Llama(model_path=model_path, n_ctx=n_ctx, n_gpu_layers=n_gpu_layers, verbose=False)
+        self._llm = Llama(
+            model_path=model_path, n_ctx=n_ctx, n_gpu_layers=n_gpu_layers, verbose=False
+        )
 
     def generate(self, prompt: str, max_tokens: int = 512) -> str:
         result = self._llm(prompt, max_tokens=max_tokens, echo=False)

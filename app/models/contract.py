@@ -241,8 +241,7 @@ class ContractStrategy(BaseModel):
     )
     risk_score: float = Field(
         description=(
-            "Risk score in [0.0, 1.0] -- derived from Planner score as (1 - score). "
-            "Lower is safer."
+            "Risk score in [0.0, 1.0] -- derived from Planner score as (1 - score). Lower is safer."
         ),
     )
     rationale: str = Field(description="Human-readable Planner rationale for this strategy.")

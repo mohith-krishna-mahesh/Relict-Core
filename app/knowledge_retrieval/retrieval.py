@@ -324,3 +324,7 @@ class RetrievalOrchestrator:
             query_ctx["species_tags"] = species.tags
 
         return query_ctx
+
+
+# Alias for backwards compatibility
+KnowledgeRetrievalEngine = RetrievalOrchestrator

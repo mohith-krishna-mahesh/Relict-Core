@@ -258,7 +258,9 @@ class PopulationSimulator:
 
         warnings: list[str] = []
         if final_p < 0.01 and params.initial_frequency > 0.0:
-            warnings.append("Allele declined to near zero; fitness costs or migration prevented establishment.")
+            warnings.append(
+                "Allele declined to near zero; fitness costs or migration prevented establishment."
+            )
         if params.fitness_cost > 0.5:
             warnings.append("High fitness cost (>0.5) strongly suppresses allele spread.")
 
@@ -283,7 +285,9 @@ class PopulationSimulator:
         """
         valid_params = {"fitness_cost", "initial_frequency", "migration_rate", "drive_efficiency"}
         if parameter_name not in valid_params:
-            raise ValueError(f"Sensitivity parameter '{parameter_name}' must be one of {valid_params}.")
+            raise ValueError(
+                f"Sensitivity parameter '{parameter_name}' must be one of {valid_params}."
+            )
 
         outcomes: list[dict[str, Any]] = []
 

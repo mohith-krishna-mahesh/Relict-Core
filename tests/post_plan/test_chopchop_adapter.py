@@ -130,7 +130,9 @@ async def test_executable_missing():
     """Test handling when CHOPCHOP script / python executable is not found."""
     adapter = CHOPCHOPAdapter(ChopchopConfig(use_wsl=False))
 
-    with patch("asyncio.create_subprocess_exec", side_effect=FileNotFoundError("chopchop.py not found")):
+    with patch(
+        "asyncio.create_subprocess_exec", side_effect=FileNotFoundError("chopchop.py not found")
+    ):
         result = await adapter.analyze_target(
             target="TYRP1",
             species="Canis lupus",
@@ -197,4 +199,6 @@ async def test_missing_genome():
     )
 
     assert result.provider_status == ProviderStatus.UNAVAILABLE
-    assert any("genome assembly must be explicitly specified" in err.lower() for err in result.errors)
+    assert any(
+        "genome assembly must be explicitly specified" in err.lower() for err in result.errors
+    )

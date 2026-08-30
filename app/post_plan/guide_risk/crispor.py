@@ -299,11 +299,17 @@ class CRISPORAdapter:
         if not cleaned:
             return False, "Target sequence cannot be empty."
         if len(cleaned) < 23:
-            return False, f"Target sequence length ({len(cleaned)}bp) is too short for CRISPOR (min 23bp)."
+            return (
+                False,
+                f"Target sequence length ({len(cleaned)}bp) is too short for CRISPOR (min 23bp).",
+            )
         valid_bases = set("ACGTUNRYKMSWBDHV")
         invalid = set(cleaned) - valid_bases
         if invalid:
-            return False, f"Target sequence contains invalid nucleotide characters: {', '.join(sorted(invalid))}"
+            return (
+                False,
+                f"Target sequence contains invalid nucleotide characters: {', '.join(sorted(invalid))}",
+            )
         return True, ""
 
     async def analyze_target(
@@ -436,7 +442,11 @@ class CRISPORAdapter:
                 stderr_str = stderr_b.decode("utf-8", errors="replace")
 
                 if proc.returncode != 0:
-                    err_msg = stderr_str.strip() or stdout_str.strip() or f"Process exited with code {proc.returncode}"
+                    err_msg = (
+                        stderr_str.strip()
+                        or stdout_str.strip()
+                        or f"Process exited with code {proc.returncode}"
+                    )
                     logger.warning("CRISPOR execution failed: %s", err_msg)
                     return CrisporAnalysisResult(
                         provider_status=ProviderStatus.FAILED,
@@ -462,7 +472,9 @@ class CRISPORAdapter:
 
                 warnings: list[str] = []
                 if not candidates:
-                    warnings.append(f"CRISPOR completed successfully but no guide candidates with PAM '{active_pam}' were found in target sequence.")
+                    warnings.append(
+                        f"CRISPOR completed successfully but no guide candidates with PAM '{active_pam}' were found in target sequence."
+                    )
 
                 return CrisporAnalysisResult(
                     provider_status=ProviderStatus.SUCCESS,
@@ -481,7 +493,9 @@ class CRISPORAdapter:
                 )
 
             except asyncio.TimeoutError:
-                logger.error("CRISPOR execution timed out after %s seconds", self.config.timeout_seconds)
+                logger.error(
+                    "CRISPOR execution timed out after %s seconds", self.config.timeout_seconds
+                )
                 return CrisporAnalysisResult(
                     provider_status=ProviderStatus.FAILED,
                     target_identifier=target_identifier,

@@ -352,7 +352,11 @@ class CHOPCHOPAdapter:
             stderr_str = stderr_b.decode("utf-8", errors="replace")
 
             if proc.returncode != 0:
-                err_msg = stderr_str.strip() or stdout_str.strip() or f"Process exited with code {proc.returncode}"
+                err_msg = (
+                    stderr_str.strip()
+                    or stdout_str.strip()
+                    or f"Process exited with code {proc.returncode}"
+                )
                 logger.warning("CHOPCHOP execution failed: %s", err_msg)
                 return ChopchopAnalysisResult(
                     provider_status=ProviderStatus.FAILED,
@@ -375,7 +379,9 @@ class CHOPCHOPAdapter:
 
             warnings: list[str] = []
             if not candidates:
-                warnings.append(f"CHOPCHOP completed successfully but no guide candidates were found for target '{target}'.")
+                warnings.append(
+                    f"CHOPCHOP completed successfully but no guide candidates were found for target '{target}'."
+                )
 
             return ChopchopAnalysisResult(
                 provider_status=ProviderStatus.SUCCESS,
@@ -396,7 +402,9 @@ class CHOPCHOPAdapter:
             )
 
         except asyncio.TimeoutError:
-            logger.error("CHOPCHOP execution timed out after %s seconds", self.config.timeout_seconds)
+            logger.error(
+                "CHOPCHOP execution timed out after %s seconds", self.config.timeout_seconds
+            )
             return ChopchopAnalysisResult(
                 provider_status=ProviderStatus.FAILED,
                 target=target,

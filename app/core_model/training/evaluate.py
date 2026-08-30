@@ -1,7 +1,11 @@
 import json
 from pathlib import Path
 
-from app.core_model.objective_parser import _extract_json, _load_prompt_template, StructuredObjective
+from app.core_model.objective_parser import (
+    _extract_json,
+    _load_prompt_template,
+    StructuredObjective,
+)
 from app.core_model.inference.ollama import generate as baseline_generate
 from app.core_model.training.merge_adapter import generate as finetuned_generate
 
@@ -37,7 +41,9 @@ def run_eval() -> None:
             b_actual = _resolve(baseline_generate, prompt_template, objective)
             b_match = b_actual["ambiguity_status"] == expected["ambiguity_status"]
             row["baseline_actual"], row["baseline_match"] = b_actual, b_match
-            print(f"    baseline   {b_actual['ambiguity_status']:<22} {'PASS' if b_match else 'FAIL'}")
+            print(
+                f"    baseline   {b_actual['ambiguity_status']:<22} {'PASS' if b_match else 'FAIL'}"
+            )
         except Exception as e:
             row["baseline_error"] = str(e)
             print(f"    baseline   PARSE ERROR: {e}")
@@ -46,7 +52,9 @@ def run_eval() -> None:
             f_actual = _resolve(finetuned_generate, prompt_template, objective)
             f_match = f_actual["ambiguity_status"] == expected["ambiguity_status"]
             row["finetuned_actual"], row["finetuned_match"] = f_actual, f_match
-            print(f"    finetuned  {f_actual['ambiguity_status']:<22} {'PASS' if f_match else 'FAIL'}")
+            print(
+                f"    finetuned  {f_actual['ambiguity_status']:<22} {'PASS' if f_match else 'FAIL'}"
+            )
         except Exception as e:
             row["finetuned_error"] = str(e)
             print(f"    finetuned  PARSE ERROR: {e}")
@@ -60,10 +68,10 @@ def run_eval() -> None:
     b_errors = sum(1 for r in results if "baseline_error" in r)
     f_errors = sum(1 for r in results if "finetuned_error" in r)
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Total: {total}")
-    print(f"Baseline  — passed: {b_passed}/{total} | parse errors: {b_errors}")
-    print(f"Finetuned — passed: {f_passed}/{total} | parse errors: {f_errors}")
+    print(f"Baseline  ï¿½ passed: {b_passed}/{total} | parse errors: {b_errors}")
+    print(f"Finetuned ï¿½ passed: {f_passed}/{total} | parse errors: {f_errors}")
     print(f"Delta: {f_passed - b_passed:+d}")
 
     with open(RESULTS_PATH, "w", encoding="utf-8") as f:

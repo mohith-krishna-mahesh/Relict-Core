@@ -205,9 +205,7 @@ def adapt_run_result(
     edges, nodes = _collect_edges(internal.strategies)
     contract_strategies = [adapt_strategy(s) for s in internal.strategies]
 
-    objective = (
-        internal.project_context.objective if internal.project_context else None
-    )
+    objective = internal.project_context.objective if internal.project_context else None
 
     created_ts: str | None = None
     ts = internal.project_context and getattr(internal, "timestamps", None)

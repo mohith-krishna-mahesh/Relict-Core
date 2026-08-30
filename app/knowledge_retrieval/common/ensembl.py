@@ -140,12 +140,8 @@ class EnsemblClient(BaseClient):
         except httpx.HTTPStatusError as e:
             if e.response.status_code != 404:
                 logger.warning(
-                    "Ensembl lookup error for %s in %s: %s",
-                    symbol, species_ensembl_name, e
+                    "Ensembl lookup error for %s in %s: %s", symbol, species_ensembl_name, e
                 )
         except Exception as e:
-            logger.warning(
-                "Ensembl lookup error for %s in %s: %s",
-                symbol, species_ensembl_name, e
-            )
+            logger.warning("Ensembl lookup error for %s in %s: %s", symbol, species_ensembl_name, e)
         return None

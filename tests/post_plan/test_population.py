@@ -134,4 +134,6 @@ def test_deterministic_repeatability(simulator: PopulationSimulator):
 
     assert res1.derived_metrics.final_frequency == res2.derived_metrics.final_frequency
     assert res1.derived_metrics.time_to_threshold == res2.derived_metrics.time_to_threshold
-    assert [g.allele_frequency for g in res1.trajectory] == [g.allele_frequency for g in res2.trajectory]
+    assert [g.allele_frequency for g in res1.trajectory] == [
+        g.allele_frequency for g in res2.trajectory
+    ]

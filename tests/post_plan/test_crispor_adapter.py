@@ -116,9 +116,13 @@ async def test_successful_crispor_analysis(mock_crispor_output_dir: tuple[Path, 
     mock_proc.returncode = 0
     mock_proc.communicate = mock_communicate
 
-    with patch("asyncio.create_subprocess_exec", new=AsyncMock(return_value=mock_proc)), \
-         patch("app.post_plan.guide_risk.crispor.parse_crispor_tsv_outputs", return_value=parse_crispor_tsv_outputs(guides_file, offs_file)):
-
+    with (
+        patch("asyncio.create_subprocess_exec", new=AsyncMock(return_value=mock_proc)),
+        patch(
+            "app.post_plan.guide_risk.crispor.parse_crispor_tsv_outputs",
+            return_value=parse_crispor_tsv_outputs(guides_file, offs_file),
+        ),
+    ):
         result = await adapter.analyze_target(
             target_identifier="testGene",
             sequence="ATTCTACTTTTCAACAATAATACATAAACATATTGGCTTGTGGTAGCAACACT",
@@ -139,7 +143,10 @@ async def test_executable_missing():
     """Test failure when CRISPOR binary / python runtime cannot be found."""
     adapter = CRISPORAdapter(CrisporConfig(use_wsl=False))
 
-    with patch("asyncio.create_subprocess_exec", side_effect=FileNotFoundError("No such file or directory: 'crispor.py'")):
+    with patch(
+        "asyncio.create_subprocess_exec",
+        side_effect=FileNotFoundError("No such file or directory: 'crispor.py'"),
+    ):
         result = await adapter.analyze_target(
             target_identifier="testGene",
             sequence="ATTCTACTTTTCAACAATAATACATAAACATATTGGCTTGTGGTAGCAACACT",
@@ -206,7 +213,9 @@ async def test_empty_unsupported_genome():
     )
 
     assert result.provider_status == ProviderStatus.UNAVAILABLE
-    assert any("genome assembly must be explicitly specified" in err.lower() for err in result.errors)
+    assert any(
+        "genome assembly must be explicitly specified" in err.lower() for err in result.errors
+    )
 
 
 @pytest.mark.asyncio

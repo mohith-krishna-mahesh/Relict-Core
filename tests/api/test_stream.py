@@ -218,9 +218,6 @@ def success_client_and_run_id() -> Generator[tuple[TestClient, str], None, None]
     _clear()
 
 
-
-
-
 # ===========================================================================
 # TestStreamUnknownRunId — HTTP 404 matching GET /v1/runs/{run_id}
 # ===========================================================================

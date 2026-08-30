@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.core_model.inference.ollama import generate
 from app.core_model.training.datasets.domain_configs import DOMAINS, DEFAULT_CATEGORY_TARGETS
+
 # Structural-category descriptions are domain-agnostic by design — the same
 # CLEAR/AMBIGUOUS/VAGUE/MULTI-GOAL distinctions apply regardless of subject
 # matter. Domain flavor (species, genes, phenotypes) is injected into the
@@ -95,20 +96,21 @@ def generate_batch(category_desc: str, n: int, domain_config: dict) -> list[dict
         except json.JSONDecodeError:
             start, end = raw.find("["), raw.rfind("]")
             if start == -1 or end == -1:
-                print(f"  [attempt {attempt+1}] FAILED (no brackets found):\n  {raw[:300]}\n")
+                print(f"  [attempt {attempt + 1}] FAILED (no brackets found):\n  {raw[:300]}\n")
                 continue
             try:
-                return json.loads(raw[start:end + 1], strict=False)
+                return json.loads(raw[start : end + 1], strict=False)
             except json.JSONDecodeError as e:
-                print(f"  [attempt {attempt+1}] FAILED (malformed JSON): {e}\n  {raw[:300]}\n")
+                print(f"  [attempt {attempt + 1}] FAILED (malformed JSON): {e}\n  {raw[:300]}\n")
                 continue
 
     print(f"  All {1 + MAX_RETRIES_PER_BATCH} attempts failed for this batch — skipping.")
     return []
 
 
-def resolve_categories(selected: list[str] | None, domain: str, test: bool,
-                        overrides: dict[str, int]) -> list[tuple[str, str, int]]:
+def resolve_categories(
+    selected: list[str] | None, domain: str, test: bool, overrides: dict[str, int]
+) -> list[tuple[str, str, int]]:
     """Build the (name, desc, target_count) list, same shape as the original
     hardcoded CATEGORIES, from CLI args instead of hand-editing the file."""
     names = selected or list(CATEGORY_DESCRIPTIONS)
@@ -131,18 +133,30 @@ def resolve_categories(selected: list[str] | None, domain: str, test: bool,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--domain", required=True, choices=sorted(DOMAINS),
-                         help="Which domain word-bank/context to generate for.")
-    parser.add_argument("--categories", default=None,
-                         help="Comma-separated subset of "
-                              f"{list(CATEGORY_DESCRIPTIONS)}. Default: all three.")
-    parser.add_argument("--test", action="store_true",
-                         help="Override target counts to 10 per selected category "
-                              "(matches the pre-scale test-batch workflow).")
-    parser.add_argument("--counts", default=None,
-                         help="Override specific target counts, e.g. "
-                              "'standard_clear=179,fully_vague=125' — for topping "
-                              "up an existing under-target pool rather than a fresh 300/200/200 run.")
+    parser.add_argument(
+        "--domain",
+        required=True,
+        choices=sorted(DOMAINS),
+        help="Which domain word-bank/context to generate for.",
+    )
+    parser.add_argument(
+        "--categories",
+        default=None,
+        help=f"Comma-separated subset of {list(CATEGORY_DESCRIPTIONS)}. Default: all three.",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Override target counts to 10 per selected category "
+        "(matches the pre-scale test-batch workflow).",
+    )
+    parser.add_argument(
+        "--counts",
+        default=None,
+        help="Override specific target counts, e.g. "
+        "'standard_clear=179,fully_vague=125' — for topping "
+        "up an existing under-target pool rather than a fresh 300/200/200 run.",
+    )
     args = parser.parse_args()
 
     domain_config = DOMAINS[args.domain]
@@ -167,7 +181,9 @@ def main():
     all_examples = []
     for name, desc, target_count in categories:
         n_batches = math.ceil(target_count / EXAMPLES_PER_BATCH)
-        print(f"[{args.domain}] Generating {target_count} examples for category: {name} ({n_batches} batch(es))")
+        print(
+            f"[{args.domain}] Generating {target_count} examples for category: {name} ({n_batches} batch(es))"
+        )
 
         remaining = target_count
         for i in range(n_batches):
@@ -190,12 +206,16 @@ def main():
 
         got = sum(1 for ex in all_examples if ex.get("category") == name)
         if got < target_count:
-            print(f"  WARNING: only got {got}/{target_count} for {name} — some batches failed and were not retried further.")
+            print(
+                f"  WARNING: only got {got}/{target_count} for {name} — some batches failed and were not retried further."
+            )
 
     print(f"\n[{args.domain}] Generated {len(all_examples)} raw examples -> {output_path}")
     print("REVIEW EVERY LINE BY HAND before using this as training data.")
     print(f"Remember: {args.domain} still needs its direction_ambiguous share via:")
-    print(f"  python direction_ambiguous_generator.py {args.domain} --n {DEFAULT_CATEGORY_TARGETS['direction_ambiguous']}")
+    print(
+        f"  python direction_ambiguous_generator.py {args.domain} --n {DEFAULT_CATEGORY_TARGETS['direction_ambiguous']}"
+    )
 
 
 if __name__ == "__main__":
