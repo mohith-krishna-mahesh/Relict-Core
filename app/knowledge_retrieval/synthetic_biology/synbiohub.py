@@ -25,8 +25,9 @@ class SynBioHubClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        clean_targets = [t for t in targets if " " not in t and len(t) <= 15][:3]
 
-        for target in targets:
+        for target in clean_targets:
             url = f"{self.BASE_URL}/search/"
             params = {"q": target}
 
@@ -45,6 +46,8 @@ class SynBioHubClient(BaseClient):
                     )
                 )
             except httpx.HTTPError as e:
-                logger.warning("Error querying SynBioHub for %s: %s", target, e)
+                logger.debug("Error querying SynBioHub for %s: %s", target, e)
+            except Exception as e:
+                logger.debug("Unexpected error querying SynBioHub for %s: %s", target, e)
 
         return records

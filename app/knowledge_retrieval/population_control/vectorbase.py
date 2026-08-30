@@ -25,8 +25,9 @@ class VectorBaseClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        clean_targets = [t for t in targets if " " not in t and len(t) <= 15][:3]
 
-        for target in targets:
+        for target in clean_targets:
             url = f"{self.BASE_URL}/record-types/gene"
 
             try:
@@ -45,6 +46,8 @@ class VectorBaseClient(BaseClient):
                     )
                 )
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying VectorBase for {target}: {e}")
+                logger.debug("Error querying VectorBase for %s: %s", target, e)
+            except Exception as e:
+                logger.debug("Unexpected error querying VectorBase for %s: %s", target, e)
 
         return records

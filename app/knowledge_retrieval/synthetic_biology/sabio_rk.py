@@ -25,8 +25,9 @@ class SabioRkClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        clean_targets = [t for t in targets if " " not in t and len(t) <= 15][:3]
 
-        for target in targets:
+        for target in clean_targets:
             url = f"{self.BASE_URL}/searchKineticLaws/entryIDs"
 
             try:
@@ -41,10 +42,12 @@ class SabioRkClient(BaseClient):
                         source_score=1.0,
                         endpoint=url,
                         query_context={"target": target, "species": species},
-                        metadata={"results": response.text},
+                        metadata={"results": response.text[:500]},
                     )
                 )
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying SABIO-RK for {target}: {e}")
+                logger.debug("Error querying SABIO-RK for %s: %s", target, e)
+            except Exception as e:
+                logger.debug("Unexpected error querying SABIO-RK for %s: %s", target, e)
 
         return records

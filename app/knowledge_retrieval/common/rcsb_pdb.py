@@ -27,22 +27,23 @@ class RCSBPDBClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
 
-        # Only query RCSB PDB for clean gene/protein names or symbols (max 2 words, no long sentences)
+        # Only query RCSB PDB for clean gene symbols or short terms
         valid_targets = [
             t
             for t in targets
-            if len(t.split()) <= 2
-            and len(t) <= 25
-            and not any(c in t for c in [":", ";", "/", "\\"])
+            if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10) or len(t.split()) == 1)
+            and len(t) <= 15
+            and not any(c in t for c in [":", ";", "/", "\\", " "])
         ]
 
-        for target in valid_targets[:4]:
+        for target in valid_targets[:3]:
             try:
                 query_body = {
                     "query": {
                         "type": "terminal",
-                        "service": "text",
+                        "service": "full_text",
                         "parameters": {"value": target},
                     },
                     "return_type": "entry",
@@ -54,7 +55,7 @@ class RCSBPDBClient(BaseClient):
                 if not isinstance(resp, dict) or "result_set" not in resp:
                     continue
 
-                entries = resp.get("result_set", [])[:3]
+                entries = resp.get("result_set", [])[:2]
 
                 async def _fetch_entry(res: dict[str, Any]) -> tuple[str, float, str]:
                     entry_id = str(res["identifier"])
@@ -85,8 +86,8 @@ class RCSBPDBClient(BaseClient):
                         )
                     )
             except httpx.HTTPError as e:
-                logger.warning(f"HTTP Error querying RCSB PDB for {target}: {e}")
+                logger.debug("HTTP Error querying RCSB PDB for %s: %s", target, e)
             except Exception as e:
-                logger.warning(f"Error querying RCSB PDB for {target}: {e}")
+                logger.debug("Error querying RCSB PDB for %s: %s", target, e)
 
         return records

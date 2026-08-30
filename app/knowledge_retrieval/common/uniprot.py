@@ -27,16 +27,15 @@ class UniprotClient(BaseClient):
         records: list[EvidenceRecord] = []
         org_name = species or "human"
 
-        for target in targets:
+        for target in targets[:5]:
             try:
                 search_url = f"{self.BASE_URL}/uniprotkb/search"
                 params = {"query": f"gene:{target} AND organism_name:{org_name}", "format": "json"}
-                search_res = await self._http.get(search_url, params=params)
-                search_res.raise_for_status()
+                search_res = await self._get(search_url, params=params)
                 data = self._safe_json(search_res)
 
                 results = data.get("results", []) if isinstance(data, dict) else []
-                for result in results:
+                for result in results[:3]:
                     accession = result.get("primaryAccession")
                     if not accession:
                         continue
@@ -58,25 +57,24 @@ class UniprotClient(BaseClient):
                     for comment in comments:
                         if comment.get("commentType") == "FUNCTION":
                             texts = comment.get("texts", [])
-                            for text_obj in texts:
-                                func_val = text_obj.get("value")
-                                if func_val:
+                            for text in texts:
+                                value = text.get("value")
+                                if value:
                                     records.append(
                                         self._make_record(
                                             entity_a=accession,
                                             relationship="protein_function",
-                                            entity_b=func_val[:200],
+                                            entity_b=value,
                                             source_id=accession,
                                             source_score=1.0,
                                             endpoint="/uniprotkb/search",
                                             query_context={"target": target},
-                                            metadata={"full_function": func_val},
+                                            metadata={"function": value},
                                         )
                                     )
-
             except httpx.HTTPError as e:
-                logger.warning(f"UniProt HTTP Error for {target}: {e}")
+                logger.debug("UniProt HTTP Error for %s: %s", target, e)
             except Exception as e:
-                logger.warning(f"UniProt Error for {target}: {e}")
+                logger.debug("UniProt Error for %s: %s", target, e)
 
         return records

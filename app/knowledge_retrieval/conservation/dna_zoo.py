@@ -25,26 +25,28 @@ class DNAZooClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        if not species:
+            return records
 
-        for target in targets:
-            query_species = species or target
-            url = f"{self.BASE_URL}/assemblies/{query_species.replace(' ', '_')}"
+        url = f"{self.BASE_URL}/assemblies/{species.replace(' ', '_')}"
 
-            try:
-                await self._get(url)
-                records.append(
-                    self._make_record(
-                        entity_a=query_species,
-                        relationship="species_assembly",
-                        entity_b="DNA Zoo Assembly",
-                        source_id=f"dnazoo_{query_species.replace(' ', '_')}",
-                        source_score=1.0,
-                        endpoint=url,
-                        query_context={"target": target, "species": species},
-                        metadata={"status": "available", "url": url},
-                    )
+        try:
+            await self._get(url)
+            records.append(
+                self._make_record(
+                    entity_a=species,
+                    relationship="species_assembly",
+                    entity_b="DNA Zoo Assembly",
+                    source_id=f"dnazoo_{species.replace(' ', '_')}",
+                    source_score=1.0,
+                    endpoint=url,
+                    query_context={"species": species},
+                    metadata={"status": "available", "url": url},
                 )
-            except httpx.HTTPError as e:
-                logger.warning(f"Error querying DNA Zoo for {query_species}: {e}")
+            )
+        except httpx.HTTPError as e:
+            logger.debug("DNA Zoo assembly not found for %s: %s", species, e)
+        except Exception as e:
+            logger.debug("Error querying DNA Zoo for %s: %s", species, e)
 
         return records

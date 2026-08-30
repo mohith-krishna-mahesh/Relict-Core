@@ -25,10 +25,12 @@ class WikiPathwaysClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-
         headers = {"Accept": "application/json"}
 
-        for target in targets:
+        # Only query WikiPathways for clean symbols or top 4 targets
+        clean_targets = [t for t in targets if len(t.split()) <= 2 and len(t) <= 20][:4]
+
+        for target in clean_targets:
             try:
                 sparql_query = f"""
                 PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
@@ -44,13 +46,10 @@ class WikiPathwaysClient(BaseClient):
                   ?pathway a wp:Pathway ;
                            dc:title ?pathwayTitle .
                 }}
-                LIMIT 50
+                LIMIT 10
                 """
 
-                res = await self._http.post(
-                    self.BASE_URL, data={"query": sparql_query}, headers=headers
-                )
-                res.raise_for_status()
+                res = await self._post(self.BASE_URL, data={"query": sparql_query}, headers=headers)
                 data = self._safe_json(res)
 
                 bindings = (
@@ -59,6 +58,7 @@ class WikiPathwaysClient(BaseClient):
                 for b in bindings:
                     pathway_title = b.get("pathwayTitle", {}).get("value")
                     pathway_uri = b.get("pathway", {}).get("value")
+                    pathway_id = pathway_uri.split("/")[-1] if pathway_uri else ""
 
                     if pathway_title:
                         records.append(
@@ -66,16 +66,16 @@ class WikiPathwaysClient(BaseClient):
                                 entity_a=target,
                                 relationship="gene_pathway",
                                 entity_b=pathway_title,
-                                source_id=pathway_uri,
+                                source_id=pathway_id,
                                 source_score=1.0,
-                                endpoint="sparql",
+                                endpoint=self.BASE_URL,
                                 query_context={"target": target},
                                 metadata={"pathway_uri": pathway_uri},
                             )
                         )
             except httpx.HTTPError as e:
-                logger.warning(f"WikiPathways HTTP Error for {target}: {e}")
+                logger.debug("WikiPathways HTTP Error for %s: %s", target, e)
             except Exception as e:
-                logger.warning(f"WikiPathways Error for {target}: {e}")
+                logger.debug("WikiPathways Error for %s: %s", target, e)
 
         return records

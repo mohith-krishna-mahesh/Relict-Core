@@ -63,16 +63,20 @@ class AlphaMissenseClient(BaseClient):
                     )
                     return []
 
-                for target in targets:
+                candidate_genes = set(context.get("candidate_genes", [])) if context else set()
+                clean_targets = [
+                    t
+                    for t in targets
+                    if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10))
+                    and " " not in t
+                ]
+                for target in clean_targets[:4]:
                     target_records = self._query_gene(con, target)
                     records.extend(target_records)
             finally:
                 con.close()
         except Exception:
-            logger.warning(
-                "alphamissense: DuckDB query failed",
-                exc_info=True,
-            )
+            logger.debug("alphamissense: DuckDB query failed", exc_info=True)
 
         return records
 
@@ -99,7 +103,7 @@ class AlphaMissenseClient(BaseClient):
                     [gene],
                 ).fetchall()
             except Exception:
-                logger.warning("alphamissense: query failed for gene %s", gene)
+                logger.debug("alphamissense: query not available for gene %s", gene)
                 return []
 
         records: list[EvidenceRecord] = []

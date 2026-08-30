@@ -30,8 +30,9 @@ class AnimalQTLdbClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        clean_targets = [t for t in targets if " " not in t and len(t) <= 15][:3]
 
-        for target in targets:
+        for target in clean_targets:
             url = f"{self.BASE_URL}/iquery"
             params = {"q": target, "s": "QTL"}
 
@@ -54,13 +55,14 @@ class AnimalQTLdbClient(BaseClient):
                             )
                         )
                 except (ET.ParseError, ValueError, Exception) as parse_err:
-                    logger.warning(
+                    logger.debug(
                         "Failed to parse XML from AnimalQTLdb for %s: %s",
                         target,
                         parse_err,
                     )
-
             except httpx.HTTPError as e:
-                logger.warning("Error querying AnimalQTLdb for %s: %s", target, e)
+                logger.debug("Error querying AnimalQTLdb for %s: %s", target, e)
+            except Exception as e:
+                logger.debug("Unexpected error querying AnimalQTLdb for %s: %s", target, e)
 
         return records

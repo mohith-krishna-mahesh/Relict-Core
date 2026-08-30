@@ -36,19 +36,20 @@ class NCBIDatasetsV2Client(BaseClient):
         taxon = species if species else "human"
         headers = self._get_headers()
 
-        for target in targets:
+        # Only query NCBI Datasets for clean gene symbols (no phrases)
+        clean_targets = [t for t in targets if " " not in t and len(t) <= 15 and t.isalnum()][:3]
+
+        for target in clean_targets:
             try:
-                # Use _http to pass headers directly
-                gene_resp = await self._http.get(
+                gene_resp = await self._get(
                     f"{self.BASE_URL}/gene/symbol/{target}/taxon/{taxon}", headers=headers
                 )
-                gene_resp.raise_for_status()
                 gene_data = self._safe_json(gene_resp)
 
-                if not gene_data or "reports" not in gene_data:
+                if not gene_data or not isinstance(gene_data, dict) or "reports" not in gene_data:
                     continue
 
-                for report_wrapper in gene_data.get("reports", []):
+                for report_wrapper in gene_data.get("reports", [])[:2]:
                     report = report_wrapper.get("gene", {})
                     gene_id = str(report.get("gene_id", ""))
                     if not gene_id:
@@ -70,34 +71,38 @@ class NCBIDatasetsV2Client(BaseClient):
                         )
                     )
 
-                    ortho_resp = await self._http.get(
-                        f"{self.BASE_URL}/gene/id/{gene_id}/orthologs", headers=headers
-                    )
-                    ortho_resp.raise_for_status()
-                    ortho_data = self._safe_json(ortho_resp)
+                    try:
+                        ortho_resp = await self._get(
+                            f"{self.BASE_URL}/gene/id/{gene_id}/orthologs", headers=headers
+                        )
+                        ortho_data = self._safe_json(ortho_resp)
 
-                    if ortho_data and "reports" in ortho_data:
-                        for ortho_wrapper in ortho_data.get("reports", []):
-                            ortho = ortho_wrapper.get("gene", {})
-                            ortho_id = str(ortho.get("gene_id", ""))
-                            ortho_sym = ortho.get("symbol", "")
-                            if ortho_id:
-                                records.append(
-                                    self._make_record(
-                                        entity_a=symbol,
-                                        relationship="gene_orthology",
-                                        entity_b=ortho_sym,
-                                        source_id=ortho_id,
-                                        source_score=1.0,
-                                        endpoint=f"{self.BASE_URL}/gene/id/orthologs",
-                                        query_context={"gene_id": gene_id},
-                                        metadata=ortho,
+                        if isinstance(ortho_data, dict) and "reports" in ortho_data:
+                            for ortho_wrapper in ortho_data.get("reports", [])[:3]:
+                                ortho_gene = ortho_wrapper.get("gene", {})
+                                ortho_symbol = ortho_gene.get("symbol")
+                                ortho_taxname = ortho_gene.get("taxname", "ortholog")
+                                if ortho_symbol:
+                                    records.append(
+                                        self._make_record(
+                                            entity_a=target,
+                                            relationship="gene_orthology",
+                                            entity_b=f"{ortho_symbol} ({ortho_taxname})",
+                                            source_id=str(ortho_gene.get("gene_id", "")),
+                                            source_score=1.0,
+                                            endpoint=f"{self.BASE_URL}/gene/id/orthologs",
+                                            query_context={"gene_id": gene_id},
+                                            metadata=ortho_gene,
+                                        )
                                     )
-                                )
+                    except Exception as o_err:
+                        logger.debug(
+                            "NCBI Datasets ortholog query skipped for %s: %s", gene_id, o_err
+                        )
 
             except httpx.HTTPError as e:
-                logger.error(f"HTTP Error querying NCBI Datasets for {target}: {e}")
+                logger.debug("HTTP Error querying NCBI Datasets for %s: %s", target, e)
             except Exception as e:
-                logger.error(f"Error querying NCBI Datasets for {target}: {e}")
+                logger.debug("Error querying NCBI Datasets for %s: %s", target, e)
 
         return records
