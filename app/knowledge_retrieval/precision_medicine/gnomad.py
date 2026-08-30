@@ -25,6 +25,14 @@ class GnomadClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
+
+        # Only query gnomAD for clean human gene symbols
+        clean_targets = [
+            t
+            for t in targets
+            if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10)) and " " not in t
+        ]
 
         graphql_query = """
         query Gene($geneId: String!) {
@@ -35,7 +43,7 @@ class GnomadClient(BaseClient):
         }
         """
 
-        for target in targets:
+        for target in clean_targets[:4]:
             json_data = {"query": graphql_query, "variables": {"geneId": target}}
 
             try:
@@ -58,6 +66,8 @@ class GnomadClient(BaseClient):
                             )
                         )
             except httpx.HTTPError as e:
-                logger.warning(f"Error querying gnomAD for {target}: {e}")
+                logger.debug("gnomAD query error for %s: %s", target, e)
+            except Exception as e:
+                logger.debug("Unexpected error querying gnomAD for %s: %s", target, e)
 
         return records

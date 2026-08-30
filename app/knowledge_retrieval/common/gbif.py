@@ -26,11 +26,24 @@ class GBIFClient(BaseClient):
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
 
-        queries = targets.copy()
-        if species and species not in queries:
-            queries.append(species)
+        # GBIF is a species-level biodiversity database.
+        # Only query for species name or valid binomial taxon names in targets.
+        candidate_queries = []
+        if species:
+            candidate_queries.append(species)
 
-        for query_term in queries:
+        for t in targets:
+            words = t.strip().split()
+            if (
+                len(words) == 2
+                and words[0][0].isupper()
+                and words[1].islower()
+                and words[0].isalpha()
+                and words[1].isalpha()
+            ):
+                candidate_queries.append(t.strip())
+
+        for query_term in set(candidate_queries):
             try:
                 raw_resp = await self._get(
                     f"{self.BASE_URL}/species/match", params={"name": query_term}
@@ -63,25 +76,24 @@ class GBIFClient(BaseClient):
                             params={"taxonKey": taxon_key, "limit": 1},
                         )
                         occ_data = self._safe_json(occ_raw)
-                        if not isinstance(occ_data, dict):
-                            continue
-                        count = occ_data.get("count", 0)
-                        if count > 0:
-                            records.append(
-                                self._make_record(
-                                    entity_a=scientific_name,
-                                    relationship="species_occurrence",
-                                    entity_b=f"{count} occurrences",
-                                    source_id=str(taxon_key),
-                                    source_score=1.0,
-                                    endpoint=f"{self.BASE_URL}/occurrence/search",
-                                    query_context={"taxonKey": taxon_key},
-                                    metadata={"count": count},
+                        if isinstance(occ_data, dict):
+                            count = occ_data.get("count", 0)
+                            if count > 0:
+                                records.append(
+                                    self._make_record(
+                                        entity_a=scientific_name,
+                                        relationship="species_occurrence",
+                                        entity_b=f"{count} occurrences",
+                                        source_id=str(taxon_key),
+                                        source_score=1.0,
+                                        endpoint=f"{self.BASE_URL}/occurrence/search",
+                                        query_context={"taxonKey": taxon_key},
+                                        metadata={"count": count},
+                                    )
                                 )
-                            )
             except httpx.HTTPError as e:
-                logger.error("HTTP Error querying GBIF for %s: %s", query_term, e)
+                logger.warning("HTTP Error querying GBIF for %s: %s", query_term, e)
             except Exception as e:
-                logger.error("Error querying GBIF for %s: %s", query_term, e)
+                logger.warning("Error querying GBIF for %s: %s", query_term, e)
 
         return records

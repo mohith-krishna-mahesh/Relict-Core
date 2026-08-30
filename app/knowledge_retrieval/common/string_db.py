@@ -26,24 +26,30 @@ class StringDbClient(BaseClient):
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
 
-        if not targets:
+        # STRING requires clean gene/protein identifiers
+        clean_targets = [
+            t
+            for t in targets
+            if " " not in t and len(t) <= 15 and t.replace("-", "").replace("_", "").isalnum()
+        ]
+        if not clean_targets:
             return records
 
         caller_identity = getattr(self.settings, "string_caller_identity", "RelictCore")
         species_id = (context.get("species_tax_id") if context else None) or (
-            species if species and species.isdigit() else "9606"
+            species if species and str(species).isdigit() else "9606"
         )
 
         try:
             # 1. Map identifiers to STRING IDs
             data: dict[str, Any] = {
-                "identifiers": "\r".join(targets),
+                "identifiers": "\r".join(clean_targets[:10]),
                 "format": "json",
                 "caller_identity": caller_identity,
             }
 
             if species_id:
-                data["species"] = species_id
+                data["species"] = str(species_id)
 
             map_res = await self._post(f"{self.BASE_URL}/json/get_string_ids", data=data)
             mapped = self._safe_json(map_res)
@@ -54,50 +60,45 @@ class StringDbClient(BaseClient):
             if not string_ids:
                 return records
 
-            # 2. Get interaction partners
+            # 2. Get interaction partners for top 5 mapped IDs
             partner_data: dict[str, Any] = {
-                "identifiers": "%0d".join(string_ids),
+                "identifiers": "%0d".join(string_ids[:5]),
                 "required_score": "400",
                 "caller_identity": caller_identity,
             }
-
             if species_id:
-                partner_data["species"] = species_id
+                partner_data["species"] = str(species_id)
 
             partner_res = await self._post(
                 f"{self.BASE_URL}/json/interaction_partners", data=partner_data
             )
-            interactions = self._safe_json(partner_res)
+            partners = self._safe_json(partner_res)
+            if not isinstance(partners, list):
+                return records
 
-            if not isinstance(interactions, list):
-                # Fallback to /json/network
-                net_res = await self._post(f"{self.BASE_URL}/json/network", data=partner_data)
-                interactions = self._safe_json(net_res)
+            for p in partners:
+                if not isinstance(p, dict):
+                    continue
+                p_a = p.get("preferredName_A")
+                p_b = p.get("preferredName_B")
+                score = float(p.get("score", 0.4))
 
-            if isinstance(interactions, list):
-                for item in interactions:
-                    if not isinstance(item, dict):
-                        continue
-                    score = float(item.get("score", 0.0))
-                    name_a = item.get("preferredName_A", "")
-                    name_b = item.get("preferredName_B", "")
-                    if score >= 0.4 and name_a:
-                        records.append(
-                            self._make_record(
-                                entity_a=name_a,
-                                relationship="protein_protein",
-                                entity_b=name_b or None,
-                                source_id=item.get("stringId_A", ""),
-                                source_score=score,
-                                endpoint="/json/interaction_partners",
-                                query_context={"targets": targets, "species": species_id},
-                                metadata=item,
-                            )
+                if p_a and p_b:
+                    records.append(
+                        self._make_record(
+                            entity_a=p_a,
+                            relationship="protein_protein",
+                            entity_b=p_b,
+                            source_id=f"string_{p_a}_{p_b}",
+                            source_score=score,
+                            endpoint=f"{self.BASE_URL}/json/interaction_partners",
+                            query_context={"targets": clean_targets, "species": species},
+                            metadata=p,
                         )
-
+                    )
         except httpx.HTTPError as e:
-            logger.warning("STRING DB HTTP Error: %s", e)
+            logger.warning("HTTP Error querying STRING DB: %s", e)
         except Exception as e:
-            logger.warning("STRING DB Error: %s", e)
+            logger.warning("Error querying STRING DB: %s", e)
 
         return records

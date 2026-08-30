@@ -10,6 +10,12 @@ from app.models.evidence import EvidenceRecord
 
 logger = logging.getLogger(__name__)
 
+KNOWN_ENSEMBL_FALLBACKS: dict[str, str] = {
+    "mammuthus_primigenius": "loxodonta_africana",
+    "mammuthus": "loxodonta_africana",
+    "smilodon_fatalis": "panthera_leo",
+}
+
 
 class EnsemblClient(BaseClient):
     BASE_URL = "https://rest.ensembl.org"
@@ -25,19 +31,22 @@ class EnsemblClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        species_name = (context.get("species_ensembl_name") if context else None) or (
+        raw_species = (context.get("species_ensembl_name") if context else None) or (
             species.lower().replace(" ", "_") if species else "homo_sapiens"
         )
+        species_name = KNOWN_ENSEMBL_FALLBACKS.get(raw_species, raw_species)
 
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
 
         for target in targets:
-            # Ensembl symbol lookup expects single clean gene symbols (no spaces or multi-word phrases)
-            if (
-                " " in target
-                or len(target) > 20
-                or not target.replace("-", "").replace("_", "").replace(";", "").isalnum()
-            ):
+            # Ensembl symbol lookup strictly requires valid gene symbols
+            is_symbol = (
+                target in candidate_genes
+                or (target.isupper() and 2 <= len(target) <= 10)
+                or (len(target) <= 8 and any(c.isdigit() for c in target) and not " " in target)
+            )
+            if not is_symbol or " " in target:
                 continue
 
             try:
@@ -127,9 +136,9 @@ class EnsemblClient(BaseClient):
                     logger.debug("Ensembl homology query skipped for %s: %s", target, h_err)
 
             except httpx.HTTPError as e:
-                logger.warning("Ensembl HTTP Error for %s: %s", target, e)
+                logger.debug("Ensembl HTTP Error for %s: %s", target, e)
             except Exception as e:
-                logger.warning("Ensembl Error for %s: %s", target, e)
+                logger.debug("Ensembl Error for %s: %s", target, e)
 
         return records
 
@@ -138,7 +147,8 @@ class EnsemblClient(BaseClient):
         Look up a gene symbol via Ensembl REST API (exact match only).
         Returns the parsed JSON dictionary, or None on failure (e.g. 404).
         """
-        url = f"{self.BASE_URL}/lookup/symbol/{species_ensembl_name}/{symbol}"
+        mapped_species = KNOWN_ENSEMBL_FALLBACKS.get(species_ensembl_name, species_ensembl_name)
+        url = f"{self.BASE_URL}/lookup/symbol/{mapped_species}/{symbol}"
         headers = {"Accept": "application/json"}
         try:
             res = await self._get(url, headers=headers)
@@ -147,9 +157,7 @@ class EnsemblClient(BaseClient):
                 return data
         except httpx.HTTPStatusError as e:
             if e.response.status_code != 404:
-                logger.warning(
-                    "Ensembl lookup error for %s in %s: %s", symbol, species_ensembl_name, e
-                )
+                logger.debug("Ensembl lookup error for %s in %s: %s", symbol, mapped_species, e)
         except Exception as e:
-            logger.warning("Ensembl lookup error for %s in %s: %s", symbol, species_ensembl_name, e)
+            logger.debug("Ensembl lookup error for %s in %s: %s", symbol, mapped_species, e)
         return None

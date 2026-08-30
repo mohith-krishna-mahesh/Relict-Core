@@ -24,11 +24,11 @@ class RetrievalSettings(BaseSettings):
     )
 
     # ── HTTP defaults & resilience ───────────────────────────────
-    http_timeout: float = 30.0
+    http_timeout: float = 10.0
     user_agent: str = "RelictCore/0.1.0 (https://github.com/relict-core)"
-    max_concurrency: int = 8
-    http_retries: int = 3
-    retry_backoff_factor: float = 0.5
+    max_concurrency: int = 10
+    http_retries: int = 1
+    retry_backoff_factor: float = 0.2
 
     # ── Cache & TTL ───────────────────────────────────────────────
     cache_db_path: str = "data/cache.sqlite3"

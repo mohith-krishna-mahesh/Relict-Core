@@ -271,29 +271,38 @@ class RetrievalOrchestrator:
         )
 
     def _build_targets(self, ctx: RetrievalContext) -> list[str]:
-        """Assemble retrieval targets from the context."""
+        """Assemble clean, prioritized retrieval targets from the context."""
         targets: list[str] = []
 
-        # Explicit retrieval targets from the structured objective
-        targets.extend(ctx.structured_objective.retrieval_targets)
-
-        # Candidate genes from the run configuration
+        # 1. Candidate genes from run configuration (highest priority)
         targets.extend(ctx.run_configuration.candidate_genes)
 
-        # Biological processes and relevant concepts as secondary targets
-        targets.extend(ctx.structured_objective.biological_processes)
-        targets.extend(ctx.structured_objective.relevant_concepts)
-        targets.extend(ctx.structured_objective.target_phenotypes)
+        # 2. Explicit retrieval targets and target phenotypes from structured objective
+        if ctx.structured_objective.retrieval_targets:
+            for t in ctx.structured_objective.retrieval_targets:
+                if t not in targets:
+                    targets.append(t)
 
-        # Deduplicate while preserving order
+        if ctx.structured_objective.target_phenotypes:
+            for p in ctx.structured_objective.target_phenotypes:
+                if p not in targets:
+                    targets.append(p)
+
+        # Filter out multi-word broad concept phrases and duplicates
         seen: set[str] = set()
-        unique: list[str] = []
+        clean_targets: list[str] = []
         for t in targets:
-            t_lower = t.strip().lower()
-            if t_lower and t_lower not in seen:
-                seen.add(t_lower)
-                unique.append(t.strip())
-        return unique
+            clean = t.strip()
+            clean_lower = clean.lower()
+            if not clean or clean_lower in seen:
+                continue
+            # Skip long meta-phrases
+            if len(clean.split()) > 4 or len(clean) > 40:
+                continue
+            seen.add(clean_lower)
+            clean_targets.append(clean)
+
+        return clean_targets
 
     def _build_query_context(
         self,

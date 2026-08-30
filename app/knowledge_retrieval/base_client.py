@@ -67,9 +67,10 @@ class BaseClient(abc.ABC):
     def _http(self) -> httpx.AsyncClient:
         if self._client is None or self._client.is_closed:
             self._client = httpx.AsyncClient(
-                timeout=httpx.Timeout(self.settings.http_timeout),
+                timeout=httpx.Timeout(self.settings.http_timeout, connect=4.0),
                 headers={"User-Agent": self.settings.user_agent},
                 follow_redirects=True,
+                limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
             )
         return self._client
 
@@ -146,12 +147,20 @@ class BaseClient(abc.ABC):
                     delay = backoff * (2**attempt)
                     await anyio.sleep(delay)
                     continue
-                logger.warning(
-                    "%s: HTTP %s from %s",
-                    self.source_name,
-                    exc.response.status_code,
-                    url,
-                )
+                if exc.response.status_code in (400, 404):
+                    logger.debug(
+                        "%s: HTTP %s from %s",
+                        self.source_name,
+                        exc.response.status_code,
+                        url,
+                    )
+                else:
+                    logger.warning(
+                        "%s: HTTP %s from %s",
+                        self.source_name,
+                        exc.response.status_code,
+                        url,
+                    )
                 raise
             except (httpx.TransportError, httpx.TimeoutException) as exc:
                 if attempt < max_retries:

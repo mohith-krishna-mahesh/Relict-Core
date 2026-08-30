@@ -185,8 +185,7 @@ async def submit_run(
         raise HTTPException(
             status_code=429,
             detail=(
-                f"Server is at capacity: {active_count} of "
-                f"{max_limit} concurrent run(s) active."
+                f"Server is at capacity: {active_count} of {max_limit} concurrent run(s) active."
             ),
         )
 

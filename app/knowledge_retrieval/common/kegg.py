@@ -25,13 +25,20 @@ class KeggClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        org = "hsa" if (species == "human" or not species) else species
+        # KEGG requires 3-4 letter organism code (e.g. hsa, ggo, mmu, dme, eco) or 'genes'
+        org = "hsa"
+        if context and context.get("species_kegg_code"):
+            org = context["species_kegg_code"]
+        elif species and len(species.split()) == 1 and len(species) <= 4:
+            org = species.lower()
 
-        for target in targets:
+        # KEGG find only accepts clean single gene symbols (no phrases)
+        valid_targets = [t for t in targets if " " not in t and len(t) <= 15 and t.isalnum()]
+
+        for target in valid_targets[:5]:
             try:
-                # Find gene
-                find_res = await self._http.get(f"{self.BASE_URL}/find/{org}/{target}")
-                find_res.raise_for_status()
+                # Find gene using cached GET
+                find_res = await self._get(f"{self.BASE_URL}/find/{org}/{target}")
                 lines = find_res.text.strip().split("\n")
 
                 gene_ids = []
@@ -42,10 +49,9 @@ class KeggClient(BaseClient):
                     if len(parts) >= 1:
                         gene_ids.append(parts[0])
 
-                for gene_id in gene_ids:
-                    # Link pathway
-                    link_res = await self._http.get(f"{self.BASE_URL}/link/pathway/{gene_id}")
-                    link_res.raise_for_status()
+                # Query top 2 gene IDs for pathways
+                for gene_id in gene_ids[:2]:
+                    link_res = await self._get(f"{self.BASE_URL}/link/pathway/{gene_id}")
                     link_lines = link_res.text.strip().split("\n")
 
                     for link_line in link_lines:

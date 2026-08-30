@@ -47,8 +47,8 @@ class VGPClient(BaseClient):
                     )
                 )
         except httpx.HTTPError as e:
-            logger.warning(f"Error querying VGP for {species}: {e}")
+            logger.debug("VGP query not available for %s: %s", species, e)
         except Exception as e:
-            logger.warning(f"Unexpected error in VGP query for {species}: {e}")
+            logger.debug("Unexpected error in VGP query for %s: %s", species, e)
 
         return records

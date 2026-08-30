@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 
@@ -26,7 +27,17 @@ class RCSBPDBClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        for target in targets:
+
+        # Only query RCSB PDB for clean gene/protein names or symbols (max 2 words, no long sentences)
+        valid_targets = [
+            t
+            for t in targets
+            if len(t.split()) <= 2
+            and len(t) <= 25
+            and not any(c in t for c in [":", ";", "/", "\\"])
+        ]
+
+        for target in valid_targets[:4]:
             try:
                 query_body = {
                     "query": {
@@ -35,42 +46,47 @@ class RCSBPDBClient(BaseClient):
                         "parameters": {"value": target},
                     },
                     "return_type": "entry",
-                    "request_options": {"pager": {"start": 0, "rows": 5}},
+                    "request_options": {"pager": {"start": 0, "rows": 3}},
                 }
 
                 raw_resp = await self._post(self.BASE_URL, json_data=query_body)
                 resp = self._safe_json(raw_resp)
-                if not isinstance(resp, dict):
-                    continue
-                if not resp or "result_set" not in resp:
+                if not isinstance(resp, dict) or "result_set" not in resp:
                     continue
 
-                for result in resp.get("result_set", []):
-                    entry_id = str(result["identifier"])
-                    score = float(result.get("score", 1.0))
+                entries = resp.get("result_set", [])[:3]
 
-                    data_raw = await self._get(f"{self.DATA_URL}/{entry_id}")
-                    data_resp = self._safe_json(data_raw)
-                    if not isinstance(data_resp, dict):
-                        continue
-                    if data_resp:
-                        struct_info: dict[str, Any] = data_resp.get("struct", {})
-                        title = struct_info.get("title", "")
-                        records.append(
-                            self._make_record(
-                                entity_a=target,
-                                relationship="protein_structure",
-                                entity_b=entry_id,
-                                source_id=entry_id,
-                                source_score=score,
-                                endpoint=self.BASE_URL,
-                                query_context={"target": target, "species": species},
-                                metadata={"title": title},
-                            )
+                async def _fetch_entry(res: dict[str, Any]) -> tuple[str, float, str]:
+                    entry_id = str(res["identifier"])
+                    score = float(res.get("score", 1.0))
+                    try:
+                        data_raw = await self._get(f"{self.DATA_URL}/{entry_id}")
+                        data_resp = self._safe_json(data_raw)
+                        title = ""
+                        if isinstance(data_resp, dict):
+                            struct_info: dict[str, Any] = data_resp.get("struct", {})
+                            title = struct_info.get("title", "")
+                        return entry_id, score, title
+                    except Exception:
+                        return entry_id, score, ""
+
+                results = await asyncio.gather(*[_fetch_entry(e) for e in entries])
+                for entry_id, score, title in results:
+                    records.append(
+                        self._make_record(
+                            entity_a=target,
+                            relationship="protein_structure",
+                            entity_b=entry_id,
+                            source_id=entry_id,
+                            source_score=score,
+                            endpoint=self.BASE_URL,
+                            query_context={"target": target, "species": species},
+                            metadata={"title": title},
                         )
+                    )
             except httpx.HTTPError as e:
-                logger.error("HTTP Error querying RCSB PDB for %s: %s", target, e)
+                logger.warning(f"HTTP Error querying RCSB PDB for {target}: {e}")
             except Exception as e:
-                logger.error("Error querying RCSB PDB for %s: %s", target, e)
+                logger.warning(f"Error querying RCSB PDB for {target}: {e}")
 
         return records

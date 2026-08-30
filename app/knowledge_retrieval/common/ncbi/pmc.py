@@ -36,49 +36,44 @@ class NCBIpmcClient(BaseClient):
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
 
-        for target in targets:
+        # Query PMC for top 2 specific targets
+        for target in targets[:2]:
             try:
                 term = target
                 if species:
                     term = f"{target} AND {species}"
 
-                search_params = self._get_params(db="pmc", term=term, retmax=5)
+                search_params = self._get_params(db="pmc", term=term, retmax=3)
                 search_raw = await self._get(f"{self.BASE_URL}/esearch.fcgi", params=search_params)
                 search_resp = self._safe_json(search_raw)
-                if not isinstance(search_resp, dict):
-                    continue
-
-                if not search_resp or "esearchresult" not in search_resp:
+                if not isinstance(search_resp, dict) or "esearchresult" not in search_resp:
                     continue
 
                 id_list: list[str] = search_resp["esearchresult"].get("idlist", [])
                 if not id_list:
                     continue
 
-                summary_params = self._get_params(db="pmc", id=",".join(id_list))
+                # Batch summary request for all PMC IDs
+                summary_params = self._get_params(db="pmc", id=",".join(id_list[:3]))
                 summary_raw = await self._get(
                     f"{self.BASE_URL}/esummary.fcgi", params=summary_params
                 )
                 summary_resp = self._safe_json(summary_raw)
-                if not isinstance(summary_resp, dict):
+                if not isinstance(summary_resp, dict) or "result" not in summary_resp:
                     continue
 
-                if not summary_resp or "result" not in summary_resp:
-                    continue
-
-                for pmc_id in id_list:
-                    doc_info = summary_resp["result"].get(pmc_id, {})
+                for pmcid in id_list[:3]:
+                    doc_info = summary_resp["result"].get(pmcid, {})
                     if not doc_info:
                         continue
 
                     title = doc_info.get("title", "")
-
                     records.append(
                         self._make_record(
                             entity_a=target,
                             relationship="literature_association",
-                            entity_b=title,
-                            source_id=f"PMC{pmc_id}",
+                            entity_b=title if title else f"PMC{pmcid}",
+                            source_id=pmcid,
                             source_score=1.0,
                             endpoint=f"{self.BASE_URL}/esummary.fcgi",
                             query_context={"term": term},
@@ -87,8 +82,8 @@ class NCBIpmcClient(BaseClient):
                     )
 
             except httpx.HTTPError as e:
-                logger.error("HTTP Error querying NCBI PMC for %s: %s", target, e)
+                logger.warning("HTTP Error querying NCBI PMC for %s: %s", target, e)
             except Exception as e:
-                logger.error("Error querying NCBI PMC for %s: %s", target, e)
+                logger.warning("Error querying NCBI PMC for %s: %s", target, e)
 
         return records

@@ -29,12 +29,18 @@ class GTExClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        for target in targets:
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
+        clean_targets = [
+            t
+            for t in targets
+            if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10)) and " " not in t
+        ]
+        for target in clean_targets[:4]:
             try:
                 records.extend(await self._query_expression(target))
                 records.extend(await self._query_eqtl(target))
             except Exception:
-                logger.warning("gtex: failed to query target %s", target, exc_info=True)
+                logger.debug("gtex: failed to query target %s", target)
         return records
 
     async def _query_expression(self, gene_symbol: str) -> list[EvidenceRecord]:

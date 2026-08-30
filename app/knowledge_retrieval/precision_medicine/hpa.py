@@ -34,12 +34,18 @@ class HPAClient(BaseClient):
         context: dict[str, Any] | None = None,
     ) -> list[EvidenceRecord]:
         records: list[EvidenceRecord] = []
-        for target in targets:
+        candidate_genes = set(context.get("candidate_genes", [])) if context else set()
+        clean_targets = [
+            t
+            for t in targets
+            if (t in candidate_genes or (t.isupper() and 2 <= len(t) <= 10)) and " " not in t
+        ]
+        for target in clean_targets[:4]:
             try:
                 target_records = await self._query_gene(target)
                 records.extend(target_records)
             except Exception:
-                logger.warning("hpa: failed to query target %s", target, exc_info=True)
+                logger.debug("hpa: failed to query target %s", target)
         return records
 
     async def _query_gene(self, ensembl_id: str) -> list[EvidenceRecord]:
