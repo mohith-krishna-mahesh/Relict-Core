@@ -636,8 +636,12 @@ class ConstraintEvaluator:
         aliases = {
             "preserve fertility": ConstraintType.PRESERVE_FERTILITY,
             "preserve_fertility": ConstraintType.PRESERVE_FERTILITY,
+            "fertility": ConstraintType.PRESERVE_FERTILITY,
             "maximize genetic diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
             "maximize_genetic_diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
+            "maximize diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
+            "maximize_diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
+            "diversity": ConstraintType.MAXIMIZE_GENETIC_DIVERSITY,
         }
 
         for constraint in constraints:
@@ -647,10 +651,11 @@ class ConstraintEvaluator:
 
             value = str(constraint).strip().lower()
 
-            if value not in aliases:
-                raise ValueError(f"Unsupported constraint: {constraint!r}")
-
-            normalized.add(aliases[value])
+            if value in aliases:
+                normalized.add(aliases[value])
+            else:
+                # Silently accept unmodeled/informational constraints
+                pass
 
         return normalized
 

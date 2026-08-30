@@ -235,7 +235,18 @@ def start_server(host: str | None = None, port: int | None = None) -> None:
     """Launch the FastAPI server."""
     h = host or settings.api_host
     p = port or settings.api_port
-    print(f"Starting Relict Core on {h}:{p}...")
+    env_file = Path(".env")
+    token = _read_existing_api_token(env_file)
+
+    print("=" * 60)
+    print(f"Starting Relict Core on http://{h}:{p}")
+    if token:
+        print(f"Active API Key: {token}")
+        print("Header: Authorization: Bearer <API_KEY>")
+    else:
+        print("Auth: Disabled (or run 'python3 -m app.cli bootstrap' to configure)")
+    print("=" * 60)
+
     uvicorn.run("app.main:app", host=h, port=p, reload=settings.debug)
 
 

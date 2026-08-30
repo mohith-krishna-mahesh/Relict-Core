@@ -83,9 +83,38 @@ def _heuristic_resolve(
             ambiguity_status=AmbiguityStatus.CLARIFICATION_REQUIRED,
         )
 
-    # Extract target candidates from candidate_genes or objective text
     genes = list(run_config.candidate_genes)
     species = project.species or "target species"
+
+    # Extract potential gene symbols (e.g. uppercase symbols of 2-8 chars)
+    symbol_pat = re.findall(r"\b[A-Z][A-Za-z0-9_-]{1,7}\b", text)
+    known_non_genes = {
+        "Increase",
+        "Decrease",
+        "Upregulate",
+        "Downregulate",
+        "Improve",
+        "Restore",
+        "Enhance",
+        "Apply",
+        "Using",
+        "Through",
+        "Design",
+        "Target",
+        "Genetic",
+        "Mutations",
+        "Precise",
+        "Gorilla",
+        "Gorillas",
+        "Human",
+        "Mammoth",
+        "Elephant",
+        "Wheat",
+        "Plant",
+        "Animal",
+    }
+    extracted_genes = [s for s in symbol_pat if s not in known_non_genes and s not in genes]
+    effective_genes = list(genes) + extracted_genes
 
     # Extract concise phenotype keywords/phrases from objective text
     raw_words = [w.strip(".,;:()\"'") for w in text.split() if len(w) > 2]
@@ -118,15 +147,52 @@ def _heuristic_resolve(
         "strategy",
         "simultaneously",
         "operating",
+        "increase",
+        "increasing",
+        "decrease",
+        "decreasing",
+        "upregulate",
+        "upregulating",
+        "downregulate",
+        "downregulating",
+        "improve",
+        "improving",
+        "in",
+        "by",
+        "of",
+        "to",
+        "a",
+        "an",
+        "is",
+        "are",
+        "on",
+        "as",
+        "at",
+        "target",
+        "pathway",
+        "pathways",
+        "cellular",
+        "metabolic",
+        "function",
+        "expression",
+        "activity",
+        "traits",
+        "phenotypes",
+        "species",
+        "animals",
+        "plants",
+        "organism",
+        "gorillas",
+        "gorilla",
+        "elephant",
+        "mammoth",
     }
-    pheno_terms = [w for w in raw_words if w.lower() not in stop_words and w not in genes]
+    pheno_terms = [w for w in raw_words if w.lower() not in stop_words and w not in effective_genes]
     target_phenos = pheno_terms[:5] if pheno_terms else [text[:40]]
 
     bio_procs = [f"{species} metabolic and cellular regulation"]
     concepts = [project.scope.value.lower(), f"{species} genetics"] + target_phenos
-    retrieval_targets = target_phenos + (
-        [f"{g} function in {species}" for g in genes] if genes else [f"{species} target pathways"]
-    )
+    retrieval_targets = list(effective_genes) + target_phenos + [f"{species} target pathways"]
 
     return StructuredObjective(
         target_phenotypes=target_phenos,
