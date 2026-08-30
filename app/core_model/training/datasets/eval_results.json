@@ -1,333 +1,463 @@
 [
   {
     "index": 0,
-    "objective": "I want to increase drought tolerance in rice by modifying stomatal density.",
+    "objective": "Increase drought tolerance in wheat by upregulating the DREB1A transcription factor pathway.",
     "expected": {
       "target_phenotypes": [
         "drought tolerance"
       ],
       "biological_processes": [
-        "stomatal regulation",
-        "transpiration control"
+        "abscisic acid signaling",
+        "osmotic stress response"
       ],
-      "desired_change": null,
+      "desired_change": "Increase drought tolerance via DREB1A pathway upregulation",
       "relevant_concepts": [
-        "stomatal density",
-        "drought response"
+        "DREB1A transcription factor",
+        "dehydration-responsive element binding"
       ],
       "retrieval_targets": [
-        "genes regulating stomatal density in Oryza sativa"
+        "DREB1A wheat orthologs",
+        "ABA signaling pathway genes"
       ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+      "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
         "drought tolerance"
       ],
       "biological_processes": [
-        "stomatal regulation"
+        "transcription factor pathway regulation"
       ],
-      "desired_change": "increase stomatal density",
+      "desired_change": "upregulate the DREB1A transcription factor pathway",
       "relevant_concepts": [
-        "stomatal density",
         "drought tolerance",
-        "rice"
+        "DREB1A transcription factor",
+        "pathway upregulation",
+        "wheat"
       ],
       "retrieval_targets": [
-        "stomatal density in rice",
-        "genetic factors affecting stomatal density",
-        "drought tolerance mechanisms in rice"
+        "DREB1A transcription factor pathway in wheat",
+        "drought tolerance mechanisms in wheat",
+        "upregulation of transcription factors"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "status_match": false
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "enhanced drought tolerance",
+        "reduced water loss under stress"
+      ],
+      "biological_processes": [
+        "abscisic acid signaling",
+        "osmotic regulation"
+      ],
+      "desired_change": "upregulation of DREB1A expression during drought",
+      "relevant_concepts": [
+        "drought stress response",
+        "transcription factor activity",
+        "wheat stress adaptation"
+      ],
+      "retrieval_targets": [
+        "DREB1A gene function",
+        "drought tolerance mechanisms in wheat",
+        "gene expression under water deficit"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 1,
-    "objective": "I want to decrease stomatal density in wheat to reduce water loss under drought conditions.",
+    "objective": "Reduce lignin content in alfalfa stems to improve digestibility for livestock.",
     "expected": {
       "target_phenotypes": [
-        "drought tolerance",
-        "reduced water loss"
+        "lignin content",
+        "forage digestibility"
       ],
       "biological_processes": [
-        "stomatal development",
-        "transpiration"
+        "lignin biosynthesis",
+        "phenylpropanoid pathway"
       ],
-      "desired_change": "decrease stomatal density",
+      "desired_change": "Decrease lignin content to improve digestibility",
       "relevant_concepts": [
-        "stomatal density",
-        "water use efficiency"
+        "monolignol biosynthesis",
+        "cinnamyl alcohol dehydrogenase"
       ],
       "retrieval_targets": [
-        "genes controlling stomatal density in Triticum aestivum"
+        "CAD gene alfalfa",
+        "lignin biosynthesis pathway genes"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "reduced water loss under drought conditions"
+        "improved digestibility for livestock"
       ],
       "biological_processes": [
-        "stomatal regulation",
-        "water balance in plants"
+        "lignin biosynthesis"
       ],
-      "desired_change": "decrease stomatal density",
+      "desired_change": "reduce lignin content",
       "relevant_concepts": [
-        "stomatal density",
-        "drought tolerance",
-        "wheat",
-        "water loss"
+        "lignin",
+        "alfalfa stems",
+        "digestibility",
+        "livestock nutrition"
       ],
       "retrieval_targets": [
-        "stomatal density in wheat",
-        "genetic factors affecting stomatal density",
-        "drought tolerance mechanisms in wheat"
+        "genes involved in lignin biosynthesis in alfalfa",
+        "lignin content measurement methods in alfalfa stems",
+        "digestibility assays for alfalfa stems"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "improved stem digestibility"
+      ],
+      "biological_processes": [
+        "lignin biosynthesis",
+        "cell wall structure"
+      ],
+      "desired_change": "decrease lignin content by 20% in stem tissue",
+      "relevant_concepts": [
+        "lignin reduction",
+        "alfalfa",
+        "digestibility",
+        "cell wall modification"
+      ],
+      "retrieval_targets": [
+        "lignin biosynthesis pathway",
+        "alfalfa stem structure",
+        "livestock digestion efficiency"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 2,
-    "objective": "Increase root depth in wheat to improve drought resistance.",
+    "objective": "Modify the flowering time gene in soybean.",
     "expected": {
-      "target_phenotypes": [
-        "increased root depth",
-        "drought resistance"
-      ],
-      "biological_processes": [
-        "root elongation",
-        "root system architecture"
-      ],
-      "desired_change": "increase root depth",
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
       "relevant_concepts": [
-        "deep rooting phenotype",
-        "drought avoidance"
+        "flowering time gene",
+        "soybean"
       ],
       "retrieval_targets": [
-        "genes regulating root depth in wheat"
+        "flowering time gene",
+        "soybean genetics"
       ],
-      "ambiguity_status": "CLEAR"
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
-      "target_phenotypes": [
-        "drought resistance"
-      ],
-      "biological_processes": [
-        "root development"
-      ],
-      "desired_change": "increase root depth",
-      "relevant_concepts": [
-        "root depth",
-        "drought resistance",
-        "wheat",
-        "root development"
-      ],
-      "retrieval_targets": [
-        "genes associated with root depth in wheat",
-        "genetic pathways for drought resistance in wheat"
-      ],
-      "ambiguity_status": "CLEAR"
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": true
+    "finetuned_match": true
   },
   {
     "index": 3,
-    "objective": "Reduce flowering time in Arabidopsis without affecting seed yield.",
+    "objective": "Adjust the seed oil content pathway in canola.",
     "expected": {
-      "target_phenotypes": [
-        "early flowering",
-        "unchanged seed yield"
-      ],
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
       "biological_processes": [
-        "floral transition",
-        "seed development"
+        "seed oil content pathway"
       ],
-      "desired_change": "decrease time to flowering while preserving seed yield",
+      "desired_change": null,
       "relevant_concepts": [
-        "flowering time genes",
-        "yield-flowering tradeoff"
+        "canola",
+        "seed oil content pathway"
       ],
       "retrieval_targets": [
-        "FT and CO gene regulation",
-        "flowering time QTLs"
+        "canola seed oil content pathway",
+        "genetic regulation of seed oil biosynthesis"
       ],
-      "ambiguity_status": "CLEAR"
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
-      "target_phenotypes": [
-        "reduced flowering time"
-      ],
-      "biological_processes": [
-        "flower development"
-      ],
-      "desired_change": "reduce flowering time",
-      "relevant_concepts": [
-        "Arabidopsis",
-        "flowering time",
-        "seed yield"
-      ],
-      "retrieval_targets": [
-        "genes associated with flowering time in Arabidopsis",
-        "genetic pathways regulating flowering time",
-        "phenotypic effects of flowering time mutations on seed yield"
-      ],
-      "ambiguity_status": "CLEAR"
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": true
+    "finetuned_match": true
   },
   {
     "index": 4,
-    "objective": "Modify the FT gene expression level in Arabidopsis.",
+    "objective": "Make rice healthier.",
     "expected": {
-      "target_phenotypes": [
-        "altered flowering time"
-      ],
-      "biological_processes": [
-        "floral transition",
-        "photoperiod signaling"
-      ],
-      "desired_change": null,
-      "relevant_concepts": [
-        "FT gene",
-        "flowering regulation"
-      ],
-      "retrieval_targets": [
-        "FT gene expression pathways in Arabidopsis"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "actual": {
       "target_phenotypes": null,
       "biological_processes": null,
-      "desired_change": "increase or decrease expression level of FT gene",
-      "relevant_concepts": [
-        "FT gene",
-        "gene expression level",
-        "Arabidopsis"
-      ],
-      "retrieval_targets": [
-        "FT gene function in Arabidopsis",
-        "gene expression regulation mechanisms",
-        "methods to modify gene expression"
-      ],
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": true
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
   },
   {
     "index": 5,
-    "objective": "Change the growth rate of maize.",
+    "objective": "Improve the crop overall.",
     "expected": {
-      "target_phenotypes": [
-        "altered growth rate"
-      ],
-      "biological_processes": [
-        "cell division",
-        "vegetative growth"
-      ],
+      "target_phenotypes": null,
+      "biological_processes": null,
       "desired_change": null,
-      "relevant_concepts": [
-        "growth rate regulation",
-        "maize development"
-      ],
-      "retrieval_targets": [
-        "genes associated with growth rate in Zea mays"
-      ],
+      "relevant_concepts": null,
+      "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
-      "target_phenotypes": [
-        "growth rate"
-      ],
-      "biological_processes": [
-        "cell division",
-        "metabolism"
-      ],
-      "desired_change": "increase",
-      "relevant_concepts": [
-        "maize",
-        "growth rate",
-        "genetic modification"
-      ],
-      "retrieval_targets": [
-        "maize growth rate genes",
-        "genetic pathways affecting growth rate"
-      ],
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
   },
   {
     "index": 6,
-    "objective": "Adjust the fruit ripening time in tomato.",
+    "objective": "Increase fruit size in tomato while also reducing susceptibility to Fusarium wilt.",
     "expected": {
       "target_phenotypes": [
-        "altered fruit ripening time"
+        "fruit size",
+        "disease resistance to Fusarium wilt"
       ],
       "biological_processes": [
-        "fruit ripening",
-        "ethylene signaling"
+        "cell expansion",
+        "pathogen defense response"
       ],
-      "desired_change": null,
+      "desired_change": "Increase fruit size and reduce Fusarium wilt susceptibility",
       "relevant_concepts": [
-        "ripening regulation",
-        "tomato fruit development"
+        "fruit weight QTL",
+        "I gene family resistance loci"
       ],
       "retrieval_targets": [
-        "genes controlling ripening time in Solanum lycopersicum"
+        "tomato fruit size QTL genes",
+        "Fusarium oxysporum resistance genes tomato"
       ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+      "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "fruit ripening time"
+        "increased fruit size",
+        "reduced susceptibility to Fusarium wilt"
       ],
       "biological_processes": [
-        "fruit ripening"
+        "fruit development",
+        "plant disease resistance"
       ],
-      "desired_change": null,
+      "desired_change": "increase fruit size and reduce susceptibility to Fusarium wilt",
       "relevant_concepts": [
         "tomato",
-        "ripening time",
-        "gene expression",
-        "developmental timing"
+        "fruit size",
+        "Fusarium wilt",
+        "disease resistance",
+        "genetic modification"
       ],
       "retrieval_targets": [
-        "genes involved in tomato fruit ripening",
-        "regulatory pathways affecting ripening time",
-        "phenotypic variation in ripening duration"
+        "genes associated with fruit size in tomato",
+        "genes involved in Fusarium wilt resistance in tomato",
+        "genetic pathways for fruit development and disease resistance"
       ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+      "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "larger fruit diameter",
+        "decreased Fusarium wilt incidence"
+      ],
+      "biological_processes": [
+        "fruit development",
+        "pathogen recognition"
+      ],
+      "desired_change": "enhanced fruit size and reduced disease susceptibility",
+      "relevant_concepts": [
+        "fruit growth regulation",
+        "Fusarium pathogenesis response"
+      ],
+      "retrieval_targets": [
+        "fruit size genes",
+        "Fusarium resistance mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 7,
-    "objective": "Make the plant better.",
+    "objective": "Boost cold tolerance in maize seedlings and shorten the time to flowering.",
     "expected": {
-      "target_phenotypes": null,
-      "biological_processes": null,
-      "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+      "target_phenotypes": [
+        "cold tolerance",
+        "flowering time"
+      ],
+      "biological_processes": [
+        "cold stress response",
+        "photoperiod signaling"
+      ],
+      "desired_change": "Increase cold tolerance and decrease time to flowering",
+      "relevant_concepts": [
+        "CBF/DREB cold response genes",
+        "ZmCCT flowering repressor"
+      ],
+      "retrieval_targets": [
+        "maize cold tolerance genes",
+        "ZmCCT ortholog"
+      ],
+      "ambiguity_status": "CLEAR"
     },
-    "actual": {
-      "target_phenotypes": null,
-      "biological_processes": null,
-      "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    "baseline_actual": {
+      "target_phenotypes": [
+        "cold tolerance in maize seedlings",
+        "time to flowering"
+      ],
+      "biological_processes": [
+        "cold stress response",
+        "flowering time regulation"
+      ],
+      "desired_change": "increase cold tolerance in maize seedlings and shorten time to flowering",
+      "relevant_concepts": [
+        "maize seedling development",
+        "cold tolerance",
+        "flowering time",
+        "genetic regulation of development"
+      ],
+      "retrieval_targets": [
+        "genes associated with cold tolerance in maize",
+        "genetic pathways regulating flowering time in maize",
+        "key regulatory genes in maize seedling response to cold"
+      ],
+      "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "enhanced cold tolerance in seedlings",
+        "reduced time to flowering"
+      ],
+      "biological_processes": [
+        "cold stress response pathways",
+        "flowering time regulation"
+      ],
+      "desired_change": "improved survival under low-temperature conditions and accelerated reproductive development",
+      "relevant_concepts": [
+        "cold tolerance",
+        "flowering time control",
+        "maize",
+        "seedling resilience"
+      ],
+      "retrieval_targets": [
+        "cold stress response genes in maize",
+        "flowering time regulators"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 8,
-    "objective": "Improve the crop.",
+    "objective": "Increase genetic diversity at the MHC class II locus in the captive black rhino population.",
     "expected": {
+      "target_phenotypes": [
+        "MHC class II diversity"
+      ],
+      "biological_processes": [
+        "adaptive immune diversity",
+        "major histocompatibility complex variation"
+      ],
+      "desired_change": "Increase MHC class II genetic diversity",
+      "relevant_concepts": [
+        "MHC class II DRA/DRB genes",
+        "heterozygosity"
+      ],
+      "retrieval_targets": [
+        "black rhino MHC class II sequences",
+        "captive breeding genetic diversity data"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "genetic diversity at MHC class II locus"
+      ],
+      "biological_processes": [
+        "immune response",
+        "genetic variation"
+      ],
+      "desired_change": "increase",
+      "relevant_concepts": [
+        "MHC class II locus",
+        "genetic diversity",
+        "captive population",
+        "immune response"
+      ],
+      "retrieval_targets": [
+        "MHC class II locus",
+        "genetic diversity",
+        "captive black rhino population",
+        "immune response mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
       "target_phenotypes": null,
       "biological_processes": null,
       "desired_change": null,
@@ -335,396 +465,480 @@
       "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
-      "target_phenotypes": null,
-      "biological_processes": null,
-      "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "status_match": true
+    "finetuned_match": false
   },
   {
     "index": 9,
-    "objective": "I want to do something with gene editing in cotton.",
+    "objective": "Reduce susceptibility to chytrid fungus in a captive breeding population of mountain yellow-legged frogs.",
     "expected": {
-      "target_phenotypes": null,
-      "biological_processes": null,
-      "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+      "target_phenotypes": [
+        "chytrid fungus susceptibility"
+      ],
+      "biological_processes": [
+        "antimicrobial peptide expression",
+        "skin immune defense"
+      ],
+      "desired_change": "Decrease susceptibility to Batrachochytrium dendrobatidis",
+      "relevant_concepts": [
+        "antimicrobial skin peptides",
+        "Bd resistance loci"
+      ],
+      "retrieval_targets": [
+        "frog antimicrobial peptide genes",
+        "Bd resistance QTL amphibians"
+      ],
+      "ambiguity_status": "CLEAR"
     },
-    "actual": {
-      "target_phenotypes": null,
-      "biological_processes": null,
-      "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    "baseline_actual": {
+      "target_phenotypes": [
+        "reduced susceptibility to chytrid fungus"
+      ],
+      "biological_processes": [
+        "immune response",
+        "fungal pathogen resistance"
+      ],
+      "desired_change": "reduce susceptibility",
+      "relevant_concepts": [
+        "chytrid fungus",
+        "mountain yellow-legged frog",
+        "captive breeding population",
+        "immune system"
+      ],
+      "retrieval_targets": [
+        "genetic factors influencing chytrid resistance in mountain yellow-legged frogs",
+        "immune pathway genes in amphibians",
+        "fungal pathogen defense mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "reduced infection rate by chytrid fungus"
+      ],
+      "biological_processes": [
+        "skin immunity",
+        "fungal pathogen defense"
+      ],
+      "desired_change": "decreased susceptibility to chytrid fungus in captive breeding populations",
+      "relevant_concepts": [
+        "chytrid fungus resistance",
+        "skin microbiome",
+        "captive breeding",
+        "fungal disease"
+      ],
+      "retrieval_targets": [
+        "chytrid fungus resistance in mountain yellow-legged frogs",
+        "skin immunity mechanisms",
+        "captive breeding disease susceptibility"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 10,
-    "objective": "Enhance disease resistance in soybean against Phytophthora sojae.",
+    "objective": "Adjust the disease resistance genes in the coral population.",
     "expected": {
-      "target_phenotypes": [
-        "disease resistance"
-      ],
-      "biological_processes": [
-        "pathogen defense response",
-        "immune signaling"
-      ],
-      "desired_change": "increase resistance to Phytophthora sojae",
-      "relevant_concepts": [
-        "disease resistance genes",
-        "plant-pathogen interaction"
-      ],
-      "retrieval_targets": [
-        "resistance genes against Phytophthora sojae in Glycine max"
-      ],
-      "ambiguity_status": "CLEAR"
-    },
-    "actual": {
-      "target_phenotypes": [
-        "disease resistance in soybean against Phytophthora sojae"
-      ],
-      "biological_processes": [
-        "defense response against pathogens"
-      ],
-      "desired_change": "enhance",
-      "relevant_concepts": [
-        "soybean",
-        "Phytophthora sojae",
-        "disease resistance",
-        "pathogen defense"
-      ],
-      "retrieval_targets": [
-        "genes associated with disease resistance in soybean",
-        "pathway mechanisms of Phytophthora sojae infection",
-        "existing genetic variants for resistance"
-      ],
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": false
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
   },
   {
     "index": 11,
-    "objective": "I'd like soybean plants that resist Phytophthora sojae infection better.",
+    "objective": "Modify heat stress tolerance in staghorn coral.",
     "expected": {
-      "target_phenotypes": [
-        "disease resistance"
-      ],
-      "biological_processes": [
-        "pathogen defense response",
-        "immune signaling"
-      ],
-      "desired_change": "increase resistance to Phytophthora sojae",
-      "relevant_concepts": [
-        "disease resistance genes",
-        "plant-pathogen interaction"
-      ],
-      "retrieval_targets": [
-        "resistance genes against Phytophthora sojae in Glycine max"
-      ],
-      "ambiguity_status": "CLEAR"
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "resistance to Phytophthora sojae infection"
+        "heat stress tolerance"
       ],
-      "biological_processes": [
-        "pathogen defense response in plants"
-      ],
-      "desired_change": "improved resistance to Phytophthora sojae infection",
+      "biological_processes": null,
+      "desired_change": null,
       "relevant_concepts": [
-        "soybean",
-        "Phytophthora sojae",
-        "disease resistance",
-        "plant immune response"
+        "heat stress tolerance",
+        "staghorn coral"
       ],
       "retrieval_targets": [
-        "genes associated with resistance to Phytophthora sojae in soybean",
-        "molecular mechanisms of plant pathogen defense"
+        "heat stress tolerance in staghorn coral",
+        "genetic mechanisms of heat stress tolerance"
       ],
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": false
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
   },
   {
     "index": 12,
-    "objective": "Boost cold tolerance in banana plants during winter months.",
+    "objective": "Help endangered species survive better.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 13,
+    "objective": "Make the panda population healthier.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 14,
+    "objective": "Increase disease resistance to canine distemper virus in the Amur tiger population and improve reproductive fitness.",
+    "expected": {
+      "target_phenotypes": [
+        "canine distemper resistance",
+        "reproductive fitness"
+      ],
+      "biological_processes": [
+        "viral immune response",
+        "reproductive physiology"
+      ],
+      "desired_change": "Increase distemper resistance and improve reproductive fitness",
+      "relevant_concepts": [
+        "CDV receptor genes",
+        "inbreeding depression"
+      ],
+      "retrieval_targets": [
+        "tiger CDV resistance genes",
+        "Amur tiger fertility genetics"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "disease resistance to canine distemper virus",
+        "reproductive fitness"
+      ],
+      "biological_processes": [
+        "immune response to viral infection",
+        "reproduction"
+      ],
+      "desired_change": "increase disease resistance to canine distemper virus and improve reproductive fitness",
+      "relevant_concepts": [
+        "canine distemper virus",
+        "disease resistance",
+        "reproductive fitness",
+        "Amur tiger"
+      ],
+      "retrieval_targets": [
+        "genetic factors associated with disease resistance to canine distemper virus in tigers",
+        "genetic factors influencing reproductive fitness in Amur tigers"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": false,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "resistance to canine distemper virus",
+        "increased reproductive success"
+      ],
+      "biological_processes": [
+        "viral pathogen defense mechanisms",
+        "reproductive hormone regulation"
+      ],
+      "desired_change": "stronger immune response to canine distemper and higher litter viability",
+      "relevant_concepts": [
+        "disease resistance",
+        "reproductive fitness",
+        "viral pathogen defense"
+      ],
+      "retrieval_targets": [
+        "canine distemper virus resistance in tigers",
+        "reproductive success metrics in wild tiger populations"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 15,
+    "objective": "Boost monarch butterfly cold tolerance during overwintering and increase resistance to Ophryocystis elektroscirrha parasite.",
+    "expected": {
+      "target_phenotypes": [
+        "cold tolerance",
+        "parasite resistance"
+      ],
+      "biological_processes": [
+        "cold stress physiology",
+        "immune response to protozoan parasite"
+      ],
+      "desired_change": "Increase overwintering cold tolerance and increase OE parasite resistance",
+      "relevant_concepts": [
+        "monarch overwintering physiology",
+        "OE resistance genetics"
+      ],
+      "retrieval_targets": [
+        "monarch butterfly cold tolerance genes",
+        "OE parasite resistance loci"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "cold tolerance during overwintering",
+        "resistance to Ophryocystis elektroscirrha parasite"
+      ],
+      "biological_processes": [
+        "cold tolerance",
+        "parasite resistance"
+      ],
+      "desired_change": "increase",
+      "relevant_concepts": [
+        "monarch butterfly",
+        "overwintering",
+        "cold tolerance",
+        "Ophryocystis elektroscirrha",
+        "parasite resistance"
+      ],
+      "retrieval_targets": [
+        "genetic factors influencing cold tolerance in monarch butterflies",
+        "genetic mechanisms of resistance to Ophryocystis elektroscirrha",
+        "overwintering behavior in monarch butterflies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "enhanced cold tolerance during overwintering",
+        "increased resistance to Ophryocystis elektroscirrha"
+      ],
+      "biological_processes": [
+        "cold stress response pathways",
+        "parasite immune recognition"
+      ],
+      "desired_change": "stronger survival during winter and reduced infection rate",
+      "relevant_concepts": [
+        "overwintering survival",
+        "parasite resistance",
+        "cold tolerance"
+      ],
+      "retrieval_targets": [
+        "monarch butterfly cold tolerance genes",
+        "Ophryocystis immune evasion mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 16,
+    "objective": "Increase cold tolerance in Asian elephant cell lines by introducing woolly mammoth cold-adaptation gene variants.",
     "expected": {
       "target_phenotypes": [
         "cold tolerance"
       ],
       "biological_processes": [
-        "cold stress response",
-        "membrane lipid regulation"
+        "thermogenesis",
+        "hemoglobin oxygen affinity regulation"
+      ],
+      "desired_change": "Increase cold tolerance via mammoth-derived gene variants",
+      "relevant_concepts": [
+        "mammoth TBX15",
+        "hemoglobin cold adaptation"
+      ],
+      "retrieval_targets": [
+        "woolly mammoth cold adaptation genes",
+        "Asian elephant genome comparison"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "cold tolerance"
+      ],
+      "biological_processes": [
+        "cold adaptation"
       ],
       "desired_change": "increase cold tolerance",
       "relevant_concepts": [
-        "cold stress genes",
-        "chilling injury"
+        "Asian elephant cell lines",
+        "woolly mammoth cold-adaptation gene variants"
       ],
       "retrieval_targets": [
-        "cold tolerance genes in Musa species"
+        "genes associated with cold adaptation in woolly mammoths",
+        "expression patterns of cold-adaptation genes in Asian elephant cell lines"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_match": true,
+    "finetuned_actual": {
       "target_phenotypes": [
-        "cold tolerance in banana plants"
+        "enhanced cold tolerance in Asian elephant cell lines"
       ],
       "biological_processes": [
-        "cold stress response",
-        "plant temperature regulation"
+        "cellular stress response under cold exposure",
+        "mitochondrial function under low-temperature conditions"
       ],
-      "desired_change": "increase cold tolerance",
+      "desired_change": "introduction of woolly mammoth cold-adaptation gene variants into Asian elephant cell lines",
       "relevant_concepts": [
-        "banana plant physiology",
-        "cold stress tolerance",
-        "winter survival in plants"
+        "cold-adaptation genes",
+        "mammalian thermal tolerance",
+        "cellular resilience"
       ],
       "retrieval_targets": [
-        "genes associated with cold tolerance in banana plants",
-        "molecular mechanisms of cold stress response in plants",
-        "winter survival traits in banana species"
+        "woolly mammoth cold-adaptation gene variants",
+        "Asian elephant cell line thermal response"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "status_match": true
-  },
-  {
-    "index": 13,
-    "objective": "Change seed oil content in canola.",
-    "expected": {
-      "target_phenotypes": [
-        "altered seed oil content"
-      ],
-      "biological_processes": [
-        "lipid biosynthesis",
-        "seed development"
-      ],
-      "desired_change": null,
-      "relevant_concepts": [
-        "oil content regulation",
-        "canola seed composition"
-      ],
-      "retrieval_targets": [
-        "genes controlling seed oil content in Brassica napus"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "actual": {
-      "target_phenotypes": [
-        "seed oil content"
-      ],
-      "biological_processes": [
-        "oil biosynthesis in seeds"
-      ],
-      "desired_change": "increase",
-      "relevant_concepts": [
-        "canola",
-        "seed oil content",
-        "oil biosynthesis",
-        "seed development"
-      ],
-      "retrieval_targets": [
-        "genes involved in oil biosynthesis in canola",
-        "regulatory elements affecting seed oil content",
-        "existing genetic variants linked to high oil content in canola"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "status_match": true
-  },
-  {
-    "index": 14,
-    "objective": "Reduce seed oil content in canola to below 30% by modifying FAE1 gene activity.",
-    "expected": {
-      "target_phenotypes": [
-        "reduced seed oil content"
-      ],
-      "biological_processes": [
-        "lipid biosynthesis",
-        "seed development"
-      ],
-      "desired_change": "decrease seed oil content below 30% via FAE1 modification",
-      "relevant_concepts": [
-        "FAE1 gene",
-        "seed oil biosynthesis"
-      ],
-      "retrieval_targets": [
-        "FAE1 gene function in Brassica napus"
-      ],
-      "ambiguity_status": "CLEAR"
-    },
-    "actual": {
-      "target_phenotypes": [
-        "reduced seed oil content"
-      ],
-      "biological_processes": [
-        "oil biosynthesis",
-        "gene regulation"
-      ],
-      "desired_change": "reduce seed oil content to below 30%",
-      "relevant_concepts": [
-        "FAE1 gene",
-        "seed oil content",
-        "gene activity modification"
-      ],
-      "retrieval_targets": [
-        "FAE1 gene function",
-        "oil biosynthesis pathway",
-        "seed oil content thresholds in canola"
-      ],
-      "ambiguity_status": "CLEAR"
-    },
-    "status_match": true
-  },
-  {
-    "index": 15,
-    "objective": "Increase yield in wheat while also improving drought tolerance and reducing water usage.",
-    "expected": {
-      "target_phenotypes": [
-        "increased yield",
-        "drought tolerance",
-        "reduced water usage"
-      ],
-      "biological_processes": [
-        "grain development",
-        "water use efficiency",
-        "stress response"
-      ],
-      "desired_change": "increase yield and drought tolerance simultaneously",
-      "relevant_concepts": [
-        "yield-stress tradeoff",
-        "multi-trait breeding"
-      ],
-      "retrieval_targets": [
-        "genes linked to yield under drought stress in wheat"
-      ],
-      "ambiguity_status": "CLEAR"
-    },
-    "actual": {
-      "target_phenotypes": [
-        "increased yield in wheat",
-        "improved drought tolerance",
-        "reduced water usage"
-      ],
-      "biological_processes": [
-        "water use efficiency",
-        "stomatal regulation",
-        "photosynthetic efficiency"
-      ],
-      "desired_change": "increase yield in wheat",
-      "relevant_concepts": [
-        "wheat yield",
-        "drought tolerance",
-        "water usage efficiency"
-      ],
-      "retrieval_targets": [
-        "genes associated with drought tolerance in wheat",
-        "genetic pathways for water use efficiency",
-        "yield-related traits in wheat"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "status_match": false
-  },
-  {
-    "index": 16,
-    "objective": "I want higher yield in wheat but I'm not sure if that conflicts with drought tolerance.",
-    "expected": {
-      "target_phenotypes": [
-        "increased yield"
-      ],
-      "biological_processes": [
-        "grain development"
-      ],
-      "desired_change": "increase yield, tradeoff with drought tolerance unresolved",
-      "relevant_concepts": [
-        "yield-stress tradeoff"
-      ],
-      "retrieval_targets": [
-        "genes linked to yield under drought stress in wheat"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "actual": {
-      "target_phenotypes": [
-        "higher yield in wheat",
-        "drought tolerance in wheat"
-      ],
-      "biological_processes": [
-        "photosynthesis",
-        "starch synthesis",
-        "water uptake"
-      ],
-      "desired_change": "higher yield",
-      "relevant_concepts": [
-        "wheat yield",
-        "drought tolerance",
-        "genetic trade-offs"
-      ],
-      "retrieval_targets": [
-        "genetic factors affecting wheat yield",
-        "genetic factors affecting drought tolerance",
-        "potential trade-offs between yield and drought tolerance"
-      ],
-      "ambiguity_status": "CLARIFICATION_REQUIRED"
-    },
-    "status_match": true
+    "finetuned_match": true
   },
   {
     "index": 17,
-    "objective": "Alter petal color in petunia from purple to white.",
+    "objective": "Reduce the risk of hemorrhagic disease in de-extinction candidate passenger pigeon embryos by editing band-tailed pigeon host immune genes.",
     "expected": {
       "target_phenotypes": [
-        "altered petal color"
+        "hemorrhagic disease susceptibility"
       ],
       "biological_processes": [
-        "anthocyanin biosynthesis",
-        "pigmentation"
+        "immune response",
+        "viral hemorrhagic disease pathway"
       ],
-      "desired_change": "change petal color from purple to white",
+      "desired_change": "Decrease hemorrhagic disease susceptibility",
       "relevant_concepts": [
-        "anthocyanin pathway",
-        "flower color genetics"
+        "band-tailed pigeon immune genes",
+        "passenger pigeon genome reconstruction"
       ],
       "retrieval_targets": [
-        "genes controlling anthocyanin biosynthesis in Petunia"
+        "band-tailed pigeon immune gene sequences",
+        "passenger pigeon reconstructed genome"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "white petal color"
+        "hemorrhagic disease in passenger pigeon embryos"
       ],
       "biological_processes": [
-        "pigment biosynthesis in petunia petals"
+        "immune response in host embryos",
+        "gene expression in host immune cells"
       ],
-      "desired_change": "change petal color from purple to white",
+      "desired_change": "reduce the risk of hemorrhagic disease",
       "relevant_concepts": [
-        "petunia petal color",
-        "anthocyanin biosynthesis",
-        "gene expression regulation"
+        "de-extinction",
+        "passenger pigeon",
+        "band-tailed pigeon",
+        "host immune genes",
+        "hemorrhagic disease"
       ],
       "retrieval_targets": [
-        "genes involved in petunia petal color",
-        "anthocyanin pathway genes",
-        "white petal mutation in petunia"
+        "genes associated with immune response in band-tailed pigeons",
+        "hemorrhagic disease mechanisms in pigeons",
+        "immune gene editing techniques in avian embryos"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "reduced incidence of hemorrhagic disease in early-stage embryos"
+      ],
+      "biological_processes": [
+        "innate immune response activation",
+        "pathogen recognition pathways"
+      ],
+      "desired_change": "deletion of a specific immune gene variant linked to hemorrhagic susceptibility",
+      "relevant_concepts": [
+        "disease resistance genes",
+        "avian immune evolution",
+        "de-extinction risk mitigation"
+      ],
+      "retrieval_targets": [
+        "hemorrhagic disease in passenger pigeons",
+        "immune gene variants in band-tailed pigeons",
+        "embryonic immune development in birds"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   },
   {
     "index": 18,
-    "objective": "Do something about the color of the flowers.",
+    "objective": "Modify the pigmentation genes in the dodo reconstruction project.",
     "expected": {
       "target_phenotypes": null,
       "biological_processes": null,
@@ -733,66 +947,1516 @@
       "retrieval_targets": null,
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "flower color"
+        "pigmentation"
+      ],
+      "biological_processes": [
+        "gene expression",
+        "pigment synthesis"
+      ],
+      "desired_change": null,
+      "relevant_concepts": [
+        "dodo reconstruction",
+        "pigmentation genes"
+      ],
+      "retrieval_targets": [
+        "dodo pigmentation genes",
+        "gene function in pigmentation"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 19,
+    "objective": "Adjust the body size trait in the thylacine de-extinction candidate.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "body size"
       ],
       "biological_processes": null,
       "desired_change": null,
       "relevant_concepts": [
-        "flower pigmentation"
+        "body size",
+        "thylacine",
+        "de-extinction"
       ],
       "retrieval_targets": [
-        "flower color genes",
-        "pigment biosynthesis pathways"
+        "body size trait in thylacine",
+        "de-extinction candidate genetics"
       ],
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
-    "status_match": true
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
   },
   {
-    "index": 19,
-    "objective": "Increase thermotolerance in tomato plants to withstand temperatures above 35C during flowering.",
+    "index": 20,
+    "objective": "Bring back the mammoth better.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 21,
+    "objective": "Make the de-extinction project work.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 22,
+    "objective": "Increase cold tolerance and increase body fat storage capacity in the mammoth de-extinction proxy embryos.",
     "expected": {
       "target_phenotypes": [
-        "heat tolerance"
+        "cold tolerance",
+        "body fat storage capacity"
       ],
       "biological_processes": [
-        "heat shock response",
-        "reproductive thermotolerance"
+        "thermogenesis",
+        "adipose tissue regulation"
       ],
-      "desired_change": "increase tolerance to temperatures above 35C during flowering",
+      "desired_change": "Increase cold tolerance and increase fat storage capacity",
       "relevant_concepts": [
-        "heat shock proteins",
-        "reproductive stress tolerance"
+        "mammoth adipose genes",
+        "brown fat thermogenesis"
       ],
       "retrieval_targets": [
-        "heat shock protein genes in Solanum lycopersicum"
+        "mammoth fat storage genes",
+        "elephant adipose gene comparison"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "actual": {
+    "baseline_actual": {
       "target_phenotypes": [
-        "thermotolerance in tomato plants"
+        "cold tolerance",
+        "body fat storage capacity"
       ],
       "biological_processes": [
-        "temperature response in plants",
-        "flowering stage regulation"
+        "cold tolerance",
+        "fat storage"
       ],
-      "desired_change": "increase thermotolerance",
+      "desired_change": "increase",
       "relevant_concepts": [
-        "tomato plants",
-        "flowering",
-        "temperature tolerance",
-        "thermal stress response"
+        "cold tolerance",
+        "body fat storage",
+        "mammoth de-extinction",
+        "embryo development"
       ],
       "retrieval_targets": [
-        "genes associated with thermotolerance in tomato",
-        "molecular pathways in flowering under heat stress",
-        "temperature thresholds in plant development"
+        "genes associated with cold tolerance in mammoths",
+        "genes involved in fat storage",
+        "embryo development pathways in mammoths"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": false,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "enhanced cold tolerance",
+        "increased body fat storage capacity"
+      ],
+      "biological_processes": [
+        "thermogenesis in adipose tissue",
+        "fat deposition regulation during development"
+      ],
+      "desired_change": "improved survival in cold environments and greater energy reserve capacity",
+      "relevant_concepts": [
+        "cold-adapted metabolism",
+        "fat storage in extinct mammals",
+        "embryonic development under cold stress"
+      ],
+      "retrieval_targets": [
+        "Mammuthus primigenius adipogenesis gene expression profiles",
+        "cold-tolerance phenotypic data from related elephant species"
       ],
       "ambiguity_status": "CLEAR"
     },
-    "status_match": true
+    "finetuned_match": true
+  },
+  {
+    "index": 23,
+    "objective": "Reduce disease susceptibility and increase gestation success rate in the woolly mammoth de-extinction surrogate program.",
+    "expected": {
+      "target_phenotypes": [
+        "disease susceptibility",
+        "gestation success rate"
+      ],
+      "biological_processes": [
+        "immune defense",
+        "reproductive/gestational physiology"
+      ],
+      "desired_change": "Decrease disease susceptibility and increase gestation success rate",
+      "relevant_concepts": [
+        "elephant gestational physiology",
+        "surrogate immune compatibility"
+      ],
+      "retrieval_targets": [
+        "elephant gestation genetics",
+        "immune compatibility surrogate species"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "reduced disease susceptibility",
+        "increased gestation success rate"
+      ],
+      "biological_processes": [
+        "disease resistance",
+        "gestation process"
+      ],
+      "desired_change": "reduce disease susceptibility and increase gestation success rate",
+      "relevant_concepts": [
+        "de-extinction",
+        "surrogate program",
+        "disease susceptibility",
+        "gestation success"
+      ],
+      "retrieval_targets": [
+        "genetic factors influencing disease resistance in mammals",
+        "genetic factors affecting gestation success in mammals",
+        "mammalian reproductive biology",
+        "surrogate breeding protocols"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": false,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "decreased incidence of developmental diseases in offspring",
+        "improved fetal viability during late gestation"
+      ],
+      "biological_processes": [
+        "embryonic development regulation",
+        "maternal-fetal signaling pathways"
+      ],
+      "desired_change": "stable reduction in disease incidence and increased gestation success in surrogate hosts",
+      "relevant_concepts": [
+        "disease resistance genes",
+        "gestational health in large mammals",
+        "de-extinction viability metrics"
+      ],
+      "retrieval_targets": [
+        "Mammuthus primigenius disease resistance gene clusters",
+        "gestational success data in Asian elephants"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 24,
+    "objective": "Reduce fertility in female Aedes aegypti mosquitoes using a gene drive targeting the doublesex gene.",
+    "expected": {
+      "target_phenotypes": [
+        "female fertility"
+      ],
+      "biological_processes": [
+        "sex determination",
+        "gene drive propagation"
+      ],
+      "desired_change": "Decrease female fertility via doublesex gene drive",
+      "relevant_concepts": [
+        "doublesex gene",
+        "CRISPR gene drive"
+      ],
+      "retrieval_targets": [
+        "Aedes aegypti doublesex sequence",
+        "gene drive doublesex efficacy studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "reduced fertility in female Aedes aegypti mosquitoes"
+      ],
+      "biological_processes": [
+        "reproduction in mosquitoes",
+        "gene expression in doublesex gene"
+      ],
+      "desired_change": "reduce fertility",
+      "relevant_concepts": [
+        "gene drive",
+        "doublesex gene",
+        "fertility in female mosquitoes"
+      ],
+      "retrieval_targets": [
+        "doublesex gene function in Aedes aegy's fertility",
+        "gene drive mechanisms in mosquitoes",
+        "fertility regulation in female mosquitoes"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "reduced fertility in female Aedes aegypti mosquitoes"
+      ],
+      "biological_processes": [
+        "gamete development",
+        "female reproductive physiology"
+      ],
+      "desired_change": "decreased fertility in female Aedes aegypti mosquitoes",
+      "relevant_concepts": [
+        "gene drive",
+        "doublesex gene",
+        "fertility reduction",
+        "Aedes aegypti"
+      ],
+      "retrieval_targets": [
+        "doublesex gene",
+        "Aedes aegypti",
+        "fertility reduction",
+        "gene drive"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 25,
+    "objective": "Increase male-bias in offspring sex ratio in invasive gray squirrel populations.",
+    "expected": {
+      "target_phenotypes": [
+        "offspring sex ratio"
+      ],
+      "biological_processes": [
+        "sex chromosome segregation",
+        "gene drive"
+      ],
+      "desired_change": "Increase male-biased sex ratio in offspring",
+      "relevant_concepts": [
+        "X-shredder gene drive",
+        "sex ratio distorter"
+      ],
+      "retrieval_targets": [
+        "gray squirrel sex determination genes",
+        "X-shredder drive mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "male-bias in offspring sex ratio"
+      ],
+      "biological_processes": [
+        "sex ratio determination in offspring",
+        "genetic mechanisms of sex determination"
+      ],
+      "desired_change": "increase male-bias in offspring sex ratio",
+      "relevant_concepts": [
+        "sex ratio",
+        "invasive species",
+        "gray squirrel",
+        "genetic engineering",
+        "offspring sex determination"
+      ],
+      "retrieval_targets": [
+        "genetic mechanisms of sex determination in gray squirrels",
+        "methods to manipulate offspring sex ratio",
+        "invasive gray squirrel populations"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "male-biased offspring ratio"
+      ],
+      "biological_processes": [
+        "sex-ratio determination during gametogenesis",
+        "X-Y chromosome segregation in sperm"
+      ],
+      "desired_change": "shift in offspring sex ratio toward males",
+      "relevant_concepts": [
+        "sex-ratio distorter genes",
+        "invasive species population dynamics",
+        "gametic selection"
+      ],
+      "retrieval_targets": [
+        "sex-ratio genes in gray squirrels",
+        "mechanisms of male-biased reproduction in invasive species",
+        "offspring sex ratio in wild squirrel populations"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 26,
+    "objective": "Modify the reproductive gene in the invasive rat population.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 27,
+    "objective": "Adjust the population growth rate parameter for screwworm flies.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 28,
+    "objective": "Control the mosquito population better.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 29,
+    "objective": "Deal with the invasive species problem.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 30,
+    "objective": "Decrease fertility and increase larval mortality in Anopheles gambiae via a combined gene drive strategy.",
+    "expected": {
+      "target_phenotypes": [
+        "fertility",
+        "larval mortality"
+      ],
+      "biological_processes": [
+        "gametogenesis",
+        "larval developmental pathway"
+      ],
+      "desired_change": "Decrease fertility and increase larval mortality",
+      "relevant_concepts": [
+        "combined gene drive constructs",
+        "larval lethal genes"
+      ],
+      "retrieval_targets": [
+        "Anopheles gambiae fertility genes",
+        "larval lethality gene drive studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "decreased fertility",
+        "increased larval mortality"
+      ],
+      "biological_processes": [
+        "fertility",
+        "larval development"
+      ],
+      "desired_change": "decrease fertility and increase larval mortality",
+      "relevant_concepts": [
+        "gene drive",
+        "Anopheles gambiae",
+        "fertility",
+        "larval mortality"
+      ],
+      "retrieval_targets": [
+        "gene drive mechanisms in Anopheles gambiae",
+        "fertility genes in Anopheles gambiae",
+        "larval mortality pathways in Anopheeles gambiae"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "reduced fertility",
+        "increased larval mortality"
+      ],
+      "biological_processes": [
+        "gamete formation",
+        "larval development"
+      ],
+      "desired_change": "a 50% reduction in viable offspring and a 30% increase in larval death within 7 days of hatching",
+      "relevant_concepts": [
+        "gene drive",
+        "fertility suppression",
+        "larval mortality"
+      ],
+      "retrieval_targets": [
+        "Anopheles gambiae",
+        "fertility suppression genes",
+        "larval development pathways"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 31,
+    "objective": "Reduce population growth rate and increase male-only offspring production in invasive carp populations.",
+    "expected": {
+      "target_phenotypes": [
+        "population growth rate",
+        "offspring sex ratio"
+      ],
+      "biological_processes": [
+        "reproductive rate regulation",
+        "sex determination"
+      ],
+      "desired_change": "Decrease population growth rate and increase male-only offspring",
+      "relevant_concepts": [
+        "YY supermale technology",
+        "daughterless carp gene"
+      ],
+      "retrieval_targets": [
+        "carp sex determination genes",
+        "daughterless gene drive carp"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "reduced population growth rate",
+        "increased male-only offspring production"
+      ],
+      "biological_processes": [
+        "reproduction",
+        "population growth"
+      ],
+      "desired_change": "reduce population growth rate and increase male-only offspring production",
+      "relevant_concepts": [
+        "invasive species",
+        "sex ratio bias",
+        "offspring sex determination",
+        "population dynamics"
+      ],
+      "retrieval_targets": [
+        "genetic mechanisms of sex determination in carp",
+        "population growth rate in invasive carp",
+        "male-only offspring production mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "reduced population growth rate",
+        "increased male-only offspring production"
+      ],
+      "biological_processes": [
+        "reproductive development",
+        "sex ratio determination"
+      ],
+      "desired_change": "shift in sex ratio to favor males and slow population expansion",
+      "relevant_concepts": [
+        "population growth rate",
+        "sex-ratio distorter genes",
+        "invasive species control"
+      ],
+      "retrieval_targets": [
+        "sex-ratio distorter genes in carp",
+        "population growth rate metrics",
+        "male offspring production in carp"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 32,
+    "objective": "Correct the sickle-cell-causing point mutation in the HBB gene in patient-derived hematopoietic stem cells.",
+    "expected": {
+      "target_phenotypes": [
+        "sickle hemoglobin production"
+      ],
+      "biological_processes": [
+        "hemoglobin synthesis",
+        "erythropoiesis"
+      ],
+      "desired_change": "Correct HBB point mutation to eliminate sickle hemoglobin",
+      "relevant_concepts": [
+        "HBB E6V mutation",
+        "base editing"
+      ],
+      "retrieval_targets": [
+        "HBB gene sequence",
+        "base editing HBB correction studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "sickle-cell disease"
+      ],
+      "biological_processes": [
+        "gene correction in hematopoietic stem cells"
+      ],
+      "desired_change": "correct the point mutation in the HBB gene",
+      "relevant_concepts": [
+        "HBB gene",
+        "point mutation",
+        "sickle-cell disease",
+        "hematopoietic stem cells",
+        "gene correction"
+      ],
+      "retrieval_targets": [
+        "HBB gene sequence",
+        "sickle-cell mutation site",
+        "hematopoietic stem cell genome editing protocols"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "normal hemoglobin function",
+        "absence of sickle cell morphology"
+      ],
+      "biological_processes": [
+        "hemoglobin folding",
+        "red blood cell deformability"
+      ],
+      "desired_change": "elimination of sickle cell mutation in HBB",
+      "relevant_concepts": [
+        "sickle-cell disease",
+        "HBB gene mutation",
+        "hematopoietic stem cells"
+      ],
+      "retrieval_targets": [
+        "HBB c.394G>A variant",
+        "patient-derived hematopoietic stem cells",
+        "sickle cell disease pathogenesis"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 33,
+    "objective": "Increase CAR-T cell persistence in patients with relapsed B-cell leukemia by knocking out the PD-1 checkpoint gene.",
+    "expected": {
+      "target_phenotypes": [
+        "CAR-T cell persistence"
+      ],
+      "biological_processes": [
+        "T cell exhaustion",
+        "immune checkpoint signaling"
+      ],
+      "desired_change": "Increase CAR-T persistence via PD-1 knockout",
+      "relevant_concepts": [
+        "PD-1/PDCD1 gene",
+        "T cell exhaustion markers"
+      ],
+      "retrieval_targets": [
+        "PDCD1 gene knockout CAR-T studies",
+        "T cell exhaustion pathway genes"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "increased CAR-T cell persistence in patients with relapsed B-cell leukemia"
+      ],
+      "biological_processes": [
+        "immune checkpoint regulation",
+        "T cell persistence",
+        "antitumor immune response"
+      ],
+      "desired_change": "increase CAR-T cell persistence",
+      "relevant_concepts": [
+        "CAR-T cells",
+        "PD-1 checkpoint gene",
+        "B-cell leukemia",
+        "tumor immune evasion",
+        "gene knockout"
+      ],
+      "retrieval_targets": [
+        "PD-1 gene function",
+        "CAR-T cell persistence mechanisms",
+        "immune checkpoint inhibition in leukemia",
+        "gene knockout efficiency in T cells"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "extended CAR-T cell survival in vivo",
+        "sustained anti-leukemic activity"
+      ],
+      "biological_processes": [
+        "immune checkpoint regulation",
+        "T-cell exhaustion pathways"
+      ],
+      "desired_change": "reduced PD-1 expression in CAR-T cells",
+      "relevant_concepts": [
+        "CAR-T cell engineering",
+        "PD-1/PD-L1 axis",
+        "T-cell exhaustion"
+      ],
+      "retrieval_targets": [
+        "PD-1 gene knockout in CAR-T cells",
+        "in vivo persistence of engineered T cells",
+        "relapsed B-cell leukemia treatment"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 34,
+    "objective": "Modify the CFTR gene expression level in cystic fibrosis patient cells.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "cystic fibrosis"
+      ],
+      "biological_processes": [
+        "gene expression"
+      ],
+      "desired_change": "increase CFTR gene expression",
+      "relevant_concepts": [
+        "CFTR gene",
+        "gene expression level",
+        "cystic fibrosis",
+        "patient cells"
+      ],
+      "retrieval_targets": [
+        "CFTR gene function",
+        "gene expression regulation in cystic fibrosis",
+        "cellular mechanisms of CFTR expression"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 35,
+    "objective": "Adjust the expression of the tumor suppressor gene TP53 in the tumor cell line.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": "Adjust the expression of the tumor suppressor gene TP53",
+      "relevant_concepts": [
+        "tumor suppressor gene",
+        "TP53",
+        "gene expression",
+        "tumor cell line"
+      ],
+      "retrieval_targets": [
+        "TP53 gene function",
+        "gene expression regulation in tumor cells",
+        "tumor suppressor mechanisms"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 36,
+    "objective": "Make the treatment work better for the patient.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 37,
+    "objective": "Improve the therapy.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 38,
+    "objective": "Increase insulin sensitivity and reduce chronic inflammation markers in patients with type 2 diabetes via targeted gene editing.",
+    "expected": {
+      "target_phenotypes": [
+        "insulin sensitivity",
+        "chronic inflammation"
+      ],
+      "biological_processes": [
+        "insulin signaling pathway",
+        "inflammatory cytokine signaling"
+      ],
+      "desired_change": "Increase insulin sensitivity and decrease chronic inflammation",
+      "relevant_concepts": [
+        "IRS-1 signaling",
+        "TNF-alpha pathway"
+      ],
+      "retrieval_targets": [
+        "insulin receptor substrate genes",
+        "inflammatory cytokine gene targets diabetes"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "increased insulin sensitivity",
+        "reduced chronic inflammation markers"
+      ],
+      "biological_processes": [
+        "insulin signaling",
+        "inflammation regulation"
+      ],
+      "desired_change": "increase insulin sensitivity and reduce chronic inflammation markers",
+      "relevant_concepts": [
+        "insulin sensitivity",
+        "chronic inflammation",
+        "type 2 diabetes",
+        "targeted gene editing"
+      ],
+      "retrieval_targets": [
+        "genes involved in insulin sensitivity",
+        "genes regulating chronic inflammation",
+        "gene editing approaches for type 2 diabetes"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "improved glucose uptake in muscle cells",
+        "decreased serum levels of C-reactive protein"
+      ],
+      "biological_processes": [
+        "insulin signaling cascade",
+        "inflammatory cytokine production"
+      ],
+      "desired_change": "enhanced insulin sensitivity and reduced systemic inflammation",
+      "relevant_concepts": [
+        "insulin receptor signaling",
+        "inflammatory pathways in metabolic disease"
+      ],
+      "retrieval_targets": [
+        "insulin receptor gene (INSR)",
+        "nuclear factor kappa B (NF-\u03b2B) pathway"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 39,
+    "objective": "Reduce amyloid-beta plaque accumulation and improve synaptic plasticity in an Alzheimer's disease model.",
+    "expected": {
+      "target_phenotypes": [
+        "amyloid-beta plaque burden",
+        "synaptic plasticity"
+      ],
+      "biological_processes": [
+        "amyloid precursor protein processing",
+        "long-term potentiation"
+      ],
+      "desired_change": "Decrease amyloid-beta accumulation and increase synaptic plasticity",
+      "relevant_concepts": [
+        "APP processing pathway",
+        "BDNF signaling"
+      ],
+      "retrieval_targets": [
+        "APP gene variants Alzheimer's",
+        "synaptic plasticity gene targets"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "reduce amyloid-beta plaque accumulation",
+        "improve synaptic plasticity"
+      ],
+      "biological_processes": [
+        "amyloid-beta clearance",
+        "synaptic plasticity"
+      ],
+      "desired_change": "reduce amyloid-beta plaque accumulation",
+      "relevant_concepts": [
+        "amyloid-beta",
+        "synaptic plasticity",
+        "Alzheimer's disease model"
+      ],
+      "retrieval_targets": [
+        "amyloid-beta plaque accumulation",
+        "synaptic plasticity",
+        "Alzheimer's disease model mechanisms"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "decreased amyloid-beta plaque burden",
+        "enhanced synaptic connectivity"
+      ],
+      "biological_processes": [
+        "amyloid-beta clearance",
+        "neurotransmitter release efficiency"
+      ],
+      "desired_change": "reduced amyloid-beta plaque load by 40% and improved synaptic function in hippocampal circuits",
+      "relevant_concepts": [
+        "amyloid-beta pathology",
+        "synaptic plasticity",
+        "neurodegeneration"
+      ],
+      "retrieval_targets": [
+        "amyloid-beta accumulation in transgenic mouse models",
+        "synaptic function assays in Alzheimer's models"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 40,
+    "objective": "Increase biofuel precursor yield in engineered E. coli by upregulating the fatty acid biosynthesis pathway.",
+    "expected": {
+      "target_phenotypes": [
+        "biofuel precursor yield"
+      ],
+      "biological_processes": [
+        "fatty acid biosynthesis",
+        "metabolic flux regulation"
+      ],
+      "desired_change": "Increase fatty acid-derived biofuel precursor yield",
+      "relevant_concepts": [
+        "FabA/FabB enzymes",
+        "acyl-ACP thioesterase"
+      ],
+      "retrieval_targets": [
+        "E. coli fatty acid biosynthesis genes",
+        "thioesterase overexpression yield studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "increased biofuel precursor yield"
+      ],
+      "biological_processes": [
+        "fatty acid biosynthesis"
+      ],
+      "desired_change": "upregulate the fatty acid biosynthesis pathway",
+      "relevant_concepts": [
+        "E. coli",
+        "biofuel precursor yield",
+        "fatty acid biosynthesis pathway",
+        "upregulation"
+      ],
+      "retrieval_targets": [
+        "fatty acid biosynthesis genes in E. coli",
+        "regulatory elements controlling fatty acid biosynthesis",
+        "biofuel precursor yield metrics in engineered E. coli"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "higher fatty acid production per cell generation"
+      ],
+      "biological_processes": [
+        "fatty acid biosynthesis",
+        "acyl-CoA metabolism"
+      ],
+      "desired_change": "upregulation of fatty acid biosynthesis pathway",
+      "relevant_concepts": [
+        "biofuel precursor synthesis",
+        "pathway-flux genes",
+        "metabolic circuit design"
+      ],
+      "retrieval_targets": [
+        "fatty acid biosynthesis operon in E. coli",
+        "regulatory feedback-loop genes",
+        "acyl-CoA synthetase activity"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 41,
+    "objective": "Reduce off-target toxic byproduct formation in engineered yeast producing artemisinic acid.",
+    "expected": {
+      "target_phenotypes": [
+        "toxic byproduct formation"
+      ],
+      "biological_processes": [
+        "terpenoid biosynthesis pathway",
+        "metabolic byproduct regulation"
+      ],
+      "desired_change": "Decrease toxic byproduct formation in artemisinic acid pathway",
+      "relevant_concepts": [
+        "amorphadiene synthase",
+        "mevalonate pathway byproducts"
+      ],
+      "retrieval_targets": [
+        "yeast artemisinic acid pathway genes",
+        "byproduct minimizing pathway engineering studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "off-target toxic byproduct formation"
+      ],
+      "biological_processes": [
+        "toxic byproduct formation in yeast",
+        "artemisinic acid production in yeast"
+      ],
+      "desired_change": "reduce",
+      "relevant_concepts": [
+        "yeast metabolism",
+        "off-target effects",
+        "toxic byproducts",
+        "artemisinic acid biosynthesis"
+      ],
+      "retrieval_targets": [
+        "genetic pathways in yeast",
+        "toxic byproduct formation mechanisms",
+        "artemisinic acid production pathways",
+        "off-target effects in engineered yeast"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "decreased off-target toxic byproduct formation"
+      ],
+      "biological_processes": [
+        "biosynthetic pathway activity",
+        "toxic byproduct accumulation"
+      ],
+      "desired_change": "reduced formation of toxic byproducts during artemisinic acid biosynthesis",
+      "relevant_concepts": [
+        "biosynthetic pathway fidelity",
+        "toxic byproduct generation",
+        "yeast metabolic engineering"
+      ],
+      "retrieval_targets": [
+        "artemisinic acid biosynthesis in yeast",
+        "toxic byproduct profiles in engineered yeast",
+        "pathway-specific toxicity metrics"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 42,
+    "objective": "Modify the biosensor sensitivity threshold in the engineered bacterial reporter strain.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "biosensor sensitivity"
+      ],
+      "biological_processes": [
+        "signal transduction in bacterial reporter strains"
+      ],
+      "desired_change": "modify the sensitivity threshold",
+      "relevant_concepts": [
+        "biosensor sensitivity",
+        "sensitivity threshold",
+        "engineered bacterial reporter strains"
+      ],
+      "retrieval_targets": [
+        "biosensor sensitivity threshold",
+        "bacterial reporter strain engineering",
+        "sensitivity modulation in biosensors"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 43,
+    "objective": "Adjust the growth rate of the minimal genome synthetic organism.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "growth rate"
+      ],
+      "biological_processes": [
+        "cell growth"
+      ],
+      "desired_change": "adjust growth rate",
+      "relevant_concepts": [
+        "minimal genome",
+        "synthetic organism",
+        "growth rate"
+      ],
+      "retrieval_targets": [
+        "growth rate in minimal genome synthetic organisms",
+        "genetic components affecting growth rate"
+      ],
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 44,
+    "objective": "Make the synthetic organism function better.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 45,
+    "objective": "Improve the biosensor.",
+    "expected": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": null,
+      "biological_processes": null,
+      "desired_change": null,
+      "relevant_concepts": null,
+      "retrieval_targets": null,
+      "ambiguity_status": "CLARIFICATION_REQUIRED"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 46,
+    "objective": "Increase production titer of the target biopolymer and decrease cell lysis rate in the engineered Bacillus subtilis strain.",
+    "expected": {
+      "target_phenotypes": [
+        "biopolymer production titer",
+        "cell lysis rate"
+      ],
+      "biological_processes": [
+        "polymer biosynthesis pathway",
+        "cell wall integrity/autolysis regulation"
+      ],
+      "desired_change": "Increase biopolymer titer and decrease cell lysis rate",
+      "relevant_concepts": [
+        "PHA biosynthesis operon",
+        "autolysin regulation"
+      ],
+      "retrieval_targets": [
+        "Bacillus subtilis PHA biosynthesis genes",
+        "autolysin gene regulation studies"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "increased production titer of the target biopolymer",
+        "decreased cell lysis rate"
+      ],
+      "biological_processes": [
+        "biopolymer production",
+        "cell lysis"
+      ],
+      "desired_change": "increase production titer of the target biopolymer and decrease cell lysis rate",
+      "relevant_concepts": [
+        "production titer",
+        "cell lysis rate",
+        "Bacillus subtilis",
+        "biopolymer production",
+        "cell lysis"
+      ],
+      "retrieval_targets": [
+        "production titer of biopolymers in Bacillus subtilis",
+        "cell lysis rate in Bacillus subtilis",
+        "genetic or metabolic pathways affecting biopolymer production",
+        "genetic or metabolic pathways affecting cell lysis"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "higher biopolymer yield per cell generation",
+        "reduced cell lysis during fermentation"
+      ],
+      "biological_processes": [
+        "biosynthetic pathway flux",
+        "cell membrane stability"
+      ],
+      "desired_change": "improved biopolymer production efficiency and cell viability",
+      "relevant_concepts": [
+        "biosynthetic operon components",
+        "cell lysis mechanisms",
+        "fermentation performance"
+      ],
+      "retrieval_targets": [
+        "biopolymer biosynthesis in B. subtilis",
+        "cell lysis kinetics in fermentation"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
+  },
+  {
+    "index": 47,
+    "objective": "Increase substrate utilization range and reduce byproduct acetate secretion in engineered E. coli for bioplastic production.",
+    "expected": {
+      "target_phenotypes": [
+        "substrate utilization range",
+        "acetate secretion"
+      ],
+      "biological_processes": [
+        "carbon catabolite repression",
+        "central carbon metabolism"
+      ],
+      "desired_change": "Increase substrate range and decrease acetate secretion",
+      "relevant_concepts": [
+        "PTS system regulation",
+        "acetate overflow metabolism"
+      ],
+      "retrieval_targets": [
+        "E. coli substrate utilization genes",
+        "acetate overflow pathway genes"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_actual": {
+      "target_phenotypes": [
+        "increased substrate utilization range",
+        "reduced byproduct acetate secretion"
+      ],
+      "biological_processes": [
+        "substrate metabolism",
+        "byproduct secretion"
+      ],
+      "desired_change": "increase substrate utilization range and reduce acetate secretion",
+      "relevant_concepts": [
+        "E. coli",
+        "bioplastic production",
+        "substrate utilization",
+        "acetate secretion"
+      ],
+      "retrieval_targets": [
+        "genetic modifications for substrate utilization in E. coli",
+        "pathways affecting acetate secretion in E. coli",
+        "bioplastic production in engineered E. coli"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "baseline_match": true,
+    "finetuned_actual": {
+      "target_phenotypes": [
+        "broader substrate utilization",
+        "reduced acetate byproduct secretion"
+      ],
+      "biological_processes": [
+        "substrate uptake",
+        "metabolic byproduct formation"
+      ],
+      "desired_change": "improved substrate range and lower acetate byproduct",
+      "relevant_concepts": [
+        "substrate utilization range",
+        "byproduct secretion",
+        "bioplastic biosynthesis"
+      ],
+      "retrieval_targets": [
+        "E. coli substrate uptake pathways",
+        "acetate byproduct formation"
+      ],
+      "ambiguity_status": "CLEAR"
+    },
+    "finetuned_match": true
   }
 ]
