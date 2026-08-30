@@ -165,6 +165,10 @@ class StrategySearch:
 
         self.constraint_evaluator = ConstraintEvaluator(constraints)
 
+        self._distance_cache: dict[tuple[str, str], int | None] = {}
+        self._path_cache: dict[tuple[str, str], list[str] | None] = {}
+        self._undirected: Any = None
+
     # =========================================================================
     # Public API
     # =========================================================================
@@ -1133,6 +1137,11 @@ class StrategySearch:
     # Graph utilities
     # =========================================================================
 
+    def _get_undirected(self, graph: nx.MultiDiGraph) -> Any:
+        if getattr(self, "_undirected", None) is None:
+            self._undirected = graph.to_undirected()
+        return self._undirected
+
     def _distances_to_targets(
         self,
         graph: nx.MultiDiGraph,
@@ -1143,16 +1152,13 @@ class StrategySearch:
 
         Undirected traversal is used for relevance discovery because
         EvidenceRecord direction does not necessarily mean causal direction.
-
-        The actual edge relationships remain preserved and available for
-        later scoring/interpretation.
         """
-
-        undirected = graph.to_undirected()
-
+        undirected = self._get_undirected(graph)
         distances: dict[str, int] = {}
 
         for target in target_nodes:
+            if target not in undirected:
+                continue
             lengths = nx.single_source_shortest_path_length(
                 undirected,
                 target,
@@ -1171,22 +1177,29 @@ class StrategySearch:
         source: str,
         target: str,
     ) -> int | None:
+        key = (source, target)
+        if key in self._distance_cache:
+            return self._distance_cache[key]
 
-        undirected = graph.to_undirected()
+        undirected = self._get_undirected(graph)
 
         try:
-            return int(
+            dist = int(
                 nx.shortest_path_length(
                     undirected,
                     source=source,
                     target=target,
                 )
             )
-
+            self._distance_cache[key] = dist
+            self._distance_cache[(target, source)] = dist
+            return dist
         except (
             nx.NetworkXNoPath,
             nx.NodeNotFound,
         ):
+            self._distance_cache[key] = None
+            self._distance_cache[(target, source)] = None
             return None
 
     def _shortest_path(
@@ -1195,20 +1208,25 @@ class StrategySearch:
         source: str,
         target: str,
     ) -> list[str] | None:
+        key = (source, target)
+        if key in self._path_cache:
+            return self._path_cache[key]
 
-        undirected = graph.to_undirected()
+        undirected = self._get_undirected(graph)
 
         try:
-            return nx.shortest_path(
+            path = nx.shortest_path(
                 undirected,
                 source=source,
                 target=target,
             )
-
+            self._path_cache[key] = path
+            return path
         except (
             nx.NetworkXNoPath,
             nx.NodeNotFound,
         ):
+            self._path_cache[key] = None
             return None
 
     def _incident_edges(
