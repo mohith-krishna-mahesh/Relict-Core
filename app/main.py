@@ -62,6 +62,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     repository = SQLiteRunRepository(db_conn)
     event_bus = InMemoryRunEventBus()
 
+    # Reconcile stale in-flight runs from previous server sessions
+    from app.models.run_state import RunState, RunStatus
+
+    for state in repository.all_states():
+        if state.status in (RunStatus.PENDING, RunStatus.QUEUED, RunStatus.RUNNING):
+            failed_state = RunState(
+                run_id=state.run_id,
+                status=RunStatus.FAILED,
+                errors=["Run interrupted: server was restarted during execution."],
+            )
+            repository.save_state(failed_state)
+
     # Wire real production stage implementations
     resolver = CoreModelObjectiveResolver()
     retriever = RetrievalOrchestrator()

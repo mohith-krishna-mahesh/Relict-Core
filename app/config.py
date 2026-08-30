@@ -120,7 +120,7 @@ class Settings(BaseSettings):
     # Run Manager
     # ------------------------------------------------------------------
     max_concurrent_runs: int = Field(
-        default=1,
+        default=4,
         ge=1,
         description="Maximum number of pipeline runs that may execute concurrently.",
     )

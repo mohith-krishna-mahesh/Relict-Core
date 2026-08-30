@@ -177,17 +177,16 @@ async def submit_run(
     from app.config import settings  # noqa: PLC0415
 
     # ── CAPACITY PRE-CHECK ────────────────────────────────────────────
-    # Best-effort check before creating the background task.  Counts
+    # Best-effort check before creating the background task. Counts
     # states with PENDING/QUEUED/RUNNING status in the repository.
-    # Note: this approximates the orchestrator's internal _active_runs
-    # counter -- they are separate state (known limitation, flagged).
+    max_limit = getattr(orchestrator, "_max_concurrent_runs", settings.max_concurrent_runs)
     active_count = sum(1 for s in repository.all_states() if s.status in _ACTIVE_STATUSES)
-    if active_count >= settings.max_concurrent_runs:
+    if active_count >= max_limit:
         raise HTTPException(
             status_code=429,
             detail=(
                 f"Server is at capacity: {active_count} of "
-                f"{settings.max_concurrent_runs} concurrent run(s) active."
+                f"{max_limit} concurrent run(s) active."
             ),
         )
 
