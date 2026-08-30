@@ -49,11 +49,14 @@ tracker class.  ``state.py`` remains untouched.
 
 from __future__ import annotations
 
+import logging
 import threading
 import time
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
+
+logger = logging.getLogger(__name__)
 
 from app.models.failures import FailureCode, FailureDetail
 from app.models.post_plan import PostPlanResult, PostPlanStatus
@@ -270,6 +273,7 @@ class RunOrchestrator:
         state = self._enter_stage(state, PipelineStage.OBJECTIVE_RESOLUTION)
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info("[%s] Stage 1/5: Resolving objective and species context...", run_id)
 
         try:
             structured_objective = await self._resolver.resolve(project, run_config)
@@ -333,6 +337,10 @@ class RunOrchestrator:
         state = self._enter_stage(state, PipelineStage.RETRIEVAL)
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info(
+            "[%s] Stage 2/5: Knowledge Retrieval across biological sources...",
+            run_id,
+        )
 
         try:
             retrieval_result = await self._retriever.retrieve(retrieval_ctx)
@@ -387,6 +395,9 @@ class RunOrchestrator:
         state = state.model_copy(update={"progress": tracker.progress})
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info(
+            "[%s] Stage 2/5 Complete: Retrieved %d evidence records.", run_id, len(evidence)
+        )
 
         # ------------------------------------------------------------------
         # Stage 3: PLANNING
@@ -409,6 +420,7 @@ class RunOrchestrator:
         state = self._enter_stage(state, PipelineStage.PLANNING)
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info("[%s] Stage 3/5: Strategic Planning & Candidate Graph Traversal...", run_id)
 
         try:
             strategies = await self._planner.plan(retrieval_ctx, evidence)
@@ -444,6 +456,11 @@ class RunOrchestrator:
         state = state.model_copy(update={"progress": tracker.progress})
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info(
+            "[%s] Stage 3/5 Complete: Generated %d candidate strategies.",
+            run_id,
+            len(strategies),
+        )
 
         # ------------------------------------------------------------------
         # Stage 4: VALIDATION
@@ -467,6 +484,7 @@ class RunOrchestrator:
         state = self._enter_stage(state, PipelineStage.VALIDATION)
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info("[%s] Stage 4/5: Plan Validation & Constraint Verification...", run_id)
 
         try:
             validation = await self._validator.validate(selected_strategy, run_config)
@@ -504,6 +522,7 @@ class RunOrchestrator:
         state = state.model_copy(update={"progress": tracker.progress})
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info("[%s] Stage 4/5 Complete: Top strategy validated successfully.", run_id)
 
         # ------------------------------------------------------------------
         # Stage 5: POST-PLAN ANALYSIS
@@ -534,6 +553,7 @@ class RunOrchestrator:
         state = state.model_copy(update={"post_plan_analysis_status": post_plan_status})
         self._repo.save_state(state)
         self._publish(state, warnings=warnings)
+        logger.info("[%s] Stage 5/5: Post-Plan Analysis & Explanation Generation...", run_id)
 
         try:
             post_plan = await self._analyzer.analyze(selected_strategy, evidence, run_config)
