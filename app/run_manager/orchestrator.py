@@ -168,22 +168,25 @@ class RunOrchestrator:
         self,
         project: ProjectContext,
         run_config: RunConfiguration,
+        run_id: str | None = None,
     ) -> RunResult:
         """
-        Execute the full pipeline and return the final ``RunResult``.
+        Admit and execute a full pipeline run.
 
-        Transitions the run through PENDING → QUEUED → RUNNING, then either
-        COMPLETE (success or partial post-plan) or FAILED (hard short-circuit).
+        Parameters
+        ----------
+        project:
+            The immutable research context for this run.
+        run_config:
+            Operational parameters (candidates, max_edits, constraints, strategy).
+        run_id:
+            Optional pre-allocated run identifier (e.g. from route layer) to ensure
+            event bus alignment with client subscriptions.
 
-        Phase 2E additions
-        ------------------
-        - Raises ``RunAtCapacityError`` (before any state is persisted) when
-          the number of active runs is already at ``max_concurrent_runs``.
-        - Checks elapsed wall-clock time at each stage boundary and
-          short-circuits to FAILED with ``FailureCode.RUN_TIMEOUT`` if the
-          budget is exceeded.  This is a between-stages check — a single stage
-          that hangs past the timeout will not be interrupted mid-stage
-          (known limitation; relevant once Phase 6 wires real slow components).
+        Returns
+        -------
+        RunResult
+            Complete or failed run result with all accumulated outputs.
         """
         # ── CAPACITY CHECK ─────────────────────────────────────────────
         # Atomic: check and increment under the lock.  If already at capacity,
@@ -197,7 +200,7 @@ class RunOrchestrator:
             self._active_runs += 1
 
         try:
-            return await self._execute_inner(project, run_config)
+            return await self._execute_inner(project, run_config, run_id=run_id)
         finally:
             with self._active_runs_lock:
                 self._active_runs -= 1
@@ -206,12 +209,13 @@ class RunOrchestrator:
         self,
         project: ProjectContext,
         run_config: RunConfiguration,
+        run_id: str | None = None,
     ) -> RunResult:
         """
         Internal pipeline execution — always called with the active-run counter already
         incremented.
         """
-        run_id = str(uuid.uuid4())
+        run_id = run_id or str(uuid.uuid4())
         tracker = ProgressTracker()
         warnings: list[str] = []
         errors: list[str] = []

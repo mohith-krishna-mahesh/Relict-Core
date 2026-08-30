@@ -91,9 +91,9 @@ async def _background_execute(
     always resolves correctly.
     """
     try:
-        internal_result = await orchestrator.execute(project, run_config)
+        internal_result = await orchestrator.execute(project, run_config, run_id=route_run_id)
 
-        # Re-key result under the route-provided ID
+        # Re-key result under the route-provided ID (safety check)
         rekeyed = internal_result.model_copy(update={"run_id": route_run_id})
         repository.save_result(rekeyed)
 
