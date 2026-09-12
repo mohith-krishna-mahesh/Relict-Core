@@ -9,8 +9,8 @@ from app.core_model.objective_parser import (
 from app.core_model.inference.ollama import generate as baseline_generate
 from app.core_model.training.merge_adapter import generate as finetuned_generate
 
-EVAL_SET_PATH = Path(__file__).parent / "datasets" / "eval_set.jsonl"
-RESULTS_PATH = Path(__file__).parent / "datasets" / "eval_results.json"
+EVAL_SET_PATH = Path(__file__).parent / "datasets" / "active" / "eval_set.jsonl"
+RESULTS_PATH = Path(__file__).parent / "datasets" / "active" / "eval_results.json"
 
 
 def load_eval_set() -> list[dict]:

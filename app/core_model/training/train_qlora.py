@@ -36,9 +36,9 @@ THIS_DIR = Path(__file__).parent
 # domain+category aware and this script's own stratified_split() below only
 # knows about category. Fall back to splitting a merged pool only if the
 # pre-split files aren't present (e.g. running against an older dataset).
-TRAIN_PATH = THIS_DIR / "datasets" / "sft_task1_train.jsonl"
-VAL_PATH = THIS_DIR / "datasets" / "sft_task1_val.jsonl"
-MERGED_FALLBACK_PATH = THIS_DIR / "datasets" / "sft_task1_merged_current.jsonl"
+TRAIN_PATH = THIS_DIR / "datasets" / "active" / "sft_task1_train.jsonl"
+VAL_PATH = THIS_DIR / "datasets" / "active" / "sft_task1_val_clean.jsonl"
+MERGED_FALLBACK_PATH = THIS_DIR / "datasets" / "active" / "sft_task1_merged_current.jsonl"
 PROMPT_TEMPLATE_PATH = THIS_DIR.parent / "prompts" / "objective_resolution.txt"
 OUTPUT_DIR = THIS_DIR / "checkpoints" / "objective_resolution_qlora"
 

@@ -4,11 +4,11 @@ from collections import Counter
 
 train = [
     json.loads(l)
-    for l in open("app/core_model/training/datasets/sft_task1_train.jsonl", encoding="utf-8")
+    for l in open("app/core_model/training/datasets/active/sft_task1_train.jsonl", encoding="utf-8")
 ]
 test = [
     json.loads(l)
-    for l in open("app/core_model/training/datasets/sft_task1_test.jsonl", encoding="utf-8")
+    for l in open("app/core_model/training/datasets/active/sft_task1_test.jsonl", encoding="utf-8")
 ]
 
 train_objs = [r["objective"] for r in train]
