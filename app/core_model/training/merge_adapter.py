@@ -22,7 +22,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
 BASE_MODEL_NAME = "Qwen/Qwen3-4B-Instruct-2507"  # must match train_qlora.py's MODEL_NAME
-ADAPTER_DIR = Path(__file__).parent / "checkpoints" / "objective_resolution_qlora"
+from app.config import settings
+_LOCAL_ADAPTER_DIR = Path(__file__).parent / "checkpoints" / "objective_resolution_qlora"
+ADAPTER_SOURCE = str(_LOCAL_ADAPTER_DIR) if _LOCAL_ADAPTER_DIR.exists() else settings.adapter_repo_id
 
 _model = None
 _tokenizer = None
@@ -33,8 +35,7 @@ def _load() -> tuple[PeftModel, AutoTokenizer]:
     if _model is not None:
         return _model, _tokenizer
 
-    if not ADAPTER_DIR.exists():
-        raise FileNotFoundError(f"No adapter found at {ADAPTER_DIR} — run train_qlora.py first.")
+
 
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -50,15 +51,15 @@ def _load() -> tuple[PeftModel, AutoTokenizer]:
         device_map="auto",
     )
 
-    print(f"Attaching adapter from {ADAPTER_DIR}...")
-    model = PeftModel.from_pretrained(base_model, str(ADAPTER_DIR))
+    print(f"Attaching adapter from {ADAPTER_SOURCE}...")
+    model = PeftModel.from_pretrained(base_model, ADAPTER_SOURCE)
     model.eval()
 
     # Load the tokenizer FROM THE ADAPTER DIR, not the base repo. train_qlora.py
     # saved the tokenizer alongside the adapter, and training logged a PAD/BOS/EOS
     # token adjustment ("pad_token_id: 151643") — reloading a fresh tokenizer from
     # the base model could silently mismatch what the model actually trained on.
-    tokenizer = AutoTokenizer.from_pretrained(str(ADAPTER_DIR))
+    tokenizer = AutoTokenizer.from_pretrained(ADAPTER_SOURCE)
 
     _model, _tokenizer = model, tokenizer
     return _model, _tokenizer

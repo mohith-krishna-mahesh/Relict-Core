@@ -148,6 +148,11 @@ class Settings(BaseSettings):
         description="HTTP timeout in seconds for requests sent to the model client.",
     )
 
+    adapter_repo_id: str = Field(
+        default="MaestroS231/relict-core-objective-resolution-qlora",
+        description="Hugging Face repository ID for the objective resolution QLoRA adapter."
+    )
+
     # ------------------------------------------------------------------
     # Auth — bearer token validation
     # ------------------------------------------------------------------

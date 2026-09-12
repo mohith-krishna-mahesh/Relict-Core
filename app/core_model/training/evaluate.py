@@ -70,8 +70,8 @@ def run_eval() -> None:
 
     print(f"\n{'=' * 50}")
     print(f"Total: {total}")
-    print(f"Baseline  � passed: {b_passed}/{total} | parse errors: {b_errors}")
-    print(f"Finetuned � passed: {f_passed}/{total} | parse errors: {f_errors}")
+    print(f"Baseline  - passed: {b_passed}/{total} | parse errors: {b_errors}")
+    print(f"Finetuned - passed: {f_passed}/{total} | parse errors: {f_errors}")
     print(f"Delta: {f_passed - b_passed:+d}")
 
     with open(RESULTS_PATH, "w", encoding="utf-8") as f:
