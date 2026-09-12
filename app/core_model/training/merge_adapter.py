@@ -28,7 +28,7 @@ _model = None
 _tokenizer = None
 
 
-def _load():
+def _load() -> tuple[PeftModel, AutoTokenizer]:
     global _model, _tokenizer
     if _model is not None:
         return _model, _tokenizer

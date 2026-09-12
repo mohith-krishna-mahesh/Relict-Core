@@ -36,9 +36,9 @@
         "wheat"
       ],
       "retrieval_targets": [
-        "DREB1A transcription factor pathway in wheat",
-        "drought tolerance mechanisms in wheat",
-        "upregulation of transcription factors"
+        "DREB1A transcription factor",
+        "drought tolerance in wheat",
+        "upregulation of transcription factor pathways"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -381,8 +381,9 @@
       ],
       "retrieval_targets": [
         "genes associated with cold tolerance in maize",
-        "genetic pathways regulating flowering time in maize",
-        "key regulatory genes in maize seedling response to cold"
+        "genes regulating flowering time in maize",
+        "molecular pathways in cold stress response",
+        "genetic networks controlling flowering time"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -446,13 +447,13 @@
         "MHC class II locus",
         "genetic diversity",
         "captive population",
-        "immune response"
+        "immune system"
       ],
       "retrieval_targets": [
-        "MHC class II locus",
-        "genetic diversity",
-        "captive black rhino population",
-        "immune response mechanisms"
+        "MHC class II locus function",
+        "genetic diversity metrics",
+        "captive black rhino population genetics",
+        "methods to increase genetic diversity"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -581,15 +582,19 @@
       "target_phenotypes": [
         "heat stress tolerance"
       ],
-      "biological_processes": null,
+      "biological_processes": [
+        "stress response",
+        "thermal tolerance"
+      ],
       "desired_change": null,
       "relevant_concepts": [
-        "heat stress tolerance",
-        "staghorn coral"
+        "staghorn coral",
+        "heat stress",
+        "tolerance"
       ],
       "retrieval_targets": [
         "heat stress tolerance in staghorn coral",
-        "genetic mechanisms of heat stress tolerance"
+        "genetic mechanisms of thermal tolerance in corals"
       ],
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
@@ -891,24 +896,24 @@
     },
     "baseline_actual": {
       "target_phenotypes": [
-        "hemorrhagic disease in passenger pigeon embryos"
+        "reduced risk of hemorrhagic disease"
       ],
       "biological_processes": [
-        "immune response in host embryos",
-        "gene expression in host immune cells"
+        "immune response",
+        "host-pathogen interaction"
       ],
-      "desired_change": "reduce the risk of hemorrhagic disease",
+      "desired_change": "reduce",
       "relevant_concepts": [
         "de-extinction",
         "passenger pigeon",
         "band-tailed pigeon",
-        "host immune genes",
+        "immune genes",
         "hemorrhagic disease"
       ],
       "retrieval_targets": [
-        "genes associated with immune response in band-tailed pigeons",
-        "hemorrhagic disease mechanisms in pigeons",
-        "immune gene editing techniques in avian embryos"
+        "hemorrhagic disease in passenger pigeons",
+        "immune genes in band-tailed pigeons",
+        "host immune gene editing in avian embryos"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -1322,12 +1327,12 @@
         "invasive species",
         "gray squirrel",
         "genetic engineering",
-        "offspring sex determination"
+        "male-biased offspring"
       ],
       "retrieval_targets": [
         "genetic mechanisms of sex determination in gray squirrels",
-        "methods to manipulate offspring sex ratio",
-        "invasive gray squirrel populations"
+        "methods to manipulate sex ratio in mammals",
+        "invasive gray squirrel population dynamics"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -1370,8 +1375,14 @@
       "target_phenotypes": null,
       "biological_processes": null,
       "desired_change": null,
-      "relevant_concepts": null,
-      "retrieval_targets": null,
+      "relevant_concepts": [
+        "reproductive gene",
+        "invasive rat population"
+      ],
+      "retrieval_targets": [
+        "reproductive gene",
+        "invasive rat population"
+      ],
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
     "baseline_match": true,
@@ -1517,7 +1528,8 @@
       "retrieval_targets": [
         "gene drive mechanisms in Anopheles gambiae",
         "fertility genes in Anopheles gambiae",
-        "larval mortality pathways in Anopheeles gambiae"
+        "larval mortality pathways in Anophe",
+        "combined gene drive strategies"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -1726,10 +1738,9 @@
         "gene knockout"
       ],
       "retrieval_targets": [
-        "PD-1 gene function",
+        "PD-1 gene function in T cells",
         "CAR-T cell persistence mechanisms",
-        "immune checkpoint inhibition in leukemia",
-        "gene knockout efficiency in T cells"
+        "clinical outcomes of PD-1 knockout in relapsed B-cell leukemia"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -1815,17 +1826,17 @@
     "baseline_actual": {
       "target_phenotypes": null,
       "biological_processes": null,
-      "desired_change": "Adjust the expression of the tumor suppressor gene TP53",
+      "desired_change": null,
       "relevant_concepts": [
-        "tumor suppressor gene",
         "TP53",
-        "gene expression",
+        "tumor suppressor gene",
+        "expression adjustment",
         "tumor cell line"
       ],
       "retrieval_targets": [
         "TP53 gene function",
-        "gene expression regulation in tumor cells",
-        "tumor suppressor mechanisms"
+        "tumor suppressor gene expression",
+        "tumor cell line characteristics"
       ],
       "ambiguity_status": "CLARIFICATION_REQUIRED"
     },
@@ -1941,8 +1952,8 @@
       ],
       "retrieval_targets": [
         "genes involved in insulin sensitivity",
-        "genes regulating chronic inflammation",
-        "gene editing approaches for type 2 diabetes"
+        "genes regulating inflammation in type 2 diabetes",
+        "gene editing techniques for metabolic disorders"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -2003,14 +2014,16 @@
       ],
       "desired_change": "reduce amyloid-beta plaque accumulation",
       "relevant_concepts": [
-        "amyloid-beta",
+        "Alzheimer's disease",
+        "amyloid-beta plaques",
         "synaptic plasticity",
-        "Alzheimer's disease model"
+        "neurodegeneration"
       ],
       "retrieval_targets": [
         "amyloid-beta plaque accumulation",
         "synaptic plasticity",
-        "Alzheimer's disease model mechanisms"
+        "Alzheimer's disease model",
+        "genetic mechanisms of amyloid-beta clearance"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -2072,11 +2085,11 @@
         "E. coli",
         "biofuel precursor yield",
         "fatty acid biosynthesis pathway",
-        "upregulation"
+        "gene upregulation"
       ],
       "retrieval_targets": [
         "fatty acid biosynthesis genes in E. coli",
-        "regulatory elements controlling fatty acid biosynthesis",
+        "regulatory elements for fatty acid biosynthesis",
         "biofuel precursor yield metrics in engineered E. coli"
       ],
       "ambiguity_status": "CLEAR"
@@ -2132,21 +2145,18 @@
         "off-target toxic byproduct formation"
       ],
       "biological_processes": [
-        "toxic byproduct formation in yeast",
-        "artemisinic acid production in yeast"
+        "toxic byproduct formation in yeast"
       ],
       "desired_change": "reduce",
       "relevant_concepts": [
-        "yeast metabolism",
-        "off-target effects",
-        "toxic byproducts",
-        "artemisinic acid biosynthesis"
+        "yeast",
+        "artemisinic acid production",
+        "off-target toxic byproducts"
       ],
       "retrieval_targets": [
-        "genetic pathways in yeast",
-        "toxic byproduct formation mechanisms",
-        "artemisinic acid production pathways",
-        "off-target effects in engineered yeast"
+        "genetic modifications in yeast",
+        "toxic byproduct pathways",
+        "artemisinic acid biosynthesis"
       ],
       "ambiguity_status": "CLEAR"
     },
@@ -2190,7 +2200,7 @@
         "biosensor sensitivity"
       ],
       "biological_processes": [
-        "signal transduction in bacterial reporter strains"
+        "signal detection in bacterial reporter strains"
       ],
       "desired_change": "modify the sensitivity threshold",
       "relevant_concepts": [
@@ -2360,8 +2370,8 @@
       "retrieval_targets": [
         "production titer of biopolymers in Bacillus subtilis",
         "cell lysis rate in Bacillus subtilis",
-        "genetic or metabolic pathways affecting biopolymer production",
-        "genetic or metabolic pathways affecting cell lysis"
+        "genetic modifications affecting biopolymer production",
+        "genetic modifications affecting cell lysis"
       ],
       "ambiguity_status": "CLEAR"
     },
